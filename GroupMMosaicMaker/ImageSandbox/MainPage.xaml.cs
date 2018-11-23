@@ -29,8 +29,9 @@ namespace ImageSandbox
         private double dpiY;
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
-        private int squareDiameter;
+        private int pixelArea;
         private MosaicInformationDialog displayMosaicInformation;
+        private StorageFile selectedImageFile;
 
         #endregion
 
@@ -38,9 +39,12 @@ namespace ImageSandbox
 
         public MainPage()
         {
+            
             this.displayMosaicInformation = new MosaicInformationDialog();
             this.InitializeComponent();
-            this.squareDiameter = 0;
+            this.PixelAreaOf5.IsChecked = true;
+            this.ModifyMoasicButton.IsEnabled = false;
+            this.RefreshMosaicButton.IsEnabled = false;
             this.dpiX = 0;
             this.dpiY = 0;
         }
@@ -76,10 +80,31 @@ namespace ImageSandbox
             }
         }
 
-       
 
 
 
+        private void createPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
+        {
+            var y = 0;
+            while (y < imageHeight)
+            {
+                var x = 0;
+                while (x < imageWidth)
+                {
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
+
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
+
+                    var averageColor =
+                        this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
+                            YStoppingPoint, x, XStoppingPoint);
+
+
+                    x += this.pixelArea;
+                }
+                y += this.pixelArea;
+            }
+        }
 
 
         private void createSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
@@ -100,9 +125,9 @@ namespace ImageSandbox
 
                     this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, averageColor);
 
-                    x += this.squareDiameter;
+                    x += this.pixelArea;
                 }
-                y += this.squareDiameter;
+                y += this.pixelArea;
             }
         }
 
@@ -126,7 +151,7 @@ namespace ImageSandbox
 
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
         {
-            var CoordinateStoppingPoint = coordinate + this.squareDiameter;
+            var CoordinateStoppingPoint = coordinate + this.pixelArea;
             if (CoordinateStoppingPoint > maxValue)
             {
                 CoordinateStoppingPoint = (int) maxValue;
@@ -238,13 +263,13 @@ namespace ImageSandbox
 
         private async Task HandleLoadPicture()
         {
-            var sourceImageFile = await this.selectSourceImageFile();
+            this.selectedImageFile = await this.selectSourceImageFile();
             
-            if (sourceImageFile != null)
+            if (this.selectedImageFile != null)
             {
-                var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(sourceImageFile);
+                var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
-                using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
+                using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
                     {
                         var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
@@ -266,34 +291,49 @@ namespace ImageSandbox
                         
                         var sourcePixels = pixelData.DetachPixelData();
 
-                        await this.handleCreatingImages(decoder, sourcePixels);
+                        await this.createOrignalImage(decoder, sourcePixels);
                     }
             }
         }
 
-        private async Task handleCreatingImages(BitmapDecoder decoder, byte[] sourcePixels)
+        private async Task handleCreatingSolidMosaicImage()
         {
-            await this.createOrignalImage(decoder, sourcePixels);
 
-            await this.createMosaicImage(decoder, sourcePixels);
+            if (this.selectedImageFile != null)
+            {
+                var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+                using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+                {
+                    var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                    var transform = new BitmapTransform
+                    {
+                        ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                        ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                    };
+
+                    this.dpiX = decoder.DpiX;
+                    this.dpiY = decoder.DpiY;
+
+                    var pixelData = await decoder.GetPixelDataAsync(
+                        BitmapPixelFormat.Bgra8,
+                        BitmapAlphaMode.Straight,
+                        transform,
+                        ExifOrientationMode.IgnoreExifOrientation,
+                        ColorManagementMode.DoNotColorManage
+                    );
+
+                    var sourcePixels = pixelData.DetachPixelData();
+
+                    await this.createMosaicImage(decoder, sourcePixels);
+                }
+            }
         }
 
         private async Task createMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
-            var results = await this.displayMosaicInformation.ShowAsync();
-            //this.squareDiameter = this.displayMosaicInformation.PixelArea;
-            this.squareDiameter = 5;
-
-            var selectedSolidMosiac = ContentDialogResult.Primary;
-            var selectedPictureMosiac = ContentDialogResult.Secondary;
-            if (results == selectedSolidMosiac)
-            {
-                this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
-            }
-            else if (results == selectedPictureMosiac)
-            {
-
-            }
+           this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
 
             this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
             using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
@@ -311,6 +351,34 @@ namespace ImageSandbox
                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
                 this.imageDisplay.Source = this.orignalImage;
             }
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.PixelAreaOf5.IsChecked == true)
+            {
+                this.pixelArea = 5;
+            }
+            if (this.PixelAreaOf15.IsChecked == true)
+            {
+                this.pixelArea = 15;
+            }
+            if (this.PixelAreaOf25.IsChecked == true)
+            {
+                this.pixelArea = 25;
+            }
+            if (this.PixelAreaOf55.IsChecked == true)
+            {
+                this.pixelArea = 55;
+            }
+
+        }
+
+        private async void CreateMosaicImageButton_Click(object sender, RoutedEventArgs e)
+        {
+
+
+           await this.handleCreatingSolidMosaicImage();
         }
     }
 }
