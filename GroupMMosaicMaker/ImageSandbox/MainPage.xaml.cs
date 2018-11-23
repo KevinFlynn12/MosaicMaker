@@ -76,61 +76,63 @@ namespace ImageSandbox
             }
         }
 
+       
+
+
+
+
 
         private void createSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
-           
-
             var y = 0;
             while (y < imageHeight)
             {
                 var x = 0;
                 while (x < imageWidth)
                 {
-                    var XStoppingPoint = x + this.squareDiameter;
-                    if (XStoppingPoint > imageWidth)
-                    {
-                        XStoppingPoint = (int) imageWidth;
-                    }
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    var YStoppingPoint = y + this.squareDiameter;
-                    if (YStoppingPoint > imageHeight)
-                    {
-                        YStoppingPoint = (int) imageHeight;
-                    }
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
 
                     var averageColor = 
                         this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
                             YStoppingPoint, x, XStoppingPoint);
 
-                    for (var YStartingPoint = y; YStartingPoint < YStoppingPoint; YStartingPoint++)
-                    {
-                       
-                        for (var XStartingPoint = x; XStartingPoint < XStoppingPoint; XStartingPoint++)
-                        {
-                            var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
-                           
-                            pixelColor.R = averageColor.R;
-                            pixelColor.B = averageColor.B;
-                            pixelColor.G = averageColor.G;
-                            
-                           
-                            this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
-
-
-                        }
-                    }
-
-
-
-
+                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, averageColor);
 
                     x += this.squareDiameter;
-
                 }
-
                 y += this.squareDiameter;
             }
+        }
+
+        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int y, int YStoppingPoint, int x,
+            int XStoppingPoint, Color averageColor)
+        {
+            for (var YStartingPoint = y; YStartingPoint < YStoppingPoint; YStartingPoint++)
+            {
+                for (var XStartingPoint = x; XStartingPoint < XStoppingPoint; XStartingPoint++)
+                {
+                    var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
+
+                    pixelColor.R = averageColor.R;
+                    pixelColor.B = averageColor.B;
+                    pixelColor.G = averageColor.G;
+
+                    this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
+                }
+            }
+        }
+
+        private int UpdateStoppingPoint(uint maxValue, int coordinate)
+        {
+            var CoordinateStoppingPoint = coordinate + this.squareDiameter;
+            if (CoordinateStoppingPoint > maxValue)
+            {
+                CoordinateStoppingPoint = (int) maxValue;
+            }
+
+            return CoordinateStoppingPoint;
         }
 
         private Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int currentY, int YStoppingPoint, int currentX,
@@ -271,13 +273,13 @@ namespace ImageSandbox
 
         private async Task handleCreatingImages(BitmapDecoder decoder, byte[] sourcePixels)
         {
-            this.orignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-            using (var writeStream = this.orignalImage.PixelBuffer.AsStream())
-            {
-                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
-                this.imageDisplay.Source = this.orignalImage;
-            }
+            await this.createOrignalImage(decoder, sourcePixels);
 
+            await this.createMosaicImage(decoder, sourcePixels);
+        }
+
+        private async Task createMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
             var results = await this.displayMosaicInformation.ShowAsync();
             //this.squareDiameter = this.displayMosaicInformation.PixelArea;
             this.squareDiameter = 5;
@@ -293,13 +295,21 @@ namespace ImageSandbox
 
             }
 
-
-
             this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
             using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
             {
                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
                 this.AlterImageDisplay.Source = this.modifiedImage;
+            }
+        }
+
+        private async Task createOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.orignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
+            using (var writeStream = this.orignalImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                this.imageDisplay.Source = this.orignalImage;
             }
         }
     }
