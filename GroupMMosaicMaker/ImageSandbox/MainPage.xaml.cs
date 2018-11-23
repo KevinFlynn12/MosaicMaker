@@ -86,10 +86,10 @@ namespace ImageSandbox
         private void createPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
             var y = 0;
-            while (y < imageHeight)
+            while (y <= imageHeight)
             {
                 var x = 0;
-                while (x < imageWidth)
+                while (x <= imageWidth)
                 {
                     var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
@@ -119,6 +119,9 @@ namespace ImageSandbox
 
                     var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
 
+                   
+
+
                     var averageColor = 
                         this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
                             YStoppingPoint, x, XStoppingPoint);
@@ -140,13 +143,38 @@ namespace ImageSandbox
                 {
                     var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
 
-                    pixelColor.R = averageColor.R;
-                    pixelColor.B = averageColor.B;
-                    pixelColor.G = averageColor.G;
+                    if (this.outLineCheckbox.IsChecked == true)
+                    {
+                        if (coordinateIsValidForOutline(y, YStoppingPoint, x, XStoppingPoint, XStartingPoint, YStartingPoint))
+                        {
+                            pixelColor.R = 255;
+                            pixelColor.B = 255;
+                            pixelColor.G = 255;
+                        }
+                    }
+                    else
+                    {
+
+                        pixelColor.R = averageColor.R;
+                        pixelColor.B = averageColor.B;
+                        pixelColor.G = averageColor.G;
+
+                    }
+
 
                     this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
                 }
             }
+        }
+
+        private static bool coordinateIsValidForOutline(int y, int YStoppingPoint, int x, int XStoppingPoint, int XStartingPoint, int YStartingPoint)
+        {
+            return CoordinateIsValidForOutline(x, XStoppingPoint, XStartingPoint) || CoordinateIsValidForOutline(y, YStoppingPoint, YStartingPoint);
+        }
+
+        private static bool CoordinateIsValidForOutline(int coordinate, int coordinateStoppingPoint, int coordinateStartingPoint)
+        {
+            return coordinateStartingPoint == coordinateStoppingPoint || coordinateStartingPoint == coordinate;
         }
 
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
