@@ -117,10 +117,7 @@ namespace ImageSandbox
                 {
                     var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
-
-                   
-
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);            
 
                     var averageColor = 
                         this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
@@ -145,20 +142,14 @@ namespace ImageSandbox
 
                     if (this.outLineCheckbox.IsChecked == true)
                     {
-                        if (coordinateIsValidForOutline(y, YStoppingPoint, x, XStoppingPoint, XStartingPoint, YStartingPoint))
-                        {
-                            pixelColor.R = 255;
-                            pixelColor.B = 255;
-                            pixelColor.G = 255;
-                        }
+                        handleAddingOutlines(y, YStoppingPoint, x, XStoppingPoint
+                            , averageColor, YStartingPoint, XStartingPoint, pixelColor);
                     }
                     else
                     {
-
                         pixelColor.R = averageColor.R;
                         pixelColor.B = averageColor.B;
                         pixelColor.G = averageColor.G;
-
                     }
 
 
@@ -167,14 +158,22 @@ namespace ImageSandbox
             }
         }
 
-        private static bool coordinateIsValidForOutline(int y, int YStoppingPoint, int x, int XStoppingPoint, int XStartingPoint, int YStartingPoint)
+        private static void handleAddingOutlines(int y, int YStoppingPoint, int x, int XStoppingPoint, Color averageColor,
+            int YStartingPoint, int XStartingPoint, Color pixelColor)
         {
-            return CoordinateIsValidForOutline(x, XStoppingPoint, XStartingPoint) || CoordinateIsValidForOutline(y, YStoppingPoint, YStartingPoint);
-        }
-
-        private static bool CoordinateIsValidForOutline(int coordinate, int coordinateStoppingPoint, int coordinateStartingPoint)
-        {
-            return coordinateStartingPoint == coordinateStoppingPoint || coordinateStartingPoint == coordinate;
+            if (YStartingPoint == y || YStoppingPoint == YStartingPoint
+                                    || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+            {
+                pixelColor.R = 255;
+                pixelColor.B = 255;
+                pixelColor.G = 255;
+            }
+            else
+            {
+                pixelColor.R = averageColor.R;
+                pixelColor.B = averageColor.B;
+                pixelColor.G = averageColor.G;
+            }
         }
 
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
