@@ -11,8 +11,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using ImageSandbox.View;
-using ImageMagick;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,7 +28,6 @@ namespace ImageSandbox
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
         private int pixelArea;
-        private MosaicInformationDialog displayMosaicInformation;
         private StorageFile selectedImageFile;
 
         #endregion
@@ -40,7 +37,6 @@ namespace ImageSandbox
         public MainPage()
         {
             
-            this.displayMosaicInformation = new MosaicInformationDialog();
             this.InitializeComponent();
             this.PixelAreaOf5.IsChecked = true;
             this.ModifyMoasicButton.IsEnabled = false;
@@ -325,9 +321,6 @@ namespace ImageSandbox
 
         private async Task handleCreatingSolidMosaicImage()
         {
-
-            if (this.selectedImageFile != null)
-            {
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -353,15 +346,19 @@ namespace ImageSandbox
 
                     var sourcePixels = pixelData.DetachPixelData();
 
-                    await this.createMosaicImage(decoder, sourcePixels);
+                    await this.createSolidMosaicImage(decoder, sourcePixels);
                 }
-            }
         }
 
-        private async Task createMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
-           this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+            this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
 
+            await this.handleCreatingMosaicImage(decoder, sourcePixels);
+        }
+
+        private async Task handleCreatingMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
             this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
             using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
             {
@@ -403,8 +400,7 @@ namespace ImageSandbox
 
         private async void CreateMosaicImageButton_Click(object sender, RoutedEventArgs e)
         {
-
-
+            
            await this.handleCreatingSolidMosaicImage();
         }
     }
