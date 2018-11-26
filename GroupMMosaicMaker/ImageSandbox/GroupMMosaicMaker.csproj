@@ -95,9 +95,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controller\HandlingImageController.cs" />
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Util\RelayCommand.cs" />
+    <Compile Include="ViewModel\MosaicMakerPageViewModel.cs" />
+    <Compile Include="View\MosaicMakerPage.xaml.cs">
+      <DependentUpon>MosaicMakerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\MosaicImages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -123,7 +125,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
+    <Page Include="View\MosaicMakerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -136,10 +138,7 @@
       <Version>6.1.7</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Util\" />
-    <Folder Include="View\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Chat;
 using Windows.ApplicationModel.Store;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -11,6 +12,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using ImageSandbox.ViewModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,6 +32,7 @@ namespace ImageSandbox
         private WriteableBitmap outlineOrignalImage;
         private int blockSize;
         private StorageFile selectedImageFile;
+        private MosaicMakerPageViewModel viewModel;
 
         #endregion
 
@@ -39,9 +42,10 @@ namespace ImageSandbox
         {
             
             this.InitializeComponent();
-            this.PixelAreaOf5.IsChecked = true;
             this.ModifyMoasicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
+            this.viewModel = new MosaicMakerPageViewModel();
+            this.DataContext = this.viewModel;
             this.dpiX = 0;
             this.dpiY = 0;
         }
@@ -290,7 +294,13 @@ namespace ImageSandbox
 
         private async void LoadButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await this.HandleLoadPicture();
+            this.selectedImageFile = await this.selectSourceImageFile();
+            if (this.selectedImageFile != null)
+            {
+                await this.viewModel.LoadPicture(this.selectedImageFile);
+            }
+
+            //await this.HandleLoadPicture();
         }
 
         private async Task HandleLoadPicture()
@@ -435,27 +445,6 @@ namespace ImageSandbox
             }
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            if (this.PixelAreaOf5.IsChecked == true)
-            {
-                this.blockSize = 5;
-            }
-            if (this.PixelAreaOf15.IsChecked == true)
-            {
-                this.blockSize = 15;
-            }
-            if (this.PixelAreaOf25.IsChecked == true)
-            {
-                this.blockSize = 25;
-            }
-            if (this.PixelAreaOf55.IsChecked == true)
-            {
-                this.blockSize = 55;
-            }
-
-        }
-
         private async void CreateMosaicImageButton_Click(object sender, RoutedEventArgs e)
         {
             
@@ -465,6 +454,11 @@ namespace ImageSandbox
             {
                 await this.handleCreatingOutlineOrignalImage();
             }
+        }
+
+        private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            throw new NotImplementedException();
         }
     }
 }
