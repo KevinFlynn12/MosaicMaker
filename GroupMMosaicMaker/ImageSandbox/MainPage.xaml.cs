@@ -28,7 +28,7 @@ namespace ImageSandbox
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
         private WriteableBitmap outlineOrignalImage;
-        private int pixelArea;
+        private int blockSize;
         private StorageFile selectedImageFile;
 
         #endregion
@@ -97,25 +97,25 @@ namespace ImageSandbox
 
                     this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, averageColor);
 
-                    x += this.pixelArea;
+                    x += this.blockSize;
                 }
-                y += this.pixelArea;
+                y += this.blockSize;
             }
         }
 
-        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int y, int YStoppingPoint, int x,
+        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
             int XStoppingPoint, Color averageColor)
         {
-            for (var YStartingPoint = y; YStartingPoint < YStoppingPoint; YStartingPoint++)
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
-                for (var XStartingPoint = x; XStartingPoint < XStoppingPoint; XStartingPoint++)
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
                     if (this.outLineCheckbox.IsChecked == true)
                     {
-                        if (YStartingPoint == y || YStoppingPoint == YStartingPoint
-                                                || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+                        if (currentYPoint == startingYPoint || YStoppingPoint == currentYPoint
+                                                || currentXPoint == startingXPoint || XStoppingPoint == currentXPoint)
                         {
                             pixelColor = Colors.White;
 
@@ -135,52 +135,55 @@ namespace ImageSandbox
                     }
 
 
-                    this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
+                    this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight);
                 }
             }
         }
 
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
-            var y = 0;
-            while (y < imageHeight)
+            var startingYpoint = 0;
+            while (startingYpoint < imageHeight)
             {
-                var x = 0;
-                while (x < imageWidth)
+                var startingXpoint = 0;
+                while (startingXpoint < imageWidth)
                 {
-                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, startingXpoint);
 
-                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, startingYpoint);
 
-                    for (var YStartingPoint = y; YStartingPoint < YStoppingPoint; YStartingPoint++)
+                    for (var currentYPoint = startingYpoint; currentYPoint < YStoppingPoint; currentYPoint++)
                     {
-                        for (var XStartingPoint = x; XStartingPoint < XStoppingPoint; XStartingPoint++)
+                        for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                         {
-                            var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
+                            var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
                           
-                          if (YStartingPoint == y || YStoppingPoint == YStartingPoint
-                                                  || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+                          if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
+                                                  || currentXPoint == startingXpoint || XStoppingPoint == currentXPoint)
                           {
                             pixelColor = Colors.White;
-                            this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
+                            this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight);
 
                             }
 
                         }
                     }
 
-                    x += this.pixelArea;
+                    startingXpoint += this.blockSize;
                 }
-                y += this.pixelArea;
+                startingYpoint += this.blockSize;
             }
         }
 
-
+        private static bool validCoordinatesForOutline(int startingCoordinate, int currentCoordinate, int coordinateStopingPoint)
+        {
+            return currentCoordinate == startingCoordinate || currentCoordinate == coordinateStopingPoint;
+        }
 
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
         {
-            var CoordinateStoppingPoint = coordinate + this.pixelArea;
+            var CoordinateStoppingPoint = coordinate + this.blockSize;
             if (CoordinateStoppingPoint > maxValue)
             {
                 CoordinateStoppingPoint = (int) maxValue;
@@ -189,7 +192,7 @@ namespace ImageSandbox
             return CoordinateStoppingPoint;
         }
 
-        private Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int currentY, int YStoppingPoint, int currentX,
+        private Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
             int XStoppingPoint)
         {
             var pixelCount = 0.0;
@@ -197,12 +200,12 @@ namespace ImageSandbox
             var totalBlue = 0.0;
             var totalGreen = 0.0;
 
-            for (var YStartingPoint = currentY; YStartingPoint < YStoppingPoint; YStartingPoint++)
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
-                for (var XStartingPoint = currentX; XStartingPoint < XStoppingPoint; XStartingPoint++)
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
                     pixelCount++;
-                    var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
                     totalGreen += pixelColor.G;
@@ -441,19 +444,19 @@ namespace ImageSandbox
         {
             if (this.PixelAreaOf5.IsChecked == true)
             {
-                this.pixelArea = 5;
+                this.blockSize = 5;
             }
             if (this.PixelAreaOf15.IsChecked == true)
             {
-                this.pixelArea = 15;
+                this.blockSize = 15;
             }
             if (this.PixelAreaOf25.IsChecked == true)
             {
-                this.pixelArea = 25;
+                this.blockSize = 25;
             }
             if (this.PixelAreaOf55.IsChecked == true)
             {
-                this.pixelArea = 55;
+                this.blockSize = 55;
             }
 
         }

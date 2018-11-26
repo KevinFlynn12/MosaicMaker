@@ -16,19 +16,21 @@
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
             <AppBarButton x:Name="SaveButton" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
         </CommandBar>
-        <Image x:Name="imageDisplay" HorizontalAlignment="Left" Height="354" Margin="37,63,0,0" VerticalAlignment="Top" Width="574"/>
+        <Image x:Name="imageDisplay" HorizontalAlignment="Left" Height="354" Margin="27,106,0,0" VerticalAlignment="Top" Width="574"/>
 
-        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="704,451,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
+        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="700,477,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
 
-        <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="354" Margin="682,59,0,0" VerticalAlignment="Top" Width="574"/>
-        <Button Content="Create Mosaic" HorizontalAlignment="Left" Margin="353,448,0,0" VerticalAlignment="Top" Height="58" Width="130" Click="CreateMosaicImageButton_Click"/>
-        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="537,445,0,0" VerticalAlignment="Top" Height="62" Width="128"/>
-        <TextBlock HorizontalAlignment="Left" Margin="84,455,0,0" Text="Select The area for The pixels" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <RadioButton x:Name="PixelAreaOf5" Content="5" HorizontalAlignment="Left" Margin="67,495,0,0" VerticalAlignment="Top" Width="52" Checked="RadioButton_Checked"  />
-        <RadioButton x:Name="PixelAreaOf15" Content="15" HorizontalAlignment="Left" Margin="161,501,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
-        <RadioButton x:Name="PixelAreaOf25" Content="25" HorizontalAlignment="Left" Margin="74,544,0,0" VerticalAlignment="Top" Width="73"  Checked="RadioButton_Checked" />
-        <RadioButton x:Name="PixelAreaOf55" Content="55" HorizontalAlignment="Left" Margin="156,544,0,0" VerticalAlignment="Top"  Checked="RadioButton_Checked" />
-        <CheckBox x:Name="outLineCheckbox" Content="Add a outline" HorizontalAlignment="Left" Margin="65,602,0,0" VerticalAlignment="Top"/>
+        <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="354" Margin="700,106,0,0" VerticalAlignment="Top" Width="574"/>
+        <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="351,476,0,0" VerticalAlignment="Top" Height="58" Width="130" Click="CreateMosaicImageButton_Click"/>
+        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="535,476,0,0" VerticalAlignment="Top" Height="62" Width="128"/>
+        <TextBlock HorizontalAlignment="Left" Margin="67,476,0,0" Text="Select The BlockSize" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <RadioButton x:Name="PixelAreaOf5" Content="5" HorizontalAlignment="Left" Margin="67,522,0,0" VerticalAlignment="Top" Width="52" Checked="RadioButton_Checked"  />
+        <RadioButton x:Name="PixelAreaOf15" Content="15" HorizontalAlignment="Left" Margin="156,522,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
+        <RadioButton x:Name="PixelAreaOf25" Content="25" HorizontalAlignment="Left" Margin="67,576,0,0" VerticalAlignment="Top" Width="73"  Checked="RadioButton_Checked" />
+        <RadioButton x:Name="PixelAreaOf55" Content="55" HorizontalAlignment="Left" Margin="156,570,0,0" VerticalAlignment="Top"  Checked="RadioButton_Checked" />
+        <CheckBox x:Name="outLineCheckbox" Content="Add a outline" HorizontalAlignment="Left" Margin="67,631,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
+        <TextBlock HorizontalAlignment="Left" Margin="27,81,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="864,81,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>
