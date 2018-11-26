@@ -27,6 +27,7 @@ namespace ImageSandbox
         private double dpiY;
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
+        private WriteableBitmap outlineOrignalImage;
         private int pixelArea;
         private StorageFile selectedImageFile;
 
@@ -78,31 +79,6 @@ namespace ImageSandbox
 
 
 
-
-        private void createPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
-        {
-            var y = 0;
-            while (y <= imageHeight)
-            {
-                var x = 0;
-                while (x <= imageWidth)
-                {
-                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
-
-                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
-
-                    var averageColor =
-                        this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
-                            YStoppingPoint, x, XStoppingPoint);
-
-
-                    x += this.pixelArea;
-                }
-                y += this.pixelArea;
-            }
-        }
-
-
         private void createSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
             var y = 0;
@@ -138,8 +114,18 @@ namespace ImageSandbox
 
                     if (this.outLineCheckbox.IsChecked == true)
                     {
-                        handleAddingOutlines(y, YStoppingPoint, x, XStoppingPoint
-                            , averageColor, YStartingPoint, XStartingPoint, pixelColor);
+                        if (YStartingPoint == y || YStoppingPoint == YStartingPoint
+                                                || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+                        {
+                            pixelColor = Colors.White;
+
+                        }
+                        else
+                        {
+                            pixelColor.R = averageColor.R;
+                            pixelColor.B = averageColor.B;
+                            pixelColor.G = averageColor.G;
+                        }
                     }
                     else
                     {
@@ -154,23 +140,43 @@ namespace ImageSandbox
             }
         }
 
-        private static void handleAddingOutlines(int y, int YStoppingPoint, int x, int XStoppingPoint, Color averageColor,
-            int YStartingPoint, int XStartingPoint, Color pixelColor)
+        private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
-            if (YStartingPoint == y || YStoppingPoint == YStartingPoint
-                                    || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+            var y = 0;
+            while (y < imageHeight)
             {
-                pixelColor.R = 255;
-                pixelColor.B = 255;
-                pixelColor.G = 255;
-            }
-            else
-            {
-                pixelColor.R = averageColor.R;
-                pixelColor.B = averageColor.B;
-                pixelColor.G = averageColor.G;
+                var x = 0;
+                while (x < imageWidth)
+                {
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
+
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
+
+                    for (var YStartingPoint = y; YStartingPoint < YStoppingPoint; YStartingPoint++)
+                    {
+                        for (var XStartingPoint = x; XStartingPoint < XStoppingPoint; XStartingPoint++)
+                        {
+                            var pixelColor = this.getPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, imageWidth, imageHeight);
+
+                          
+                          if (YStartingPoint == y || YStoppingPoint == YStartingPoint
+                                                  || XStartingPoint == x || XStoppingPoint == XStartingPoint)
+                          {
+                            pixelColor = Colors.White;
+                            this.setPixelBgra8(sourcePixels, YStartingPoint, XStartingPoint, pixelColor, imageWidth, imageHeight);
+
+                            }
+
+                        }
+                    }
+
+                    x += this.pixelArea;
+                }
+                y += this.pixelArea;
             }
         }
+
+
 
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
         {
@@ -350,6 +356,60 @@ namespace ImageSandbox
                 }
         }
 
+        private async Task handleCreatingOutlineOrignalImage()
+        {
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                await this.createOutlineOrignalImage(decoder, sourcePixels);
+            }
+        }
+
+        private async Task createOutlineOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.createOrignalImageWithOutline(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+
+            this.outlineOrignalImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+            using (var writeStream = this.outlineOrignalImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                this.imageDisplay.Source = this.outlineOrignalImage;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
@@ -402,6 +462,11 @@ namespace ImageSandbox
         {
             
            await this.handleCreatingSolidMosaicImage();
+
+            if(this.outLineCheckbox.IsChecked == true)
+            {
+                await this.handleCreatingOutlineOrignalImage();
+            }
         }
     }
 }
