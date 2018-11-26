@@ -358,6 +358,15 @@ namespace ImageSandbox
                     await this.createSolidMosaicImage(decoder, sourcePixels);
                 }
         }
+        private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+
+            await this.handleCreatingMosaicImage(decoder, sourcePixels);
+        }
+
+
+
 
         private async Task handleCreatingOutlineOrignalImage()
         {
@@ -402,23 +411,8 @@ namespace ImageSandbox
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-        private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
-        {
-            this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
-
-            await this.handleCreatingMosaicImage(decoder, sourcePixels);
-        }
+        
+       
 
         private async Task handleCreatingMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
@@ -436,6 +430,7 @@ namespace ImageSandbox
             using (var writeStream = this.orignalImage.PixelBuffer.AsStream())
             {
                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                
                 this.imageDisplay.Source = this.orignalImage;
             }
         }
