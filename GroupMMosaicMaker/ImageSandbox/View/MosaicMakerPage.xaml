@@ -21,10 +21,10 @@
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="380,80,0,0" VerticalAlignment="Top" Width="994"/>
         <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="420" Margin="380,559,0,0" VerticalAlignment="Top" Width="994"/>
 
-        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="41,559,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
+        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="46,524,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
 
-        <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="54,384,0,0" VerticalAlignment="Top" Height="58" Width="130" Click="CreateMosaicImageButton_Click"/>
-        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Center" Height="62" Width="128"/>
+        <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="44,356,0,0" VerticalAlignment="Top" Height="58" Width="130" Click="CreateMosaicImageButton_Click"/>
+        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="46,438,0,0" VerticalAlignment="Top" Height="62" Width="128"/>
         <TextBlock HorizontalAlignment="Left" Margin="41,115,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <CheckBox x:Name="outLineCheckbox" Content="Add a outline" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
         <TextBlock HorizontalAlignment="Left" Margin="252,239,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>

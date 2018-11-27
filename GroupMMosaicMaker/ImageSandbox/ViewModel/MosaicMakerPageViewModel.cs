@@ -31,6 +31,7 @@ namespace ImageSandbox.ViewModel
         private int blockSize;
         private StorageFile selectedImageFile;
         private WriteableBitmap imageDisplay;
+        public RelayCommand CreateMosaic { get; set; }
 
         public WriteableBitmap ImageDisplay
         {
@@ -59,7 +60,16 @@ namespace ImageSandbox.ViewModel
         private void loadAllCommands()
         {
         }
+        private bool canAlwaysExecute(object obj)
+        {
+            return true;
+        }
 
+        /// <summary>
+        /// Loads the picture.
+        /// </summary>
+        /// <param name="imageFile">The image file.</param>
+        /// <returns></returns>
         public async Task LoadPicture(StorageFile imageFile)
         {
             this.selectedImageFile = imageFile;
@@ -90,7 +100,7 @@ namespace ImageSandbox.ViewModel
 
                     var sourcePixels = pixelData.DetachPixelData();
 
-                    await this.createOrignalImage(decoder, sourcePixels);
+                    await this.createOriginalImage(decoder, sourcePixels);
                 }
             }
         }
@@ -101,7 +111,7 @@ namespace ImageSandbox.ViewModel
             newImage.SetSource(inputstream);
             return newImage;
         }
-        private async Task createOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
+        private async Task createOriginalImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.orignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
             using (var writeStream = this.orignalImage.PixelBuffer.AsStream())
@@ -111,9 +121,30 @@ namespace ImageSandbox.ViewModel
                 this.ImageDisplay = this.orignalImage;
             }
         }
-        private bool canAlwaysExecute(object obj)
+
+        /// <summary>
+        /// Saves the pircture.
+        /// </summary>
+        /// <param name="saveFile">The save file.</param>
+        /// <returns></returns>
+        public async Task SavePircture(StorageFile saveFile)
         {
-            return true;
+            if (saveFile != null)
+            {
+                var stream = await saveFile.OpenAsync(FileAccessMode.ReadWrite);
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+
+                var pixelStream = this.modifiedImage.PixelBuffer.AsStream();
+                var pixels = new byte[pixelStream.Length];
+                await pixelStream.ReadAsync(pixels, 0, pixels.Length);
+
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
+                    (uint)this.modifiedImage.PixelWidth,
+                    (uint)this.modifiedImage.PixelHeight, this.dpiX, this.dpiY, pixels);
+                await encoder.FlushAsync();
+
+                stream.Dispose();
+            }
         }
 
         /*
