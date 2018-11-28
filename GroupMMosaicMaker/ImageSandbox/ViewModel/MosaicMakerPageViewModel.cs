@@ -15,13 +15,19 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
+using ImageSandbox.Model;
 using ImageSandbox.Util;
-
+/*
+ * TODO
+ *Get the checkbox working and blocksize
+ * 
+ *
+ */
 namespace ImageSandbox.ViewModel
 {
     class MosaicMakerPageViewModel: INotifyPropertyChanged
     {
-        #region Data members
+          #region Data members
 
         private double dpiX;
         private double dpiY;
@@ -31,7 +37,20 @@ namespace ImageSandbox.ViewModel
         private int blockSize;
         private StorageFile selectedImageFile;
         private WriteableBitmap imageDisplay;
-        public RelayCommand CreateMosaic { get; set; }
+        private WriteableBitmap alterImageDisplay;
+        private SolidMosaic solidMosaic;
+        public RelayCommand CreateSolidMosaic { get; set; }
+        private bool hasGrid;
+
+        public bool HasGrid
+        {
+            get => this.hasGrid;
+            set
+            {
+                this.hasGrid = value;
+                this.OnPropertyChanged();
+            }
+        }
 
         public WriteableBitmap ImageDisplay
         {
@@ -40,8 +59,29 @@ namespace ImageSandbox.ViewModel
             {
                 this.imageDisplay = value;
                 this.OnPropertyChanged();
+                this.HasGrid = true;
             }
         }
+        public WriteableBitmap AlterImageDisplay
+        {
+            get => this.alterImageDisplay;
+            set
+            {
+                this.alterImageDisplay = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public int BlockSize
+        {
+            get => this.blockSize;
+            set
+            {
+                this.blockSize = value;
+                this.OnPropertyChanged();
+            }
+        }
+
 
         #endregion
 
@@ -49,17 +89,29 @@ namespace ImageSandbox.ViewModel
 
         public MosaicMakerPageViewModel()
         {
-           
+            this.HasGrid = false;
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
+            this.solidMosaic = new SolidMosaic();
         }
 
         #endregion
 
         private void loadAllCommands()
         {
+            this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canAlwaysExecute);
         }
+
+        private async void createSolidMosaic(object obj)
+        {
+            await this.handleCreatingSolidMosaicImage();
+            if (this.HasGrid)
+            {
+                await this.handleCreatingOutlineOrignalImage();
+            }
+        }
+
         private bool canAlwaysExecute(object obj)
         {
             return true;
@@ -127,7 +179,7 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         /// <param name="saveFile">The save file.</param>
         /// <returns></returns>
-        public async Task SavePircture(StorageFile saveFile)
+        public async Task SavePicture(StorageFile saveFile)
         {
             if (saveFile != null)
             {
@@ -144,6 +196,149 @@ namespace ImageSandbox.ViewModel
                 await encoder.FlushAsync();
 
                 stream.Dispose();
+            }
+        }
+        private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
+        {
+            var startingYpoint = 0;
+            while (startingYpoint < imageHeight)
+            {
+                var startingXpoint = 0;
+                while (startingXpoint < imageWidth)
+                {
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, startingXpoint);
+
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, startingYpoint);
+
+                    for (var currentYPoint = startingYpoint; currentYPoint < YStoppingPoint; currentYPoint++)
+                    {
+                        for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                        {
+                            var pixelColor = AnalyzeImage.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+
+
+                            if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
+                                                                || currentXPoint == startingXpoint || XStoppingPoint == currentXPoint)
+                            {
+                                pixelColor = Colors.White;
+                                this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight);
+
+                            }
+
+                        }
+                    }
+
+                    startingXpoint += this.BlockSize;
+                }
+                startingYpoint += this.BlockSize;
+            }
+        }
+        private int UpdateStoppingPoint(uint maxValue, int coordinate)
+        {
+            var CoordinateStoppingPoint = coordinate + BlockSize;
+            if (CoordinateStoppingPoint > maxValue)
+            {
+                CoordinateStoppingPoint = (int)maxValue;
+            }
+
+            return CoordinateStoppingPoint;
+        }
+        private void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
+        {
+            var offset = (x * (int)width + y) * 4;
+            pixels[offset + 2] = color.R;
+            pixels[offset + 1] = color.G;
+            pixels[offset + 0] = color.B;
+        }
+        private async Task handleCreatingSolidMosaicImage()
+        {
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                await this.createSolidMosaicImage(decoder, sourcePixels);
+            }
+        }
+        private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.solidMosaic.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.BlockSize, this.HasGrid);
+
+            await this.handleCreatingMosaicImage(decoder, sourcePixels);
+        }
+        private async Task handleCreatingOutlineOrignalImage()
+        {
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                await this.createOutlineOrignalImage(decoder, sourcePixels);
+            }
+        }
+
+        private async Task createOutlineOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.createOrignalImageWithOutline(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+
+            this.outlineOrignalImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+            using (var writeStream = this.outlineOrignalImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                this.ImageDisplay = this.outlineOrignalImage;
+            }
+        }
+
+
+
+
+        private async Task handleCreatingMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
+        {
+            this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+            using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                this.AlterImageDisplay = this.modifiedImage;
             }
         }
 

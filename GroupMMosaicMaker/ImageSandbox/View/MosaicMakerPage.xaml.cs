@@ -63,7 +63,7 @@ namespace ImageSandbox
             fileSavePicker.FileTypeChoices.Add("PNG files", new List<string> { ".png" });
             var savefile = await fileSavePicker.PickSaveFileAsync();
 
-            await this.viewModel.SavePircture(savefile);
+            await this.viewModel.SavePicture(savefile);
         }
 
 
