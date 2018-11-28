@@ -18,21 +18,21 @@
         </CommandBar>
 
 
-        <Image x:Name="imageDisplay"  HorizontalAlignment="Left" Height="420" Margin="380,80,0,0" VerticalAlignment="Top" Width="994"/>
-        <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="420" Margin="380,559,0,0" VerticalAlignment="Top" Width="994"/>
+        <Image x:Name="imageDisplay"  HorizontalAlignment="Left" Height="420" Margin="380,80,0,0" VerticalAlignment="Top" Width="874"/>
+        <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="420" Margin="382,541,0,0" VerticalAlignment="Top" Width="868"/>
 
-        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="41,559,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
+        <Button x:Name="RefreshMosaicButton" Content="Refresh Picture Mosaic" HorizontalAlignment="Left" Margin="47,685,0,0" VerticalAlignment="Top"  Width="167" Height="56" Click="Refresh_Click"/>
 
-        <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="54,384,0,0" VerticalAlignment="Top" Height="58" Width="130" Click="CreateMosaicImageButton_Click"/>
-        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Center" Height="62" Width="128"/>
+        <Button x:Name="DisplaySolidMosaic" Content="Display Solid Mosaic" HorizontalAlignment="Left" Margin="54,384,0,0" VerticalAlignment="Top" Height="58" Width="162" Click="CreateMosaicImageButton_Click"/>
+        <Button x:Name="DisplayPictureMosaic" Content="Display Picture Mosaic" HorizontalAlignment="Left" Margin="50,525,0,0" VerticalAlignment="Top" Height="62" Width="168"/>
         <TextBlock HorizontalAlignment="Left" Margin="54,118,0,0" Text="Select The BlockSize" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <RadioButton x:Name="PixelAreaOf5" Content="5" HorizontalAlignment="Left" Margin="67,164,0,0" VerticalAlignment="Top" Width="52" Checked="RadioButton_Checked"  />
         <RadioButton x:Name="PixelAreaOf15" Content="15" HorizontalAlignment="Left" Margin="121,164,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
         <RadioButton x:Name="PixelAreaOf25" Content="25" HorizontalAlignment="Left" Margin="54,227,0,0" VerticalAlignment="Top" Width="60"  Checked="RadioButton_Checked" />
         <RadioButton x:Name="PixelAreaOf55" Content="55" HorizontalAlignment="Left" Margin="121,227,0,0" VerticalAlignment="Top"  Checked="RadioButton_Checked" />
-        <CheckBox x:Name="outLineCheckbox" Content="Add a outline" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
+        <CheckBox x:Name="outLineCheckbox" Content="Create Square Grid" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526" Click="OutLineCheckbox_OnClick"/>
         <TextBlock HorizontalAlignment="Left" Margin="252,239,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="254,766,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="254,734,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

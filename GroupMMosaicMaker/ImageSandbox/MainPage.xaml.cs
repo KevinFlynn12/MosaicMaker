@@ -40,8 +40,7 @@ namespace ImageSandbox
             
             this.InitializeComponent();
             this.PixelAreaOf5.IsChecked = true;
-            this.ModifyMoasicButton.IsEnabled = false;
-            this.RefreshMosaicButton.IsEnabled = false;
+          
             this.dpiX = 0;
             this.dpiY = 0;
         }
@@ -293,12 +292,18 @@ namespace ImageSandbox
             await this.HandleLoadPicture();
         }
 
+      
+
+
+
+
         private async Task HandleLoadPicture()
         {
             this.selectedImageFile = await this.selectSourceImageFile();
             
             if (this.selectedImageFile != null)
             {
+                
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -464,6 +469,18 @@ namespace ImageSandbox
             if(this.outLineCheckbox.IsChecked == true)
             {
                 await this.handleCreatingOutlineOrignalImage();
+            }
+        }
+
+        private async void OutLineCheckbox_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (this.outLineCheckbox.IsChecked == true)
+            {
+                await this.handleCreatingOutlineOrignalImage();
+            }
+            else if(this.outLineCheckbox.IsChecked == false)
+            {
+                this.imageDisplay.Source = this.orignalImage;
             }
         }
     }
