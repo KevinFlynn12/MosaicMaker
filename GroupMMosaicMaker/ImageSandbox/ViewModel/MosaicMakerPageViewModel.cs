@@ -27,7 +27,7 @@ namespace ImageSandbox.ViewModel
 {
     class MosaicMakerPageViewModel: INotifyPropertyChanged
     {
-          #region Data members
+        #region Data members
 
         private double dpiX;
         private double dpiY;
@@ -49,6 +49,7 @@ namespace ImageSandbox.ViewModel
             {
                 this.hasGrid = value;
                 this.OnPropertyChanged();
+                this.gridCheckboxChanged();
             }
         }
 
@@ -90,6 +91,7 @@ namespace ImageSandbox.ViewModel
         public MosaicMakerPageViewModel()
         {
             this.HasGrid = false;
+            this.blockSize = 0;
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
@@ -286,6 +288,7 @@ namespace ImageSandbox.ViewModel
 
             await this.handleCreatingMosaicImage(decoder, sourcePixels);
         }
+
         private async Task handleCreatingOutlineOrignalImage()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -315,6 +318,7 @@ namespace ImageSandbox.ViewModel
 
                 await this.createOutlineOrignalImage(decoder, sourcePixels);
             }
+           
         }
 
         private async Task createOutlineOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
@@ -342,9 +346,29 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+        private async void gridCheckboxChanged()
+        {
+            try
+            {
+                if (this.HasGrid == true)
+                {
+                    await this.handleCreatingOutlineOrignalImage();
+                }
+                else if (this.HasGrid == false)
+                {
+                    this.ImageDisplay = this.orignalImage;
+                }
+            }
+            catch (Exception exception)
+            {
+                //TODO Don't crash
+            }
+
+
+        }
         /*
 private async void saveWritableBitmap()
-{
+{ 
     var fileSavePicker = new FileSavePicker
     {
         SuggestedStartLocation = PickerLocationId.PicturesLibrary,

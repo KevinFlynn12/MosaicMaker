@@ -26,7 +26,7 @@
         <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="44,356,0,0" VerticalAlignment="Top" Height="58" Width="130" Command="{Binding CreateSolidMosaic}"/>
         <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="46,438,0,0" VerticalAlignment="Top" Height="62" Width="128"/>
         <TextBlock HorizontalAlignment="Left" Margin="41,115,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <CheckBox x:Name="outLineCheckbox" IsEnabled="{Binding HasGrid, Mode=TwoWay}" Content="Add a outline" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
+        <CheckBox x:Name="outLineCheckbox" IsChecked="{Binding HasGrid, Mode = TwoWay}" Content="Show Grid" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
         <TextBlock HorizontalAlignment="Left" Margin="252,239,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="254,766,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="" InputScope="Number" TextAlignment="{Binding BlockSize, Mode=TwoWay}" VerticalAlignment="Top" Margin="184,109,0,0"/>
