@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AnalyzeImage.cs" />
+    <Compile Include="Model\MosaicImage.cs" />
     <Compile Include="Model\SolidMosaic.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Util\RelayCommand.cs" />
