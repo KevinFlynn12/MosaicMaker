@@ -34,11 +34,13 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
         private WriteableBitmap outlineOrignalImage;
-        private int blockSize;
+        private String blockSize;
+        private int blockSizeNumber;
         private StorageFile selectedImageFile;
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private SolidMosaic solidMosaic;
+        private MosaicImage mosaicImage;
         public RelayCommand CreateSolidMosaic { get; set; }
         private bool hasGrid;
 
@@ -49,7 +51,6 @@ namespace ImageSandbox.ViewModel
             {
                 this.hasGrid = value;
                 this.OnPropertyChanged();
-                this.gridCheckboxChanged();
             }
         }
 
@@ -73,15 +74,27 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        public int BlockSize
+        public String BlockSize
         {
             get => this.blockSize;
             set
             {
                 this.blockSize = value;
+                this.blockSizeNumber = int.Parse(this.BlockSize);
                 this.OnPropertyChanged();
             }
         }
+
+        public MosaicImage MosaicImage
+        {
+            get => this.mosaicImage;
+            set
+            {
+                this.mosaicImage = value;
+                this.OnPropertyChanged();
+            }
+        }
+
 
 
         #endregion
@@ -91,7 +104,7 @@ namespace ImageSandbox.ViewModel
         public MosaicMakerPageViewModel()
         {
             this.HasGrid = false;
-            this.blockSize = 0;
+            this.BlockSize = "1";
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
@@ -130,6 +143,8 @@ namespace ImageSandbox.ViewModel
 
             if (this.selectedImageFile != null)
             {
+                this.MosaicImage = new MosaicImage(this.HasGrid, imageFile);
+                /*
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -156,6 +171,7 @@ namespace ImageSandbox.ViewModel
 
                     await this.createOriginalImage(decoder, sourcePixels);
                 }
+                */
             }
         }
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
@@ -230,14 +246,14 @@ namespace ImageSandbox.ViewModel
                         }
                     }
 
-                    startingXpoint += this.BlockSize;
+                    startingXpoint += this.blockSizeNumber;
                 }
-                startingYpoint += this.BlockSize;
+                startingYpoint += this.blockSizeNumber;
             }
         }
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
         {
-            var CoordinateStoppingPoint = coordinate + BlockSize;
+            var CoordinateStoppingPoint = coordinate + this.blockSizeNumber;
             if (CoordinateStoppingPoint > maxValue)
             {
                 CoordinateStoppingPoint = (int)maxValue;
@@ -257,6 +273,7 @@ namespace ImageSandbox.ViewModel
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
             using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+            
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
@@ -284,7 +301,7 @@ namespace ImageSandbox.ViewModel
         }
         private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
-            this.solidMosaic.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.BlockSize, this.HasGrid);
+            this.solidMosaic.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
 
             await this.handleCreatingMosaicImage(decoder, sourcePixels);
         }
@@ -346,7 +363,7 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        private async void gridCheckboxChanged()
+        public async Task GridCheckboxChanged()
         {
             try
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Chat;
 using Windows.ApplicationModel.Store;
@@ -101,7 +102,7 @@ namespace ImageSandbox
                 {
                     var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
-                    if (this.outLineCheckbox.IsChecked == true)
+                    if (this.gridCheckbox.IsChecked == true)
                     {
                         if (currentYPoint == startingYPoint || YStoppingPoint == currentYPoint
                                                 || currentXPoint == startingXPoint || XStoppingPoint == currentXPoint)
@@ -285,9 +286,10 @@ namespace ImageSandbox
                 await this.viewModel.LoadPicture(this.selectedImageFile);
             }
 
+
             //await this.HandleLoadPicture();
         }
-
+        /*
         private async Task HandleLoadPicture()
         {
             this.selectedImageFile = await this.selectSourceImageFile();
@@ -322,7 +324,7 @@ namespace ImageSandbox
                     }
             }
         }
-
+        /*
         private async Task handleCreatingSolidMosaicImage()
         {
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -353,6 +355,7 @@ namespace ImageSandbox
                     await this.createSolidMosaicImage(decoder, sourcePixels);
                 }
         }
+        *
         private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
@@ -362,7 +365,7 @@ namespace ImageSandbox
 
 
 
-
+        /*
         private async Task handleCreatingOutlineOrignalImage()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -393,7 +396,8 @@ namespace ImageSandbox
                 await this.createOutlineOrignalImage(decoder, sourcePixels);
             }
         }
-
+        */
+        /*
         private async Task createOutlineOrignalImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.createOrignalImageWithOutline(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
@@ -406,7 +410,7 @@ namespace ImageSandbox
             }
         }
 
-        
+        *
        
 
         private async Task handleCreatingMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
@@ -429,21 +433,33 @@ namespace ImageSandbox
                 this.imageDisplay.Source = this.orignalImage;
             }
         }
-
+        /*
         private async void CreateMosaicImageButton_Click(object sender, RoutedEventArgs e)
         {
             
            await this.handleCreatingSolidMosaicImage();
 
-            if(this.outLineCheckbox.IsChecked == true)
+            if(this.gridCheckbox.IsChecked == true)
             {
                 await this.handleCreatingOutlineOrignalImage();
             }
         }
+        */
 
-        private void TextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        private void blockSizeTextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
-            throw new NotImplementedException();
+            if (!Regex.IsMatch(sender.Text, "^([1-9])([0-9])*$") && sender.Text != "")
+            {
+                var pos = sender.SelectionStart - 1;
+                sender.Text = sender.Text.Remove(pos, 1);
+                sender.SelectionStart = pos;
+            }
+        }
+
+        private async void GirdCheckbox_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.HasGrid = (bool)this.gridCheckbox.IsChecked;
+            await this.viewModel.GridCheckboxChanged();
         }
     }
 }
