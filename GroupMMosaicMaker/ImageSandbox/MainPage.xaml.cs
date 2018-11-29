@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Store;
@@ -30,6 +31,7 @@ namespace ImageSandbox
         private WriteableBitmap outlineOrignalImage;
         private int blockSize;
         private StorageFile selectedImageFile;
+        private StorageFolder selectedPictureFolder;
 
         #endregion
 
@@ -37,17 +39,17 @@ namespace ImageSandbox
 
         public MainPage()
         {
-            
+
             this.InitializeComponent();
             this.PixelAreaOf5.IsChecked = true;
-          
+
             this.dpiX = 0;
             this.dpiY = 0;
         }
 
         #endregion
 
-       
+
         private async void saveWritableBitmap()
         {
             var fileSavePicker = new FileSavePicker
@@ -55,7 +57,7 @@ namespace ImageSandbox
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary,
                 SuggestedFileName = "image"
             };
-            fileSavePicker.FileTypeChoices.Add("PNG files", new List<string> { ".png" });
+            fileSavePicker.FileTypeChoices.Add("PNG files", new List<string> {".png"});
             var savefile = await fileSavePicker.PickSaveFileAsync();
 
             if (savefile != null)
@@ -68,8 +70,8 @@ namespace ImageSandbox
                 await pixelStream.ReadAsync(pixels, 0, pixels.Length);
 
                 encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
-                    (uint)this.modifiedImage.PixelWidth,
-                    (uint)this.modifiedImage.PixelHeight, this.dpiX, this.dpiY, pixels);
+                    (uint) this.modifiedImage.PixelWidth,
+                    (uint) this.modifiedImage.PixelHeight, this.dpiX, this.dpiY, pixels);
                 await encoder.FlushAsync();
 
                 stream.Dispose();
@@ -88,33 +90,38 @@ namespace ImageSandbox
                 {
                     var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);            
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
 
-                    var averageColor = 
+                    var averageColor =
                         this.FindAverageColor(sourcePixels, imageWidth, imageHeight, y,
                             YStoppingPoint, x, XStoppingPoint);
 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, averageColor);
+                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint,
+                        averageColor);
 
                     x += this.blockSize;
                 }
+
                 y += this.blockSize;
             }
         }
 
-        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
+        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint,
+            int YStoppingPoint, int startingXPoint,
             int XStoppingPoint, Color averageColor)
         {
             for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                        imageHeight);
 
                     if (this.outLineCheckbox.IsChecked == true)
                     {
                         if (currentYPoint == startingYPoint || YStoppingPoint == currentYPoint
-                                                || currentXPoint == startingXPoint || XStoppingPoint == currentXPoint)
+                                                            || currentXPoint == startingXPoint ||
+                                                            XStoppingPoint == currentXPoint)
                         {
                             pixelColor = Colors.White;
 
@@ -155,14 +162,17 @@ namespace ImageSandbox
                     {
                         for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                         {
-                            var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                            var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                                imageHeight);
 
-                          
-                          if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
-                                                  || currentXPoint == startingXpoint || XStoppingPoint == currentXPoint)
-                          {
-                            pixelColor = Colors.White;
-                            this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight);
+
+                            if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
+                                                                || currentXPoint == startingXpoint ||
+                                                                XStoppingPoint == currentXPoint)
+                            {
+                                pixelColor = Colors.White;
+                                this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
+                                    imageHeight);
 
                             }
 
@@ -171,11 +181,13 @@ namespace ImageSandbox
 
                     startingXpoint += this.blockSize;
                 }
+
                 startingYpoint += this.blockSize;
             }
         }
 
-        private static bool validCoordinatesForOutline(int startingCoordinate, int currentCoordinate, int coordinateStopingPoint)
+        private static bool validCoordinatesForOutline(int startingCoordinate, int currentCoordinate,
+            int coordinateStopingPoint)
         {
             return currentCoordinate == startingCoordinate || currentCoordinate == coordinateStopingPoint;
         }
@@ -191,7 +203,8 @@ namespace ImageSandbox
             return CoordinateStoppingPoint;
         }
 
-        private Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
+        private Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint,
+            int YStoppingPoint, int startingXPoint,
             int XStoppingPoint)
         {
             var pixelCount = 0.0;
@@ -204,7 +217,8 @@ namespace ImageSandbox
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
                     pixelCount++;
-                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                        imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
                     totalGreen += pixelColor.G;
@@ -235,6 +249,20 @@ namespace ImageSandbox
             }
         }
 
+        private async Task<StorageFolder> selectImageFileFolder()
+        {
+            var picker = new FolderPicker
+            {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
+            };
+            picker.FileTypeFilter.Add("*");
+            var selectedFolder = await picker.PickSingleFolderAsync();
+            return selectedFolder;
+        }
+
+
+
         private async Task<StorageFile> selectSourceImageFile()
         {
             var openPicker = new FileOpenPicker
@@ -243,6 +271,7 @@ namespace ImageSandbox
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary
             };
             openPicker.FileTypeFilter.Add(".jpg");
+            openPicker.FileTypeFilter.Add(".jpeg");
             openPicker.FileTypeFilter.Add(".png");
             openPicker.FileTypeFilter.Add(".bmp");
 
@@ -261,7 +290,7 @@ namespace ImageSandbox
 
         private Color getPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
         {
-            var offset = (x * (int)width + y) * 4;
+            var offset = (x * (int) width + y) * 4;
             var r = pixels[offset + 2];
             var g = pixels[offset + 1];
             var b = pixels[offset + 0];
@@ -270,7 +299,7 @@ namespace ImageSandbox
 
         private void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
-            var offset = (x * (int)width + y) * 4;
+            var offset = (x * (int) width + y) * 4;
             pixels[offset + 2] = color.R;
             pixels[offset + 1] = color.G;
             pixels[offset + 0] = color.B;
@@ -292,7 +321,7 @@ namespace ImageSandbox
             await this.HandleLoadPicture();
         }
 
-      
+
 
 
 
@@ -300,41 +329,10 @@ namespace ImageSandbox
         private async Task HandleLoadPicture()
         {
             this.selectedImageFile = await this.selectSourceImageFile();
-            
+
             if (this.selectedImageFile != null)
             {
-                
-                var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
-                using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
-                    {
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                        var transform = new BitmapTransform {
-                            ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                            ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                        };
-
-                        this.dpiX = decoder.DpiX;
-                        this.dpiY = decoder.DpiY;
-
-                        var pixelData = await decoder.GetPixelDataAsync(
-                            BitmapPixelFormat.Bgra8,
-                            BitmapAlphaMode.Straight,
-                            transform,
-                            ExifOrientationMode.IgnoreExifOrientation,
-                            ColorManagementMode.DoNotColorManage
-                        );
-                        
-                        var sourcePixels = pixelData.DetachPixelData();
-
-                        await this.createOrignalImage(decoder, sourcePixels);
-                    }
-            }
-        }
-
-        private async Task handleCreatingSolidMosaicImage()
-        {
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -360,9 +358,42 @@ namespace ImageSandbox
 
                     var sourcePixels = pixelData.DetachPixelData();
 
-                    await this.createSolidMosaicImage(decoder, sourcePixels);
+                    await this.createOrignalImage(decoder, sourcePixels);
                 }
+            }
         }
+
+        private async Task handleCreatingSolidMosaicImage()
+        {
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                await this.createSolidMosaicImage(decoder, sourcePixels);
+            }
+        }
+
         private async Task createSolidMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.createSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
@@ -408,7 +439,7 @@ namespace ImageSandbox
         {
             this.createOrignalImageWithOutline(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
 
-            this.outlineOrignalImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+            this.outlineOrignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
             using (var writeStream = this.outlineOrignalImage.PixelBuffer.AsStream())
             {
                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
@@ -416,8 +447,8 @@ namespace ImageSandbox
             }
         }
 
-        
-       
+
+
 
         private async Task handleCreatingMosaicImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
@@ -435,7 +466,7 @@ namespace ImageSandbox
             using (var writeStream = this.orignalImage.PixelBuffer.AsStream())
             {
                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
-                
+
                 this.imageDisplay.Source = this.orignalImage;
             }
         }
@@ -446,14 +477,17 @@ namespace ImageSandbox
             {
                 this.blockSize = 5;
             }
+
             if (this.PixelAreaOf15.IsChecked == true)
             {
                 this.blockSize = 15;
             }
+
             if (this.PixelAreaOf25.IsChecked == true)
             {
                 this.blockSize = 25;
             }
+
             if (this.PixelAreaOf55.IsChecked == true)
             {
                 this.blockSize = 55;
@@ -463,10 +497,10 @@ namespace ImageSandbox
 
         private async void CreateMosaicImageButton_Click(object sender, RoutedEventArgs e)
         {
-            
-           await this.handleCreatingSolidMosaicImage();
 
-            if(this.outLineCheckbox.IsChecked == true)
+            await this.handleCreatingSolidMosaicImage();
+
+            if (this.outLineCheckbox.IsChecked == true)
             {
                 await this.handleCreatingOutlineOrignalImage();
             }
@@ -478,10 +512,16 @@ namespace ImageSandbox
             {
                 await this.handleCreatingOutlineOrignalImage();
             }
-            else if(this.outLineCheckbox.IsChecked == false)
+            else if (this.outLineCheckbox.IsChecked == false)
             {
                 this.imageDisplay.Source = this.orignalImage;
             }
         }
+
+        private async void DisplayPictureMosaic_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFolder = await this.selectImageFileFolder();
+        }
     }
+
 }

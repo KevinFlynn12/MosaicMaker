@@ -24,7 +24,7 @@
         <Button x:Name="RefreshMosaicButton" Content="Refresh Picture Mosaic" HorizontalAlignment="Left" Margin="47,685,0,0" VerticalAlignment="Top"  Width="167" Height="56" Click="Refresh_Click"/>
 
         <Button x:Name="DisplaySolidMosaic" Content="Display Solid Mosaic" HorizontalAlignment="Left" Margin="54,384,0,0" VerticalAlignment="Top" Height="58" Width="162" Click="CreateMosaicImageButton_Click"/>
-        <Button x:Name="DisplayPictureMosaic" Content="Display Picture Mosaic" HorizontalAlignment="Left" Margin="50,525,0,0" VerticalAlignment="Top" Height="62" Width="168"/>
+        <Button x:Name="DisplayPictureMosaic" Content="Display Picture Mosaic" HorizontalAlignment="Left" Margin="50,525,0,0" VerticalAlignment="Top" Height="62" Width="168" Click="DisplayPictureMosaic_Click"/>
         <TextBlock HorizontalAlignment="Left" Margin="54,118,0,0" Text="Select The BlockSize" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <RadioButton x:Name="PixelAreaOf5" Content="5" HorizontalAlignment="Left" Margin="67,164,0,0" VerticalAlignment="Top" Width="52" Checked="RadioButton_Checked"  />
         <RadioButton x:Name="PixelAreaOf15" Content="15" HorizontalAlignment="Left" Margin="121,164,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
