@@ -23,7 +23,6 @@ namespace ImageSandbox.Model
         {
             this.HasGrid = hasGrid;
             this.ImageFile = imageFile;
-            this.createSourcePixels();
         }
 
         private async void createSourcePixels()
@@ -117,14 +116,15 @@ namespace ImageSandbox.Model
                 }
             }
         }
-        private void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
+
+        public void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
             var offset = (x * (int)width + y) * 4;
             pixels[offset + 2] = color.R;
             pixels[offset + 1] = color.G;
             pixels[offset + 0] = color.B;
         }
-        private int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
+        public int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
         {
             var CoordinateStoppingPoint = coordinate + blockSize;
             if (CoordinateStoppingPoint > maxValue)
@@ -147,7 +147,7 @@ namespace ImageSandbox.Model
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
                     pixelCount++;
-                    var pixelColor = getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
                     totalGreen += pixelColor.G;
@@ -164,7 +164,7 @@ namespace ImageSandbox.Model
             newColor.G = (byte)averageGreen;
             return newColor;
         }
-        public  static Color getPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
+        public Color getPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
         {
             var offset = (x * (int)width + y) * 4;
             var r = pixels[offset + 2];

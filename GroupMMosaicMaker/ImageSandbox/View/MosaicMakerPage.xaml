@@ -18,18 +18,19 @@
         </CommandBar>
 
 
-        <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="380,80,0,0" VerticalAlignment="Top" Width="994"/>
-        <Image x:Name="AlterImageDisplay" HorizontalAlignment="Left" Height="420" Margin="380,559,0,0" VerticalAlignment="Top" Width="994"/>
+        <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,80,0,0" VerticalAlignment="Top" Width="994"/>
+        <Image x:Name="AlterImageDisplay" Source="{Binding AlterImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994"/>
 
-        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="46,524,0,0" VerticalAlignment="Top"  Width="137" Height="56" Click="Refresh_Click"/>
+        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="25,524,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
 
-        <Button Content="Display Mosaic" HorizontalAlignment="Left" Margin="44,356,0,0" VerticalAlignment="Top" Height="58" Width="130" Command="{Binding CreateSolidMosaic}"/>
-        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="46,438,0,0" VerticalAlignment="Top" Height="62" Width="128"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,115,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" Content="Show Grid" HorizontalAlignment="Left" Margin="54,296,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
-        <TextBlock HorizontalAlignment="Left" Margin="252,239,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="254,766,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="184,109,0,0"/>
-
+        <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="25,231,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic}" />
+        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="25,420,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
+        <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" Content="Show Grid" HorizontalAlignment="Left" Margin="25,150,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
+        <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="337,762,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
+        <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="254,103,0,0"/>
+        <Button Content="Create Picture&#xD;&#xA;     Mosaic"  Command="{Binding CreateSolidMosaic}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174"/>
     </Grid>
 </Page>
