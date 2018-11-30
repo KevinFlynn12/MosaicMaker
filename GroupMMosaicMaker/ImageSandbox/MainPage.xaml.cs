@@ -521,6 +521,20 @@ namespace ImageSandbox
         private async void DisplayPictureMosaic_Click(object sender, RoutedEventArgs e)
         {
             var selectedFolder = await this.selectImageFileFolder();
+
+           
+            if (selectedFolder != null)
+            {
+                var allFiles = await selectedFolder.GetFilesAsync();
+                for (int i = 0; i < allFiles.Count; i++)
+                {
+                    using (var stream = await allFiles[i].OpenAsync(FileAccessMode.Read))
+                    {
+                        var bitmapImage = new BitmapImage();
+                        await bitmapImage.SetSourceAsync(stream);
+                    }
+                }
+            }
         }
     }
 
