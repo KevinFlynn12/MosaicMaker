@@ -5,11 +5,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Chat;
 using Windows.ApplicationModel.Store;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
@@ -29,18 +31,32 @@ namespace ImageSandbox
         private StorageFile selectedImageFile;
         private MosaicMakerPageViewModel viewModel;
 
+        /// <summary>
+        ///     The application height
+        /// </summary>
+        public const int ApplicationHeight = 1000;
+
+        /// <summary>
+        ///     The application width
+        /// </summary>
+        public const int ApplicationWidth = 1500;
+
         #endregion
 
         #region Constructors
 
         public MainPage()
         {
-            this.btnPictureMosaic.IsEnabled = false;
+            
             this.InitializeComponent();
+            this.btnPictureMosaic.IsEnabled = false;
             this.ModifyMoasicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
             this.viewModel = new MosaicMakerPageViewModel();
             this.DataContext = this.viewModel;
+            ApplicationView.PreferredLaunchViewSize = new Size {Width = ApplicationWidth, Height = ApplicationHeight};
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(ApplicationWidth, ApplicationHeight));
         }
 
         #endregion

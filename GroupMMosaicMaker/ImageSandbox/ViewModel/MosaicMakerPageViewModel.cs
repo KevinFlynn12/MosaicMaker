@@ -35,6 +35,8 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
         public RelayCommand CreateSolidMosaic { get; set; }
+
+        public RelayCommand ChangeBlockSize { get; set; }
         private bool hasGrid;
 
         public bool HasGrid
@@ -54,6 +56,7 @@ namespace ImageSandbox.ViewModel
             {
                 this.imageDisplay = value;
                 this.OnPropertyChanged();
+                this.CreateSolidMosaic.OnCanExecuteChanged();
             }
         }
         public WriteableBitmap AlterImageDisplay
@@ -72,8 +75,8 @@ namespace ImageSandbox.ViewModel
             set
             {
                 this.blockSize = value;
-                this.blockSizeNumber = int.Parse(this.BlockSize);
                 this.OnPropertyChanged();
+                this.ChangeBlockSize.OnCanExecuteChanged();
             }
         }
 
@@ -96,18 +99,34 @@ namespace ImageSandbox.ViewModel
         public MosaicMakerPageViewModel()
         {
             this.HasGrid = false;
-            this.BlockSize = "5";
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
+            this.BlockSize = "5";
         }
 
         #endregion
 
         private void loadAllCommands()
         {
-            this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canAlwaysExecute);
+            this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canSolidMosaic);
+            this.ChangeBlockSize = new RelayCommand(this.changeBlockSize, this.canChangeBlockSize);
         }
+
+        private bool canChangeBlockSize(object obj)
+        {
+            int parsedBlockSize;
+            int.TryParse(this.BlockSize, out parsedBlockSize);
+            return parsedBlockSize >= 5 && parsedBlockSize <= 50;
+            
+
+        }
+
+        private void changeBlockSize(object obj)
+        {
+            this.blockSizeNumber = int.Parse(this.BlockSize);
+        }
+
         private bool canSolidMosaic(object obj)
         {
             return this.selectedImageFile != null ;
