@@ -34,7 +34,7 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private MosaicImages selectedFolderImages;
+        private ImageRegistry selectedFolderImages;
 
         public RelayCommand CreateSolidMosaic { get; set; }
 
@@ -104,7 +104,7 @@ namespace ImageSandbox.ViewModel
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
-            this.selectedFolderImages = new MosaicImages();
+            this.selectedFolderImages = new ImageRegistry();
         }
 
         #endregion

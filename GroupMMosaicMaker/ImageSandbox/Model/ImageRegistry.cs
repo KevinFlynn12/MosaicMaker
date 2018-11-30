@@ -9,11 +9,11 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace ImageSandbox.Model
 {
-    class MosaicImages : IList<BitmapImage>
+    class ImageRegistry : IList<BitmapImage>
     {
         private IList<BitmapImage>  SelectedFolderImages;
 
-        public MosaicImages()
+        public ImageRegistry()
         {
             this.SelectedFolderImages = new List<BitmapImage>();
         }

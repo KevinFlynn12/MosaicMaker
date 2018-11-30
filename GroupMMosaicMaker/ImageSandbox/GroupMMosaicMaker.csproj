@@ -102,7 +102,7 @@
     <Compile Include="View\MosaicMakerPage.xaml.cs">
       <DependentUpon>MosaicMakerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\MosaicImages.cs" />
+    <Compile Include="Model\ImageRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
