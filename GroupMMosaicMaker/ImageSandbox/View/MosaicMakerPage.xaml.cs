@@ -62,6 +62,17 @@ namespace ImageSandbox
 
             return file;
         }
+        private async Task<StorageFolder> selectImageFileFolder()
+        {
+            var picker = new FolderPicker
+            {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
+            };
+            picker.FileTypeFilter.Add("*");
+            var selectedFolder = await picker.PickSingleFolderAsync();
+            return selectedFolder;
+        }
 
         private async void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -102,6 +113,11 @@ namespace ImageSandbox
         {
             this.viewModel.HasGrid = (bool)this.gridCheckbox.IsChecked;
             await this.viewModel.GridCheckboxChanged();
+        }
+
+        private async void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedFolder = await this.selectImageFileFolder();
         }
     }
 }

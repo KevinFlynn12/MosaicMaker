@@ -31,6 +31,6 @@
         <TextBlock HorizontalAlignment="Left" Margin="337,762,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
         <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="254,103,0,0"/>
-        <Button Content="Create Picture&#xD;&#xA;     Mosaic"  Command="{Binding CreateSolidMosaic}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174"/>
+        <Button Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
     </Grid>
 </Page>

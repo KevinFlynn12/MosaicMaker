@@ -340,7 +340,21 @@ namespace ImageSandbox.ViewModel
                 this.ImageDisplay = this.orignalImage;
             }
         }
-       
+        private async void DisplayPictureMosaic(StorageFolder selectedFolder)
+        {
+            if (selectedFolder != null)
+            {
+                var allFiles = await selectedFolder.GetFilesAsync();
+                for (int i = 0; i < allFiles.Count; i++)
+                {
+                    using (var stream = await allFiles[i].OpenAsync(FileAccessMode.Read))
+                    {
+                        var bitmapImage = new BitmapImage();
+                        await bitmapImage.SetSourceAsync(stream);
+                    }
+                }
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
