@@ -34,6 +34,8 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
+        private MosaicImages selectedFolderImages;
+
         public RelayCommand CreateSolidMosaic { get; set; }
         private bool hasGrid;
 
@@ -100,6 +102,7 @@ namespace ImageSandbox.ViewModel
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
+            this.selectedFolderImages = new MosaicImages();
         }
 
         #endregion
@@ -345,18 +348,28 @@ namespace ImageSandbox.ViewModel
         }
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
-            if (selectedFolder != null)
+            try
             {
-                var allFiles = await selectedFolder.GetFilesAsync();
-                for (int i = 0; i < allFiles.Count; i++)
+                if (selectedFolder != null)
                 {
-                    using (var stream = await allFiles[i].OpenAsync(FileAccessMode.Read))
+                    var allFiles = await selectedFolder.GetFilesAsync();
+                    for (int i = 0; i < allFiles.Count; i++)
                     {
-                        var bitmapImage = new BitmapImage();
-                        await bitmapImage.SetSourceAsync(stream);
+                        using (var stream = await allFiles[i].OpenAsync(FileAccessMode.Read))
+                        {
+                            var bitmapImage = new BitmapImage();
+                            await bitmapImage.SetSourceAsync(stream);
+
+                            this.selectedFolderImages.Add(bitmapImage);
+                        }
                     }
                 }
             }
+            catch (Exception e)
+            {
+
+            }
+
         }
         public event PropertyChangedEventHandler PropertyChanged;
 

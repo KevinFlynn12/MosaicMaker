@@ -124,7 +124,7 @@ namespace ImageSandbox.Model
             pixels[offset + 1] = color.G;
             pixels[offset + 0] = color.B;
         }
-        public int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
+        private int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
         {
             var CoordinateStoppingPoint = coordinate + blockSize;
             if (CoordinateStoppingPoint > maxValue)
