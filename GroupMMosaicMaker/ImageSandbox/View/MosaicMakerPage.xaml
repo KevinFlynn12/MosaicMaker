@@ -30,7 +30,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="337,762,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
-        <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="254,103,0,0"/>
+        <Button Content="Submit" Command="{Binding ChangeBlockSize}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="259,103,0,0" Height="33"/>
         <Button x:Name="btnPictureMosaic"  Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
     </Grid>
 </Page>
