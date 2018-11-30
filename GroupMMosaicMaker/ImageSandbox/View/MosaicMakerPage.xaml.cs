@@ -35,7 +35,7 @@ namespace ImageSandbox
 
         public MainPage()
         {
-            
+            this.btnPictureMosaic.IsEnabled = false;
             this.InitializeComponent();
             this.ModifyMoasicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
@@ -55,6 +55,7 @@ namespace ImageSandbox
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary
             };
             openPicker.FileTypeFilter.Add(".jpg");
+            openPicker.FileTypeFilter.Add(".jpeg");
             openPicker.FileTypeFilter.Add(".png");
             openPicker.FileTypeFilter.Add(".bmp");
 
@@ -94,6 +95,7 @@ namespace ImageSandbox
             if (this.selectedImageFile != null)
             {
                 await this.viewModel.LoadPicture(this.selectedImageFile);
+                this.btnPictureMosaic.IsEnabled = true;
             }
             
         }
@@ -118,6 +120,7 @@ namespace ImageSandbox
         private async void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedFolder = await this.selectImageFileFolder();
+            this.viewModel.DisplayPictureMosaic(selectedFolder);
         }
     }
 }

@@ -108,7 +108,10 @@ namespace ImageSandbox.ViewModel
         {
             this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canAlwaysExecute);
         }
-
+        private bool canSolidMosaic(object obj)
+        {
+            return this.selectedImageFile != null ;
+        }
         private async void createSolidMosaic(object obj)
         {
             await this.handleCreatingSolidMosaicImage();
@@ -340,7 +343,7 @@ namespace ImageSandbox.ViewModel
                 this.ImageDisplay = this.orignalImage;
             }
         }
-        private async void DisplayPictureMosaic(StorageFolder selectedFolder)
+        public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
             if (selectedFolder != null)
             {
