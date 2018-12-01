@@ -115,8 +115,6 @@ namespace ImageSandbox
             }
             
         }
-      
-
         private void blockSizeTextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
             if (!Regex.IsMatch(sender.Text, "^[1-9]?([0-9])*$") && sender.Text != "")
@@ -131,6 +129,12 @@ namespace ImageSandbox
         {
             this.viewModel.HasGrid = (bool)this.gridCheckbox.IsChecked;
             await this.viewModel.GridCheckboxChanged();
+        }
+
+        private async void BlackAndWhiteCheckbox_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.IsBlackAndWhite= (bool)this.blackAndWhiteCheckBox.IsChecked;
+            await this.viewModel.BlackAndWhiteCheckboxChanged();
         }
 
         private async void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
