@@ -19,7 +19,13 @@
 
 
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,80,0,0" VerticalAlignment="Top" Width="994"/>
-        <Image x:Name="AlterImageDisplay" Source="{Binding AlterImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994"/>
+        <Grid Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994">
+            <ScrollViewer ZoomMode="Enabled"  >
+                <Image Source="{Binding AlterImageDisplay}"></Image>
+            </ScrollViewer>
+        </Grid>
+
+        
 
         <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="10,805,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
 
