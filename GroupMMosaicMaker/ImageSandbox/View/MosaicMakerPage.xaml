@@ -21,10 +21,10 @@
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,80,0,0" VerticalAlignment="Top" Width="994"/>
         <Image x:Name="AlterImageDisplay" Source="{Binding AlterImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994"/>
 
-        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="25,524,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
+        <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="10,805,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
 
         <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="25,231,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic}" />
-        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="25,420,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
+        <Button x:Name="ModifyMoasicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="21,710,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" Content="Show Grid" HorizontalAlignment="Left" Margin="25,150,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
         <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
@@ -32,5 +32,6 @@
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
         <Button Content="Submit" Command="{Binding ChangeBlockSize}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="259,103,0,0" Height="33"/>
         <Button x:Name="btnPictureMosaic"  Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
+        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="38,409,0,0"/>
     </Grid>
 </Page>

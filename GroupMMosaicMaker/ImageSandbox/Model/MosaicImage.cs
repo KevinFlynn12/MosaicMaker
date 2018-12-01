@@ -17,6 +17,7 @@ namespace ImageSandbox.Model
         public bool HasGrid { get; set; }
 
         public StorageFile ImageFile { get; set; }
+        
         private byte[] sourcePixels;
 
         public MosaicImage(bool hasGrid, StorageFile imageFile)
@@ -70,7 +71,7 @@ namespace ImageSandbox.Model
 
                     var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid);
+                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, false);
 
                     x += blockSize;
                 }
@@ -78,7 +79,7 @@ namespace ImageSandbox.Model
             }
         }
 
-        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint, int XStoppingPoint, bool isGrid)
+        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite)
         {
             var averageColor =
                 this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
@@ -96,6 +97,12 @@ namespace ImageSandbox.Model
                         {
                             pixelColor = Colors.White;
 
+                        }else if (isBlackAndWhite)
+                        {
+                            var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
+                            pixelColor.R = (byte)averageBlack;
+                            pixelColor.B = (byte)averageBlack;
+                            pixelColor.G = (byte)averageBlack;
                         }
                         else
                         {
@@ -103,6 +110,12 @@ namespace ImageSandbox.Model
                             pixelColor.B = averageColor.B;
                             pixelColor.G = averageColor.G;
                         }
+                    }else if (isBlackAndWhite & !isGrid)
+                    {
+                        var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
+                        pixelColor.R = (byte) averageBlack;
+                        pixelColor.B = (byte)averageBlack;
+                        pixelColor.G = (byte)averageBlack;
                     }
                     else
                     {
@@ -112,17 +125,18 @@ namespace ImageSandbox.Model
                     }
 
 
-                    this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight);
+                    this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, isBlackAndWhite);
                 }
             }
         }
 
-        public void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
+        public void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height, bool isBlackAndWhite)
         {
             var offset = (x * (int)width + y) * 4;
             pixels[offset + 2] = color.R;
             pixels[offset + 1] = color.G;
             pixels[offset + 0] = color.B;
+            
         }
         private int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
         {
@@ -164,6 +178,7 @@ namespace ImageSandbox.Model
             newColor.G = (byte)averageGreen;
             return newColor;
         }
+
         public Color getPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
         {
             var offset = (x * (int)width + y) * 4;
@@ -171,6 +186,26 @@ namespace ImageSandbox.Model
             var g = pixels[offset + 1];
             var b = pixels[offset + 0];
             return Color.FromArgb(0, r, g, b);
+        }
+
+        public void CreateBlackAndWhiteMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid)
+        {
+            var y = 0;
+            while (y < imageHeight)
+            {
+                var x = 0;
+                while (x < imageWidth)
+                {
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x, blockSize);
+
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
+
+                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, true);
+
+                    x += blockSize;
+                }
+                y += blockSize;
+            }
         }
     }
 }
