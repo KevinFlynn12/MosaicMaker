@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.UserDataTasks;
@@ -450,6 +451,21 @@ namespace ImageSandbox.ViewModel
         }
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
+            await this.LoadFolderImage(selectedFolder);
+
+
+
+        }
+
+
+
+
+
+
+
+
+        private async Task LoadFolderImage(StorageFolder selectedFolder)
+        {
             try
             {
                 if (selectedFolder != null)
@@ -461,8 +477,9 @@ namespace ImageSandbox.ViewModel
                         {
                             var bitmapImage = new BitmapImage();
                             await bitmapImage.SetSourceAsync(stream);
+                            var convertedBitmap = new WriteableBitmap(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
 
-                            this.selectedFolderImages.Add(bitmapImage);
+                            this.selectedFolderImages.Add(convertedBitmap);
                         }
                     }
                 }
@@ -471,8 +488,8 @@ namespace ImageSandbox.ViewModel
             {
                 //TODO
             }
-
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
