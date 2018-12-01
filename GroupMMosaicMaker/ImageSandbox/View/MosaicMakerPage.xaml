@@ -14,7 +14,7 @@
                 <Grid/>
             </CommandBar.Content>
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
-            <AppBarButton x:Name="SaveButton" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
+            <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
         </CommandBar>
 
 

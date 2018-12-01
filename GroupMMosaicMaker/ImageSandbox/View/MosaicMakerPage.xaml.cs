@@ -115,8 +115,6 @@ namespace ImageSandbox
             }
             
         }
-      
-
         private void blockSizeTextBox_OnTextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
         {
             if (!Regex.IsMatch(sender.Text, "^[1-9]?([0-9])*$") && sender.Text != "")

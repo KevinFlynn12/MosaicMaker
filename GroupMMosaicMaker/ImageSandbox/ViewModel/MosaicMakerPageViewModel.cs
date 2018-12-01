@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.UserDataTasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -37,10 +38,22 @@ namespace ImageSandbox.ViewModel
         private ImageRegistry selectedFolderImages;
         private bool hasMosaic;
         public RelayCommand CreateSolidMosaic { get; set; }
-
+        private bool canSave;
         public RelayCommand ChangeBlockSize { get; set; }
         private bool isBlackAndWhite;
         private bool hasGrid;
+
+        public bool CanSave
+        {
+            get => this.canSave;
+            set
+            {
+                this.canSave = value;
+                this.OnPropertyChanged();
+                this.CreateSolidMosaic.OnCanExecuteChanged();
+            }
+        }
+
         public bool HasMosaic
         {
             get => this.hasMosaic;
@@ -161,6 +174,7 @@ namespace ImageSandbox.ViewModel
             }
 
             this.hasMosaic = true;
+            this.CanSave = true;
 
         }
         private async Task handleCreatingSolidMosaicImage()
