@@ -455,9 +455,9 @@ namespace ImageSandbox.ViewModel
 
         }
 
-        
 
-        
+
+
 
 
 
@@ -486,6 +486,7 @@ namespace ImageSandbox.ViewModel
             {
                 //TODO
             }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
