@@ -21,7 +21,7 @@
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay}" HorizontalAlignment="Left" Height="420" Margin="451,80,0,0" VerticalAlignment="Top" Width="994"/>
         <Grid Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994">
             <ScrollViewer ZoomMode="Enabled"  >
-                <Image Source="{Binding AlterImageDisplay}"></Image>
+                <Image Source="{Binding AlterImageDisplay}" Height="420" Width="994"></Image>
             </ScrollViewer>
         </Grid>
 
