@@ -80,13 +80,15 @@ namespace ImageSandbox
         }
         private async Task<StorageFolder> selectImageFileFolder()
         {
-            var picker = new FolderPicker
+            var folderPicker = new FolderPicker
             {
                 ViewMode = PickerViewMode.Thumbnail,
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary
             };
-            picker.FileTypeFilter.Add("*");
-            var selectedFolder = await picker.PickSingleFolderAsync();
+
+           
+            folderPicker.FileTypeFilter.Add("*");
+            var selectedFolder = await folderPicker.PickSingleFolderAsync();
             return selectedFolder;
         }
 

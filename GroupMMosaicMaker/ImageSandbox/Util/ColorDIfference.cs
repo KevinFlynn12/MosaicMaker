@@ -11,11 +11,7 @@ namespace ImageSandbox.Util
     {
         public static int GetColorDifference(Color color, Color baseColor)
         {
-            int a = color.A - baseColor.A,
-                r = color.R - baseColor.R,
-                g = color.G - baseColor.G,
-                b = color.B - baseColor.B;
-            return a * a + r * r + g * g + b * b;
+            return Math.Abs(baseColor.R - color.R) + Math.Abs(baseColor.G - color.G) + Math.Abs(baseColor.B - color.B);
         }
 
     }

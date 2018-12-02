@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -81,8 +82,10 @@ namespace ImageSandbox.Model
             }
         }
 
-        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, FolderImageRegistry loadedImages)
+        public async void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, FolderImageRegistry loadedImages)
         {
+          await loadedImages.ResizeAllImagesInFolder((uint) blockSize, (uint) blockSize);
+
             var y = 0;
             while (y < imageHeight)
             {
@@ -93,7 +96,7 @@ namespace ImageSandbox.Model
 
                     var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
-                    this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, false,  loadedImages);
+                    this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, false,  loadedImages, blockSize);
 
                     x += blockSize;
                 }
@@ -102,31 +105,36 @@ namespace ImageSandbox.Model
         }
 
 
-        private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+        private async void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int YStoppingPoint, 
-            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, FolderImageRegistry loadedImages)
+            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, FolderImageRegistry loadedImages, int blockSize)
         {
+            var count = loadedImages.Count;
+
             var averageColor =
                 this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
                     YStoppingPoint, startingXPoint, XStoppingPoint);
 
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
 
-            int matchingImageX = 0;
-
             int matchingImageY = 0;
 
             for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
+                int matchingImageX = 0;
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
                     var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                   
 
                     pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
 
                     this.setPixelBgra8(sourcePixels,currentXPoint,currentYPoint, pixelColor,imageWidth, imageHeight, isBlackAndWhite);
 
+                    matchingImageX++;
                 }
+
+                matchingImageY++;
             }
 
         }
@@ -135,20 +143,32 @@ namespace ImageSandbox.Model
 
 
 
-        public Color getMatchingImagePixel(FolderImage matchingImage, int x, int y)
+        private Color getMatchingImagePixel(FolderImage matchingImage, int x, int y)
         {
             var imageWidth = (uint) matchingImage.imageBitmap.PixelWidth;
+
+            var pixelColor = new Color();
 
             var imageHeight = (uint) matchingImage.imageBitmap.PixelHeight;
 
             var sourcePixels = matchingImage.imageBitmap.PixelBuffer.ToArray();
 
+            for (int currentY = 0; currentY < imageWidth; currentY++)
+            {
+                for (int currentX = 0; currentX < imageWidth; currentX++)
+                {
+                    if (currentX == x && currentY == y)
+                    {
+                         pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
 
-            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
 
+                        return pixelColor;
+                    }
+                }
+               
+            }
 
             return pixelColor;
-
         }
 
 

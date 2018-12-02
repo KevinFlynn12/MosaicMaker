@@ -77,13 +77,22 @@ namespace ImageSandbox.Model
         }
 
 
+        /// <summary>
+        /// Finds the closest matching image.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The folder image that has the closest color to the selected color</returns>
         public FolderImage FindClosestMatchingImage(Color color)
         {
+            if (this.SelectedFolderImages == null)
+            {
+                throw new ArgumentException("List cannot be null");
+            }
             FolderImage matchingImage = null;
             var closestValue = 1000;
             foreach (var currImage in this.SelectedFolderImages)
             {
-                var matchingValue = ColorDIfference.GetColorDifference(currImage.FindAverageColor(), color);
+                var matchingValue = ColorDIfference.GetColorDifference( color, currImage.FindAverageColor());
 
                 if (matchingValue == 0)
                 {
@@ -91,6 +100,7 @@ namespace ImageSandbox.Model
                 }
                 else if (Math.Abs(matchingValue) < closestValue)
                 {
+                    closestValue = matchingValue;
                     matchingImage = currImage;
                 }
 
@@ -98,6 +108,38 @@ namespace ImageSandbox.Model
 
             return matchingImage;
         }
+
+
+        /// <summary>
+        /// Resizes all images in folder.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">List cannot be null</exception>
+        public async Task ResizeAllImagesInFolder(uint width, uint height)
+        {
+            if (this.SelectedFolderImages == null)
+            {
+                throw new ArgumentException("List cannot be null");
+            }
+            
+            foreach (var currImage in this.SelectedFolderImages)
+            {
+               await currImage.ResizeWritableBitmap(width, height);
+
+            }
+
+
+        }
+
+
+
+
+
+
+
+
 
     }
 }
