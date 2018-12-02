@@ -95,14 +95,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\FolderImage.cs" />
     <Compile Include="Model\MosaicImage.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Util\ColorDIfference.cs" />
+    <Compile Include="Util\ImageAverageColor.cs" />
+    <Compile Include="Util\ImagePixel.cs" />
     <Compile Include="Util\RelayCommand.cs" />
     <Compile Include="ViewModel\MosaicMakerPageViewModel.cs" />
     <Compile Include="View\MosaicMakerPage.xaml.cs">
       <DependentUpon>MosaicMakerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\ImageRegistry.cs" />
+    <Compile Include="Model\FolderImageRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
