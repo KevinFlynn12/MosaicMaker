@@ -125,7 +125,9 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
-        
+
+    
+
         #endregion
 
         #region Constructors
@@ -263,10 +265,10 @@ namespace ImageSandbox.ViewModel
                     );
 
                     var sourcePixels = pixelData.DetachPixelData();
-
                     await this.createOriginalImage(decoder, sourcePixels);
                 }
             }
+            
         }
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {
