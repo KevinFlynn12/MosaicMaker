@@ -44,6 +44,18 @@ namespace ImageSandbox.ViewModel
         private bool isBlackAndWhite;
         private bool hasGrid;
 
+        private bool isCreatePictureMosaicEnabled;
+        public bool IsCreatePictureMosaicEnabled
+        {
+            get => this.isCreatePictureMosaicEnabled;
+            set
+            {
+                this.isCreatePictureMosaicEnabled = value;
+                this.OnPropertyChanged();
+                this.CreateSolidMosaic.OnCanExecuteChanged();
+            }
+        }
+
         public bool CanSave
         {
             get => this.canSave;
@@ -125,9 +137,6 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
-
-    
-
         #endregion
 
         #region Constructors
@@ -161,6 +170,7 @@ namespace ImageSandbox.ViewModel
         private void changeBlockSize(object obj)
         {
             this.blockSizeNumber = int.Parse(this.BlockSize);
+            this.IsCreatePictureMosaicEnabled = true;
             this.CreateSolidMosaic.OnCanExecuteChanged();
         }
 
@@ -289,7 +299,7 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Saves the pircture.
+        /// Saves the picture.
         /// </summary>
         /// <param name="saveFile">The save file.</param>
         /// <returns></returns>
