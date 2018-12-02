@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ImageSandbox.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
@@ -79,7 +81,7 @@ namespace ImageSandbox.Model
             }
         }
 
-        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, ICollection<FolderImage> loadedImages)
+        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, FolderImageRegistry loadedImages)
         {
             var y = 0;
             while (y < imageHeight)
@@ -102,19 +104,27 @@ namespace ImageSandbox.Model
 
         private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int YStoppingPoint, 
-            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, ICollection<FolderImage> loadedImages)
+            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, FolderImageRegistry loadedImages)
         {
             var averageColor =
                 this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
                     YStoppingPoint, startingXPoint, XStoppingPoint);
+
+            var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
+
+            int matchingImageX = 0;
+
+            int matchingImageY = 0;
+
             for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
-                    
+                    pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
 
+                    this.setPixelBgra8(sourcePixels,currentXPoint,currentYPoint, pixelColor,imageWidth, imageHeight, isBlackAndWhite);
 
                 }
             }
@@ -123,10 +133,24 @@ namespace ImageSandbox.Model
 
 
 
-        public void LoadPictureMosaicImages()
+
+
+        public Color getMatchingImagePixel(FolderImage matchingImage, int x, int y)
         {
+            var imageWidth = (uint) matchingImage.imageBitmap.PixelWidth;
+
+            var imageHeight = (uint) matchingImage.imageBitmap.PixelHeight;
+
+            var sourcePixels = matchingImage.imageBitmap.PixelBuffer.ToArray();
+
+
+            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
+
+
+            return pixelColor;
 
         }
+
 
 
         private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite)

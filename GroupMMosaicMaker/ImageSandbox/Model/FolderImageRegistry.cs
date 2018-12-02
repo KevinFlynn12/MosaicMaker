@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using ImageSandbox.Util;
 
 namespace ImageSandbox.Model
 {
@@ -73,5 +75,29 @@ namespace ImageSandbox.Model
         {
             return SelectedFolderImages.GetEnumerator();
         }
+
+
+        public FolderImage FindClosestMatchingImage(Color color)
+        {
+            FolderImage matchingImage = null;
+            var closestValue = 1000;
+            foreach (var currImage in this.SelectedFolderImages)
+            {
+                var matchingValue = ColorDIfference.GetColorDifference(currImage.FindAverageColor(), color);
+
+                if (matchingValue == 0)
+                {
+                    return currImage;
+                }
+                else if (Math.Abs(matchingValue) < closestValue)
+                {
+                    matchingImage = currImage;
+                }
+
+            }
+
+            return matchingImage;
+        }
+
     }
 }

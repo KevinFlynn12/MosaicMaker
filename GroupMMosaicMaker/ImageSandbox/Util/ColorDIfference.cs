@@ -9,7 +9,7 @@ namespace ImageSandbox.Util
 {
     class ColorDIfference
     {
-        private static int GetColorDifference(Color color, Color baseColor)
+        public static int GetColorDifference(Color color, Color baseColor)
         {
             int a = color.A - baseColor.A,
                 r = color.R - baseColor.R,
