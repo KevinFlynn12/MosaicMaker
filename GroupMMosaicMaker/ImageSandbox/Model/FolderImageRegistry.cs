@@ -9,22 +9,22 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace ImageSandbox.Model
 {
-    class ImageRegistry : IList<WriteableBitmap>
+    class FolderImageRegistry : IList<FolderImage>
     {
-        private IList<WriteableBitmap>  SelectedFolderImages;
+        private IList<FolderImage>  SelectedFolderImages;
 
-        public ImageRegistry()
+        public FolderImageRegistry()
         {
-            this.SelectedFolderImages = new List<WriteableBitmap>();
+            this.SelectedFolderImages = new List<FolderImage>();
         }
 
-        public WriteableBitmap this[int index] { get => SelectedFolderImages[index]; set => SelectedFolderImages[index] = value; }
+        public FolderImage this[int index] { get => SelectedFolderImages[index]; set => SelectedFolderImages[index] = value; }
 
         public int Count => SelectedFolderImages.Count;
 
         public bool IsReadOnly => SelectedFolderImages.IsReadOnly;
 
-        public void Add(WriteableBitmap item)
+        public void Add(FolderImage item)
         {
             SelectedFolderImages.Add(item);
         }
@@ -34,32 +34,32 @@ namespace ImageSandbox.Model
             SelectedFolderImages.Clear();
         }
 
-        public bool Contains(WriteableBitmap item)
+        public bool Contains(FolderImage item)
         {
             return SelectedFolderImages.Contains(item);
         }
 
-        public void CopyTo(WriteableBitmap[] array, int arrayIndex)
+        public void CopyTo(FolderImage[] array, int arrayIndex)
         {
             SelectedFolderImages.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<WriteableBitmap> GetEnumerator()
+        public IEnumerator<FolderImage> GetEnumerator()
         {
             return SelectedFolderImages.GetEnumerator();
         }
 
-        public int IndexOf(WriteableBitmap item)
+        public int IndexOf(FolderImage item)
         {
             return SelectedFolderImages.IndexOf(item);
         }
 
-        public void Insert(int index, WriteableBitmap item)
+        public void Insert(int index, FolderImage item)
         {
             SelectedFolderImages.Insert(index, item);
         }
 
-        public bool Remove(WriteableBitmap item)
+        public bool Remove(FolderImage item)
         {
             return SelectedFolderImages.Remove(item);
         }

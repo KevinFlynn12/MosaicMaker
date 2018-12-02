@@ -36,7 +36,7 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private ImageRegistry selectedFolderImages;
+        private FolderImageRegistry selectedFolderImages;
         private bool hasMosaic;
         public RelayCommand CreateSolidMosaic { get; set; }
         private bool canSave;
@@ -147,7 +147,7 @@ namespace ImageSandbox.ViewModel
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
-            this.selectedFolderImages = new ImageRegistry();
+            this.selectedFolderImages = new FolderImageRegistry();
         }
 
         #endregion
@@ -465,8 +465,59 @@ namespace ImageSandbox.ViewModel
 
 
 
+            await this.BuildPictureMosaic();
         }
-        
+
+        public async Task BuildPictureMosaic()
+        {
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+                if (this.IsBlackAndWhite)
+                {
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                }
+                else
+                {
+                    
+                    this.MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                }
+
+                this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
+                {
+                    await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                    this.AlterImageDisplay = this.modifiedImage;
+                }
+            }
+
+
+
+
+        }
+
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
         {
@@ -483,7 +534,9 @@ namespace ImageSandbox.ViewModel
                             await bitmapImage.SetSourceAsync(stream);
                             var convertedBitmap = new WriteableBitmap(bitmapImage.PixelWidth, bitmapImage.PixelHeight);
 
-                            this.selectedFolderImages.Add(convertedBitmap);
+                            var selectedFolderImage = new FolderImage(convertedBitmap);
+
+                            this.selectedFolderImages.Add(selectedFolderImage);
                         }
                     }
                 }
