@@ -453,13 +453,6 @@ namespace ImageSandbox.ViewModel
         {
             await this.LoadFolderImage(selectedFolder);
 
-
-
-            await this.BuildPictureMosaic();
-        }
-
-        public async Task BuildPictureMosaic()
-        {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
             using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -491,8 +484,9 @@ namespace ImageSandbox.ViewModel
                 }
                 else
                 {
-                    
-                    this.MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+
+                    this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
+                        decoder.PixelHeight, this.blockSizeNumber, this.HasGrid, this.selectedFolderImages);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
@@ -503,11 +497,8 @@ namespace ImageSandbox.ViewModel
                 }
             }
 
-
-
-
+            
         }
-
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
         {

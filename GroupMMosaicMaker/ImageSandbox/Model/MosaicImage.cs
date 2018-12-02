@@ -79,6 +79,56 @@ namespace ImageSandbox.Model
             }
         }
 
+        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, ICollection<FolderImage> loadedImages)
+        {
+            var y = 0;
+            while (y < imageHeight)
+            {
+                var x = 0;
+                while (x < imageWidth)
+                {
+                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, x, blockSize);
+
+                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
+
+                    this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, false,  loadedImages);
+
+                    x += blockSize;
+                }
+                y += blockSize;
+            }
+        }
+
+
+        private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+            int startingYPoint, int YStoppingPoint, 
+            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, ICollection<FolderImage> loadedImages)
+        {
+            var averageColor =
+                this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
+                    YStoppingPoint, startingXPoint, XStoppingPoint);
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            {
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                {
+                    var pixelColor = getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+
+                    
+
+
+                }
+            }
+
+        }
+
+
+
+        public void LoadPictureMosaicImages()
+        {
+
+        }
+
+
         private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite)
         {
             var averageColor =
