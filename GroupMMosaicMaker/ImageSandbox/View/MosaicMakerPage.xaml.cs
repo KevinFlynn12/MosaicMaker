@@ -52,7 +52,7 @@ namespace ImageSandbox
             
             this.InitializeComponent();
             this.btnPictureMosaic.IsEnabled = false;
-            this.ModifyMoasicButton.IsEnabled = false;
+            this.ModifyMosaicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
             this.viewModel = new MosaicMakerPageViewModel();
             this.DataContext = this.viewModel;
@@ -62,9 +62,6 @@ namespace ImageSandbox
         }
 
         #endregion
-
-      
-
         private async Task<StorageFile> selectSourceImageFile()
         {
             var openPicker = new FileOpenPicker
@@ -113,7 +110,6 @@ namespace ImageSandbox
             if (this.selectedImageFile != null)
             {
                 await this.viewModel.LoadPicture(this.selectedImageFile);
-                this.btnPictureMosaic.IsEnabled = true;
             }
             
         }
@@ -144,7 +140,5 @@ namespace ImageSandbox
             var selectedFolder = await this.selectImageFileFolder();
             this.viewModel.DisplayPictureMosaic(selectedFolder);
         }
-
-        
     }
 }
