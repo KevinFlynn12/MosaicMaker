@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.UserDataTasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
+
 namespace ImageSandbox.ViewModel
 {
-    class MosaicMakerPageViewModel: INotifyPropertyChanged
+    internal class MosaicMakerPageViewModel : INotifyPropertyChanged
     {
         #region Data members
 
@@ -30,21 +23,29 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap modifiedImage;
         private WriteableBitmap orignalImage;
         private WriteableBitmap outlineOrignalImage;
-        private String blockSize;
+        private string blockSize;
         private int blockSizeNumber;
         private StorageFile selectedImageFile;
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private FolderImageRegistry selectedFolderImages;
+        private readonly FolderImageRegistry selectedFolderImages;
         private bool hasMosaic;
-        public RelayCommand CreateSolidMosaic { get; set; }
         private bool canSave;
-        public RelayCommand ChangeBlockSize { get; set; }
         private bool isBlackAndWhite;
         private bool hasGrid;
 
         private bool isCreatePictureMosaicEnabled;
+
+        private bool isGridCheckEnabled;
+
+        #endregion
+
+        #region Properties
+
+        public RelayCommand CreateSolidMosaic { get; set; }
+        public RelayCommand ChangeBlockSize { get; set; }
+
         public bool IsCreatePictureMosaicEnabled
         {
             get => this.isCreatePictureMosaicEnabled;
@@ -56,7 +57,6 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        private bool isGridCheckEnabled;
         public bool IsGridCheckEnabled
         {
             get => this.isGridCheckEnabled;
@@ -67,7 +67,6 @@ namespace ImageSandbox.ViewModel
                 this.ChangeBlockSize.OnCanExecuteChanged();
             }
         }
-
 
         public bool CanSave
         {
@@ -89,6 +88,7 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
+
         public bool HasGrid
         {
             get => this.hasGrid;
@@ -104,7 +104,7 @@ namespace ImageSandbox.ViewModel
             get => this.isBlackAndWhite;
             set
             {
-                this.isBlackAndWhite= value;
+                this.isBlackAndWhite = value;
                 this.OnPropertyChanged();
             }
         }
@@ -119,6 +119,7 @@ namespace ImageSandbox.ViewModel
                 this.CreateSolidMosaic.OnCanExecuteChanged();
             }
         }
+
         public WriteableBitmap AlterImageDisplay
         {
             get => this.alterImageDisplay;
@@ -129,7 +130,7 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        public String BlockSize
+        public string BlockSize
         {
             get => this.blockSize;
             set
@@ -150,6 +151,7 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
+
         #endregion
 
         #region Constructors
@@ -165,6 +167,10 @@ namespace ImageSandbox.ViewModel
 
         #endregion
 
+        #region Methods
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private void loadAllCommands()
         {
             this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canSolidMosaic);
@@ -176,8 +182,6 @@ namespace ImageSandbox.ViewModel
             int parsedBlockSize;
             int.TryParse(this.BlockSize, out parsedBlockSize);
             return parsedBlockSize >= 5 && parsedBlockSize <= 50;
-            
-
         }
 
         private void changeBlockSize(object obj)
@@ -190,8 +194,9 @@ namespace ImageSandbox.ViewModel
 
         private bool canSolidMosaic(object obj)
         {
-            return this.selectedImageFile != null  & (this.blockSizeNumber >=5 & this.blockSizeNumber <=50);
+            return (this.selectedImageFile != null) & (this.blockSizeNumber >= 5) & (this.blockSizeNumber <= 50);
         }
+
         private async void createSolidMosaic(object obj)
         {
             await this.handleCreatingSolidMosaicImage();
@@ -202,8 +207,8 @@ namespace ImageSandbox.ViewModel
 
             this.hasMosaic = true;
             this.CanSave = true;
-
         }
+
         private async Task handleCreatingSolidMosaicImage()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -213,8 +218,7 @@ namespace ImageSandbox.ViewModel
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                var transform = new BitmapTransform
-                {
+                var transform = new BitmapTransform {
                     ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                     ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                 };
@@ -233,14 +237,16 @@ namespace ImageSandbox.ViewModel
                 var sourcePixels = pixelData.DetachPixelData();
                 if (this.IsBlackAndWhite)
                 {
-                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight,
+                        this.blockSizeNumber, this.HasGrid);
                 }
                 else
                 {
-                    this.MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                    this.MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight,
+                        this.blockSizeNumber, this.HasGrid);
                 }
-               
-                this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+
+                this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
@@ -249,9 +255,8 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-
         /// <summary>
-        /// Displays the picture mosaic.
+        ///     Displays the picture mosaic.
         /// </summary>
         /// <param name="selectedFolder">The selected folder.</param>
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
@@ -265,8 +270,7 @@ namespace ImageSandbox.ViewModel
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                var transform = new BitmapTransform
-                {
+                var transform = new BitmapTransform {
                     ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                     ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                 };
@@ -285,23 +289,22 @@ namespace ImageSandbox.ViewModel
                 var sourcePixels = pixelData.DetachPixelData();
                 if (this.IsBlackAndWhite)
                 {
-                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight,
+                        this.blockSizeNumber, this.HasGrid);
                 }
                 else
                 {
                     await this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                    decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
+                        decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
                 }
 
-                this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
                     this.AlterImageDisplay = this.modifiedImage;
                 }
             }
-
-
         }
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
@@ -321,8 +324,7 @@ namespace ImageSandbox.ViewModel
                         {
                             var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                            var transform = new BitmapTransform
-                            {
+                            var transform = new BitmapTransform {
                                 ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                                 ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                             };
@@ -340,7 +342,8 @@ namespace ImageSandbox.ViewModel
 
                             var sourcePixels = pixelData.DetachPixelData();
 
-                            var fileWriteableBitmap = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                            var fileWriteableBitmap =
+                                new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                             using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
                             {
                                 await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
@@ -349,9 +352,6 @@ namespace ImageSandbox.ViewModel
 
                                 this.selectedFolderImages.Add(selectedFolderImage);
                             }
-
-
-
                         }
                     }
                 }
@@ -362,31 +362,13 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         private bool canAlwaysExecute(object obj)
         {
             return true;
         }
 
         /// <summary>
-        /// Loads the picture.
+        ///     Loads the picture.
         /// </summary>
         /// <param name="imageFile">The image file.</param>
         /// <returns></returns>
@@ -397,7 +379,7 @@ namespace ImageSandbox.ViewModel
             if (this.selectedImageFile != null)
             {
                 this.MosaicImage = new MosaicImage(this.HasGrid, imageFile);
-                
+
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -426,21 +408,20 @@ namespace ImageSandbox.ViewModel
                     {
                         await this.creatingOutlineOrignalImage();
                     }
-                    
                 }
             }
 
             this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0;
-
         }
+
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {
-           
             IRandomAccessStream inputstream = await imageFile.OpenReadAsync();
             var newImage = new BitmapImage();
             newImage.SetSource(inputstream);
             return newImage;
         }
+
         private async Task createOriginalImage(BitmapDecoder decoder, byte[] sourcePixels)
         {
             this.orignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -453,7 +434,7 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Saves the picture.
+        ///     Saves the picture.
         /// </summary>
         /// <param name="saveFile">The save file.</param>
         /// <returns></returns>
@@ -469,13 +450,14 @@ namespace ImageSandbox.ViewModel
                 await pixelStream.ReadAsync(pixels, 0, pixels.Length);
 
                 encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
-                    (uint)this.modifiedImage.PixelWidth,
-                    (uint)this.modifiedImage.PixelHeight, this.dpiX, this.dpiY, pixels);
+                    (uint) this.modifiedImage.PixelWidth,
+                    (uint) this.modifiedImage.PixelHeight, this.dpiX, this.dpiY, pixels);
                 await encoder.FlushAsync();
 
                 stream.Dispose();
             }
         }
+
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
             var startingYpoint = 0;
@@ -492,36 +474,37 @@ namespace ImageSandbox.ViewModel
                     {
                         for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                         {
-                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
-
+                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint,
+                                imageWidth, imageHeight);
 
                             if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
-                                                                || currentXPoint == startingXpoint || XStoppingPoint == currentXPoint)
+                                                                || currentXPoint == startingXpoint ||
+                                                                XStoppingPoint == currentXPoint)
                             {
                                 pixelColor = Colors.White;
-                                ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, this.isBlackAndWhite);
-
+                                ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
+                                    imageWidth, imageHeight, this.isBlackAndWhite);
                             }
-
                         }
                     }
 
                     startingXpoint += this.blockSizeNumber;
                 }
+
                 startingYpoint += this.blockSizeNumber;
             }
         }
+
         private int UpdateStoppingPoint(uint maxValue, int coordinate)
         {
             var CoordinateStoppingPoint = coordinate + this.blockSizeNumber;
             if (CoordinateStoppingPoint > maxValue)
             {
-                CoordinateStoppingPoint = (int)maxValue;
+                CoordinateStoppingPoint = (int) maxValue;
             }
 
             return CoordinateStoppingPoint;
         }
-        
 
         private async Task creatingOutlineOrignalImage()
         {
@@ -531,8 +514,7 @@ namespace ImageSandbox.ViewModel
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                var transform = new BitmapTransform
-                {
+                var transform = new BitmapTransform {
                     ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                     ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                 };
@@ -552,16 +534,15 @@ namespace ImageSandbox.ViewModel
 
                 this.createOrignalImageWithOutline(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
 
-                this.outlineOrignalImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                this.outlineOrignalImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.outlineOrignalImage.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
                     this.ImageDisplay = this.outlineOrignalImage;
                 }
             }
-           
         }
-        
+
         public async Task GridCheckboxChanged()
         {
             if (this.orignalImage != null)
@@ -572,6 +553,7 @@ namespace ImageSandbox.ViewModel
                     {
                         await this.handleCreatingSolidMosaicImage();
                     }
+
                     await this.creatingOutlineOrignalImage();
                 }
                 else
@@ -587,8 +569,8 @@ namespace ImageSandbox.ViewModel
                     }
                 }
             }
-            
         }
+
         public async Task BlackAndWhiteCheckboxChanged()
         {
             if (this.orignalImage != null)
@@ -608,19 +590,16 @@ namespace ImageSandbox.ViewModel
                     {
                         this.ImageDisplay = this.orignalImage;
                     }
-
                 }
             }
-            
         }
-        
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #endregion
     }
 }

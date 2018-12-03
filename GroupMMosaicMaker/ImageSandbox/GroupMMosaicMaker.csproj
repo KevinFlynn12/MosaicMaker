@@ -98,7 +98,7 @@
     <Compile Include="Model\FolderImage.cs" />
     <Compile Include="Model\MosaicImage.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Util\ColorDIfference.cs" />
+    <Compile Include="Util\ColorDifference.cs" />
     <Compile Include="Util\ImageAverageColor.cs" />
     <Compile Include="Util\ImagePixel.cs" />
     <Compile Include="Util\RelayCommand.cs" />

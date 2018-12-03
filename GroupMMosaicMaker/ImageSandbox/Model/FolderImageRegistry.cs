@@ -1,117 +1,130 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
 
 namespace ImageSandbox.Model
 {
-    class FolderImageRegistry : IList<FolderImage>
+    internal class FolderImageRegistry : IList<FolderImage>
     {
-        private IList<FolderImage>  SelectedFolderImages;
+        #region Data members
+
+        private readonly IList<FolderImage> selectedFolderImages;
+
+        #endregion
+
+        #region Properties
+
+        public FolderImage this[int index]
+        {
+            get => this.selectedFolderImages[index];
+            set => this.selectedFolderImages[index] = value;
+        }
+
+        public int Count => this.selectedFolderImages.Count;
+
+        public bool IsReadOnly => this.selectedFolderImages.IsReadOnly;
+
+        #endregion
+
+        #region Constructors
 
         public FolderImageRegistry()
         {
-            this.SelectedFolderImages = new List<FolderImage>();
+            this.selectedFolderImages = new List<FolderImage>();
         }
 
-        public FolderImage this[int index] { get => SelectedFolderImages[index]; set => SelectedFolderImages[index] = value; }
+        #endregion
 
-        public int Count => SelectedFolderImages.Count;
-
-        public bool IsReadOnly => SelectedFolderImages.IsReadOnly;
+        #region Methods
 
         public void Add(FolderImage item)
         {
-            SelectedFolderImages.Add(item);
+            this.selectedFolderImages.Add(item);
         }
 
         public void Clear()
         {
-            SelectedFolderImages.Clear();
+            this.selectedFolderImages.Clear();
         }
 
         public bool Contains(FolderImage item)
         {
-            return SelectedFolderImages.Contains(item);
+            return this.selectedFolderImages.Contains(item);
         }
 
         public void CopyTo(FolderImage[] array, int arrayIndex)
         {
-            SelectedFolderImages.CopyTo(array, arrayIndex);
+            this.selectedFolderImages.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<FolderImage> GetEnumerator()
         {
-            return SelectedFolderImages.GetEnumerator();
+            return this.selectedFolderImages.GetEnumerator();
         }
 
         public int IndexOf(FolderImage item)
         {
-            return SelectedFolderImages.IndexOf(item);
+            return this.selectedFolderImages.IndexOf(item);
         }
 
         public void Insert(int index, FolderImage item)
         {
-            SelectedFolderImages.Insert(index, item);
+            this.selectedFolderImages.Insert(index, item);
         }
 
         public bool Remove(FolderImage item)
         {
-            return SelectedFolderImages.Remove(item);
+            return this.selectedFolderImages.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            SelectedFolderImages.RemoveAt(index);
+            this.selectedFolderImages.RemoveAt(index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return SelectedFolderImages.GetEnumerator();
+            return this.selectedFolderImages.GetEnumerator();
         }
 
-
         /// <summary>
-        /// Finds the closest matching image.
+        ///     Finds the closest matching image.
         /// </summary>
         /// <param name="color">The color.</param>
         /// <returns>The folder image that has the closest color to the selected color</returns>
         public FolderImage FindClosestMatchingImage(Color color)
         {
-            if (this.SelectedFolderImages == null)
+            if (this.selectedFolderImages == null)
             {
                 throw new ArgumentException("List cannot be null");
             }
+
             FolderImage matchingImage = null;
             var closestValue = 1000;
-            foreach (var currImage in this.SelectedFolderImages)
+            foreach (var currentImage in this.selectedFolderImages)
             {
-                var matchingValue = ColorDIfference.GetColorDifference( color, currImage.FindAverageColor());
+                var matchingValue = ColorDifference.GetColorDifference(color, currentImage.FindAverageColor());
 
                 if (matchingValue == 0)
                 {
-                    return currImage;
-                }
-                else if (Math.Abs(matchingValue) < closestValue)
-                {
-                    closestValue = matchingValue;
-                    matchingImage = currImage;
+                    return currentImage;
                 }
 
+                if (Math.Abs(matchingValue) < closestValue)
+                {
+                    closestValue = matchingValue;
+                    matchingImage = currentImage;
+                }
             }
 
             return matchingImage;
         }
 
-
         /// <summary>
-        /// Resizes all images in folder.
+        ///     Resizes all images in folder.
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
@@ -119,19 +132,17 @@ namespace ImageSandbox.Model
         /// <exception cref="ArgumentException">List cannot be null</exception>
         public async Task ResizeAllImagesInFolder(uint width, uint height)
         {
-            if (this.SelectedFolderImages == null)
+            if (this.selectedFolderImages == null)
             {
                 throw new ArgumentException("List cannot be null");
             }
-            
-            foreach (var currImage in this.SelectedFolderImages)
+
+            foreach (var currentImage in this.selectedFolderImages)
             {
-               await currImage.ResizeWritableBitmap(width, height);
-
+                await currentImage.ResizeWritableBitmap(width, height);
             }
-
-
         }
 
+        #endregion
     }
 }
