@@ -27,7 +27,7 @@
         <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="25,231,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic, Mode=TwoWay}" />
         <Button x:Name="ModifyMosaicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="21,710,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" Content="Show Grid" HorizontalAlignment="Left" Margin="25,150,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
+        <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" IsEnabled="{Binding IsGridCheckEnabled}" Content="Show Grid" HorizontalAlignment="Left" Margin="25,150,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
         <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="337,762,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>

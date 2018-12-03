@@ -56,6 +56,19 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+        private bool isGridCheckEnabled;
+        public bool IsGridCheckEnabled
+        {
+            get => this.isGridCheckEnabled;
+            set
+            {
+                this.isGridCheckEnabled = value;
+                this.OnPropertyChanged();
+                this.ChangeBlockSize.OnCanExecuteChanged();
+            }
+        }
+
+
         public bool CanSave
         {
             get => this.canSave;
@@ -170,7 +183,8 @@ namespace ImageSandbox.ViewModel
         private void changeBlockSize(object obj)
         {
             this.blockSizeNumber = int.Parse(this.BlockSize);
-            this.IsCreatePictureMosaicEnabled = true;
+            this.IsCreatePictureMosaicEnabled = this.orignalImage != null;
+            this.IsGridCheckEnabled = true;
             this.CreateSolidMosaic.OnCanExecuteChanged();
         }
 
@@ -415,7 +429,9 @@ namespace ImageSandbox.ViewModel
                     
                 }
             }
-            
+
+            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0;
+
         }
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {
