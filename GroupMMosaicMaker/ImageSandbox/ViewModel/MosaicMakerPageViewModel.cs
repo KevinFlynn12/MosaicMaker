@@ -234,6 +234,138 @@ namespace ImageSandbox.ViewModel
                 }
             }
         }
+
+
+        /// <summary>
+        /// Displays the picture mosaic.
+        /// </summary>
+        /// <param name="selectedFolder">The selected folder.</param>
+        public async void DisplayPictureMosaic(StorageFolder selectedFolder)
+        {
+            await this.LoadFolderImage(selectedFolder);
+
+            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
+
+            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
+
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+
+                this.dpiX = decoder.DpiX;
+                this.dpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+                if (this.IsBlackAndWhite)
+                {
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
+                }
+                else
+                {
+                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
+                    decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
+                }
+
+                this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
+                {
+                    await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+                    this.AlterImageDisplay = this.modifiedImage;
+                }
+            }
+
+
+        }
+
+        private async Task LoadFolderImage(StorageFolder selectedFolder)
+        {
+            try
+            {
+                if (selectedFolder != null)
+                {
+                    var storedFolder = await selectedFolder.GetFilesAsync();
+                    var count = storedFolder.Count;
+                    foreach (var currentFile in storedFolder)
+                    {
+                        var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(currentFile);
+
+                        using (var fileStream = await currentFile.OpenAsync(FileAccessMode.Read))
+
+                        {
+                            var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                            var transform = new BitmapTransform
+                            {
+                                ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                                ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                            };
+
+                            this.dpiX = decoder.DpiX;
+                            this.dpiY = decoder.DpiY;
+
+                            var pixelData = await decoder.GetPixelDataAsync(
+                                BitmapPixelFormat.Bgra8,
+                                BitmapAlphaMode.Straight,
+                                transform,
+                                ExifOrientationMode.IgnoreExifOrientation,
+                                ColorManagementMode.DoNotColorManage
+                            );
+
+                            var sourcePixels = pixelData.DetachPixelData();
+
+                            var fileWriteableBitmap = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                            using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
+                            {
+                                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+
+                                var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name);
+
+                                this.selectedFolderImages.Add(selectedFolderImage);
+                            }
+
+
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //TODO
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private bool canAlwaysExecute(object obj)
         {
             return true;
@@ -460,118 +592,7 @@ namespace ImageSandbox.ViewModel
             }
             
         }
-        /// <summary>
-        /// Displays the picture mosaic.
-        /// </summary>
-        /// <param name="selectedFolder">The selected folder.</param>
-        public async void DisplayPictureMosaic(StorageFolder selectedFolder)
-        {
-            await this.LoadFolderImage(selectedFolder);
-
-            var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
-
-            using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
-
-            {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                var transform = new BitmapTransform
-                {
-                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                };
-
-                this.dpiX = decoder.DpiX;
-                this.dpiY = decoder.DpiY;
-
-                var pixelData = await decoder.GetPixelDataAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Straight,
-                    transform,
-                    ExifOrientationMode.IgnoreExifOrientation,
-                    ColorManagementMode.DoNotColorManage
-                );
-
-                var sourcePixels = pixelData.DetachPixelData();
-                if (this.IsBlackAndWhite)
-                {
-                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight, this.blockSizeNumber, this.HasGrid);
-                }
-                else
-                {
-
-                        this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                        decoder.PixelHeight, this.blockSizeNumber, this.HasGrid, this.selectedFolderImages);
-                }
-
-                this.modifiedImage = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
-                using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
-                    this.AlterImageDisplay = this.modifiedImage;
-                }
-            }
-
-            
-        }
-
-        private async Task LoadFolderImage(StorageFolder selectedFolder)
-        {
-            try
-            {
-                if (selectedFolder != null)
-                {
-                    var storedFolder = await selectedFolder.GetFilesAsync();
-                    var count = storedFolder.Count;
-                    foreach(var currentFile in storedFolder)
-                    {
-                        var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(currentFile);
-
-                        using (var fileStream = await currentFile.OpenAsync(FileAccessMode.Read))
-
-                        {
-                            var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                            var transform = new BitmapTransform
-                            {
-                                ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                                ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                            };
-
-                            this.dpiX = decoder.DpiX;
-                            this.dpiY = decoder.DpiY;
-
-                            var pixelData = await decoder.GetPixelDataAsync(
-                                BitmapPixelFormat.Bgra8,
-                                BitmapAlphaMode.Straight,
-                                transform,
-                                ExifOrientationMode.IgnoreExifOrientation,
-                                ColorManagementMode.DoNotColorManage
-                            );
-
-                            var sourcePixels = pixelData.DetachPixelData();
-
-                            var fileWriteableBitmap = new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
-                            using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
-                            {
-                                await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
-
-                                var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name);
-
-                                this.selectedFolderImages.Add(selectedFolderImage);
-                            }
-
-
-                            
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                //TODO
-            }
-        }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
 

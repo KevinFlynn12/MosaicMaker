@@ -82,7 +82,7 @@ namespace ImageSandbox.Model
             }
         }
 
-        public async void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid, FolderImageRegistry loadedImages)
+        public async Task CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, FolderImageRegistry loadedImages)
         {
           await loadedImages.ResizeAllImagesInFolder((uint) blockSize, (uint) blockSize);
 
@@ -96,7 +96,7 @@ namespace ImageSandbox.Model
 
                     var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
-                    this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, isGrid, false,  loadedImages, blockSize);
+                   await  this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, YStoppingPoint, x, XStoppingPoint, false,  loadedImages, blockSize);
 
                     x += blockSize;
                 }
@@ -105,9 +105,9 @@ namespace ImageSandbox.Model
         }
 
 
-        private async void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+        private async Task setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int YStoppingPoint, 
-            int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite, FolderImageRegistry loadedImages, int blockSize)
+            int startingXPoint, int XStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages, int blockSize)
         {
             var count = loadedImages.Count;
 
@@ -125,7 +125,6 @@ namespace ImageSandbox.Model
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
-                   
 
                     pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
 
@@ -153,7 +152,7 @@ namespace ImageSandbox.Model
 
             var sourcePixels = matchingImage.imageBitmap.PixelBuffer.ToArray();
 
-            for (int currentY = 0; currentY < imageWidth; currentY++)
+            for (int currentY = 0; currentY < imageHeight; currentY++)
             {
                 for (int currentX = 0; currentX < imageWidth; currentX++)
                 {
