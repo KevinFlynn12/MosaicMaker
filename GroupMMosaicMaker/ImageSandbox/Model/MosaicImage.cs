@@ -118,13 +118,20 @@ namespace ImageSandbox.Model
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
 
             int matchingImageY = 0;
-
+            var pixelColor = Colors.White;
             for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
                 int matchingImageX = 0;
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    if (!(currentYPoint == startingYPoint || YStoppingPoint == currentYPoint
+                                                                || currentXPoint == startingXPoint || XStoppingPoint == currentXPoint))
+                    {
+                        pixelColor = Colors.White;
+                        ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, isBlackAndWhite);
+
+                    }
+                    pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
                     pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
 

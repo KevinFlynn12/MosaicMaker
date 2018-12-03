@@ -408,6 +408,11 @@ namespace ImageSandbox.ViewModel
 
                     var sourcePixels = pixelData.DetachPixelData();
                     await this.createOriginalImage(decoder, sourcePixels);
+                    if (this.HasGrid)
+                    {
+                        await this.creatingOutlineOrignalImage();
+                    }
+                    
                 }
             }
             

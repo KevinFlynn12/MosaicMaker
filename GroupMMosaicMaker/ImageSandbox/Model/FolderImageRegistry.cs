@@ -133,13 +133,5 @@ namespace ImageSandbox.Model
 
         }
 
-
-
-
-
-
-
-
-
     }
 }

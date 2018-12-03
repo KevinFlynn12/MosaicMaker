@@ -59,7 +59,7 @@ namespace ImageSandbox.Model
 
             var inMemoryRandomStream = new InMemoryRandomAccessStream();
             var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, inMemoryRandomStream);
-            encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Ignore, width, height, 96, 96, pixels);
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96, 96, pixels);
             await encoder.FlushAsync();
      
 
@@ -71,10 +71,10 @@ namespace ImageSandbox.Model
             inMemoryRandomStream.Seek(0);
             var decoder = await BitmapDecoder.CreateAsync(inMemoryRandomStream);
             var pixelData = await decoder.GetPixelDataAsync(
-                            BitmapPixelFormat.Rgba8,
+                            BitmapPixelFormat.Bgra8,
                             BitmapAlphaMode.Straight,
                             transform,
-                            ExifOrientationMode.IgnoreExifOrientation,
+                            ExifOrientationMode.RespectExifOrientation,
                             ColorManagementMode.DoNotColorManage);
 
             var sourceDecodedPixels = pixelData.DetachPixelData();
@@ -82,7 +82,7 @@ namespace ImageSandbox.Model
 
             var inMemoryRandomStream2 = new InMemoryRandomAccessStream();
             var encoder2 = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, inMemoryRandomStream2);
-            encoder2.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Ignore, width, height, 96, 96, sourceDecodedPixels);
+            encoder2.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96, 96, sourceDecodedPixels);
             await encoder2.FlushAsync();
             inMemoryRandomStream2.Seek(0);
 
