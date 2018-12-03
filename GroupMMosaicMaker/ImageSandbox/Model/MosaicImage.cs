@@ -97,7 +97,6 @@ namespace ImageSandbox.Model
         public async Task CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
             FolderImageRegistry loadedImages)
         {
-            await loadedImages.ResizeAllImagesInFolder((uint) blockSize, (uint) blockSize);
 
             var y = 0;
             while (y < imageHeight)
@@ -109,8 +108,14 @@ namespace ImageSandbox.Model
 
                     var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
+                    if (x == 300)
+                    {
+                        var donothing = 0;
+                    }
+
+
                     this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x,
-                        xStoppingPoint, false, loadedImages, blockSize);
+                        xStoppingPoint, false, loadedImages);
 
                     x += blockSize;
                 }
@@ -121,10 +126,8 @@ namespace ImageSandbox.Model
 
         private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
-            int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages,
-            int blockSize)
+            int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages)
         {
-            var count = loadedImages.Count;
 
             var averageColor =
                 ImageAverageColor.FindAverageColorForSelectedArea(sourcePixels, imageWidth, imageHeight, startingYPoint,
@@ -134,13 +137,17 @@ namespace ImageSandbox.Model
 
             var matchingImageY = 0;
             
-            for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
+            for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
             {
+                
+
                 var matchingImageX = 0;
-                for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
+                for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
                 {
+                    
+
                     Color pixelColor;
-                    if (!(currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
+                    if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
                                                           || currentXPoint == startingXPoint ||
                                                           xStoppingPoint == currentXPoint))
                     {
@@ -149,14 +156,37 @@ namespace ImageSandbox.Model
                             imageHeight, isBlackAndWhite);
                     }
 
+                    if (!(currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
+                                                         || currentXPoint == startingXPoint ||
+                                                         xStoppingPoint == currentXPoint))
+                    {
+                        pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                            imageHeight);
+
+
+
+                        //pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
+
+                        pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
+
+                        ImagePixel.setPixelBgra8(sourcePixels, currentXPoint, currentYPoint, pixelColor, imageWidth,
+                            imageHeight, isBlackAndWhite);
+                    }
+
+
+                    /*
                     pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
 
-                    pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
+
+
+                    //pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
+
+                    pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
 
                     ImagePixel.setPixelBgra8(sourcePixels, currentXPoint, currentYPoint, pixelColor, imageWidth,
                         imageHeight, isBlackAndWhite);
-
+                    */
                     matchingImageX++;
                 }
 

@@ -56,6 +56,7 @@ namespace ImageSandbox.Model
         /// <returns>Nothing</returns>
         public async Task ResizeWritableBitmap(uint width, uint height)
         {
+                       
             var stream = this.ImageBitmap.PixelBuffer.AsStream();
             var pixels = new byte[(uint) stream.Length];
             await stream.ReadAsync(pixels, 0, pixels.Length);
@@ -90,6 +91,7 @@ namespace ImageSandbox.Model
             var bitmap = new WriteableBitmap((int) width, (int) height);
             await bitmap.SetSourceAsync(inMemoryRandomStream2);
             this.ImageBitmap = bitmap;
+            
         }
 
         public override string ToString()
