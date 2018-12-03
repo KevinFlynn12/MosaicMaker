@@ -9,6 +9,17 @@ namespace ImageSandbox.Util
 {
     public static class ImageAverageColor
     {
+        /// <summary>
+        /// Finds the average color for selected area.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        /// <param name="imageWidth">Width of the image.</param>
+        /// <param name="imageHeight">Height of the image.</param>
+        /// <param name="startingYPoint">The starting y point.</param>
+        /// <param name="YStoppingPoint">The y stopping point.</param>
+        /// <param name="startingXPoint">The starting x point.</param>
+        /// <param name="XStoppingPoint">The x stopping point.</param>
+        /// <returns> The average color for that area </returns>
         public static Color FindAverageColorForSelectedArea(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
             int XStoppingPoint)
         {
@@ -40,6 +51,13 @@ namespace ImageSandbox.Util
             return newColor;
         }
 
+        /// <summary>
+        /// Finds the average color of entire image.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        /// <param name="imageWidth">Width of the image.</param>
+        /// <param name="imageHeight">Height of the image.</param>
+        /// <returns>The average color for the entire image</returns>
         public static Color FindAverageColorOfEntireImage(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
             var pixelCount = 0.0;

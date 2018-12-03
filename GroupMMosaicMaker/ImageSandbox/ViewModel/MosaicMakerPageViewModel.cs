@@ -339,14 +339,14 @@ namespace ImageSandbox.ViewModel
                     {
                         for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                         {
-                            var pixelColor = this.MosaicImage.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
 
                             if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
                                                                 || currentXPoint == startingXpoint || XStoppingPoint == currentXPoint)
                             {
                                 pixelColor = Colors.White;
-                                this.MosaicImage.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, this.isBlackAndWhite);
+                                ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, this.isBlackAndWhite);
 
                             }
 
@@ -460,6 +460,10 @@ namespace ImageSandbox.ViewModel
             }
             
         }
+        /// <summary>
+        /// Displays the picture mosaic.
+        /// </summary>
+        /// <param name="selectedFolder">The selected folder.</param>
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
             await this.LoadFolderImage(selectedFolder);

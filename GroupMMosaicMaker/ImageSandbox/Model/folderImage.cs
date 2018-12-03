@@ -26,6 +26,10 @@ namespace ImageSandbox.Model
             this.FileName = fileName;
         }
 
+        /// <summary>
+        /// Finds the average color for the stored image
+        /// </summary>
+        /// <returns></returns>
         public Color FindAverageColor()
         {
             var imageWidth = (uint) this.imageBitmap.PixelWidth;

@@ -112,7 +112,7 @@ namespace ImageSandbox.Model
             var count = loadedImages.Count;
 
             var averageColor =
-                this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
+               ImageAverageColor.FindAverageColorForSelectedArea(sourcePixels, imageWidth, imageHeight, startingYPoint,
                     YStoppingPoint, startingXPoint, XStoppingPoint);
 
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
@@ -124,12 +124,12 @@ namespace ImageSandbox.Model
                 int matchingImageX = 0;
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
                    
 
                     pixelColor = this.getMatchingImagePixel(matchingImage, matchingImageX, matchingImageY);
 
-                    this.setPixelBgra8(sourcePixels,currentXPoint,currentYPoint, pixelColor,imageWidth, imageHeight, isBlackAndWhite);
+                    ImagePixel.setPixelBgra8(sourcePixels,currentXPoint,currentYPoint, pixelColor,imageWidth, imageHeight, isBlackAndWhite);
 
                     matchingImageX++;
                 }
@@ -176,13 +176,13 @@ namespace ImageSandbox.Model
         private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint, int XStoppingPoint, bool isGrid, bool isBlackAndWhite)
         {
             var averageColor =
-                this.FindAverageColor(sourcePixels, imageWidth, imageHeight, startingYPoint,
+                 ImageAverageColor.FindAverageColorForSelectedArea(sourcePixels, imageWidth, imageHeight, startingYPoint,
                     YStoppingPoint, startingXPoint, XStoppingPoint);
             for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
 
                     if (isGrid)
                     {
@@ -219,19 +219,12 @@ namespace ImageSandbox.Model
                     }
 
 
-                    this.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, isBlackAndWhite);
+                    ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth, imageHeight, isBlackAndWhite);
                 }
             }
         }
 
-        public void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height, bool isBlackAndWhite)
-        {
-            var offset = (x * (int)width + y) * 4;
-            pixels[offset + 2] = color.R;
-            pixels[offset + 1] = color.G;
-            pixels[offset + 0] = color.B;
-            
-        }
+      
         private int UpdateStoppingPoint(uint maxValue, int coordinate, int blockSize)
         {
             var CoordinateStoppingPoint = coordinate + blockSize;
@@ -241,37 +234,10 @@ namespace ImageSandbox.Model
             }
 
             return CoordinateStoppingPoint;
-        }        
-        public Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
-            int XStoppingPoint)
-        {
-            var pixelCount = 0.0;
-            var totalRed = 0.0;
-            var totalBlue = 0.0;
-            var totalGreen = 0.0;
-
-            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
-            {
-                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
-                {
-                    pixelCount++;
-                    var pixelColor = this.getPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
-                    totalRed += pixelColor.R;
-                    totalBlue += pixelColor.B;
-                    totalGreen += pixelColor.G;
-                }
-            }
-
-            var averageRed = totalRed / pixelCount;
-            var averageBlue = totalBlue / pixelCount;
-            var averageGreen = totalGreen / pixelCount;
-
-            var newColor = new Color();
-            newColor.R = (byte)averageRed;
-            newColor.B = (byte)averageBlue;
-            newColor.G = (byte)averageGreen;
-            return newColor;
         }
+
+
+
         /*
          Issue the graph y=x+b grows faster than y=x*cos(45) (y=x*1/sqrt(2)) therefore once y=x  exceeds that of y=x*cos(45) the for loops will not run
         public Color FindAverageColorOfTriangleMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
@@ -306,6 +272,42 @@ namespace ImageSandbox.Model
             return newColor;
         }
         */
+
+
+        //remove
+        public Color FindAverageColor(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint, int YStoppingPoint, int startingXPoint,
+            int XStoppingPoint)
+        {
+            var pixelCount = 0.0;
+            var totalRed = 0.0;
+            var totalBlue = 0.0;
+            var totalGreen = 0.0;
+
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            {
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                {
+                    pixelCount++;
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth, imageHeight);
+                    totalRed += pixelColor.R;
+                    totalBlue += pixelColor.B;
+                    totalGreen += pixelColor.G;
+                }
+            }
+
+            var averageRed = totalRed / pixelCount;
+            var averageBlue = totalBlue / pixelCount;
+            var averageGreen = totalGreen / pixelCount;
+
+            var newColor = new Color();
+            newColor.R = (byte)averageRed;
+            newColor.B = (byte)averageBlue;
+            newColor.G = (byte)averageGreen;
+            return newColor;
+        }
+
+
+        //remove
         public Color getPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
         {
             var offset = (x * (int)width + y) * 4;
@@ -316,6 +318,26 @@ namespace ImageSandbox.Model
             return Color.FromArgb(0, r, g, b);
         }
 
+        //remove
+        public void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height, bool isBlackAndWhite)
+        {
+            var offset = (x * (int)width + y) * 4;
+            pixels[offset + 2] = color.R;
+            pixels[offset + 1] = color.G;
+            pixels[offset + 0] = color.B;
+
+        }
+
+
+
+        /// <summary>
+        /// Creates the black and white mosaic.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        /// <param name="imageWidth">Width of the image.</param>
+        /// <param name="imageHeight">Height of the image.</param>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <param name="isGrid">if set to <c>true</c> [is grid].</param>
         public void CreateBlackAndWhiteMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize, bool isGrid)
         {
             var y = 0;
