@@ -228,9 +228,20 @@ namespace ImageSandbox.Model
                     else if (isBlackAndWhite & !isGrid)
                     {
                         var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
-                        pixelColor.R = (byte) averageBlack;
-                        pixelColor.B = (byte) averageBlack;
-                        pixelColor.G = (byte) averageBlack;
+                        if (averageBlack >= 127.5)
+                        {
+                            pixelColor.R = 255;
+                            pixelColor.B = 255;
+                            pixelColor.G = 255;
+                        }
+                        else
+                        {
+                            pixelColor.R = 0;
+                            pixelColor.B = 0;
+                            pixelColor.G = 0;
+                            
+                        }
+                        
                     }
                     else
                     {
