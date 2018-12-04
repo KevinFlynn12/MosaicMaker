@@ -361,7 +361,7 @@ namespace ImageSandbox.ViewModel
                     var sourcePixels = pixelData.DetachPixelData();
 
                     var fileWriteableBitmap =
-                        new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
+                        new WriteableBitmap((int) transform.ScaledWidth, (int) transform.ScaledHeight);
                     
                     using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
                     {
