@@ -106,14 +106,20 @@ namespace ImageSandbox.Model
             var closestValue = 1000;
             foreach (var currentImage in this.selectedFolderImages)
             {
-                var matchingValue = ColorDifference.GetColorDifference(currentImage.FindAverageColor(), color);
-
-                if (matchingValue == 0)
+                if (ColorsAreADirectMatch(color, currentImage))
                 {
                     return currentImage;
                 }
 
-                if (Math.Abs(matchingValue) < closestValue)
+                var matchingValue = ColorDifference.GetColorDifference(currentImage.FindAverageColor(), color);
+
+                if (matchingValue == 0)
+                {
+                    closestValue = matchingValue;
+                    matchingImage = currentImage;
+                }
+
+                if (Math.Abs(matchingValue) < closestValue && closestValue!= 0)
                 {
                     closestValue = matchingValue;
                     matchingImage = currentImage;
@@ -121,6 +127,11 @@ namespace ImageSandbox.Model
             }
 
             return matchingImage;
+        }
+
+        private static bool ColorsAreADirectMatch(Color color, FolderImage currentImage)
+        {
+            return currentImage.FindAverageColor().R == color.R && currentImage.FindAverageColor().B == color.B && currentImage.FindAverageColor().G == color.G;
         }
 
         /// <summary>
