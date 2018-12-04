@@ -106,10 +106,7 @@ namespace ImageSandbox.Model
 
                 for (int x = 0; x < imageWidth; x += blockSize)
                 {
-                    if (x == 650)
-                    {
-                        var doNothing = 0;
-                    }
+                    
 
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x, blockSize);
 
@@ -122,13 +119,7 @@ namespace ImageSandbox.Model
             }
         }
 
-        private static int handlesBlockSizeUpdate(int blockSize, int x, int valueMax)
-        {
-
-
-            x += blockSize;
-            return x;
-        }
+     
 
         private async void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
@@ -141,10 +132,7 @@ namespace ImageSandbox.Model
 
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
 
-                
-            
-            
-            
+                            
             var matchingImageY = 0;
           
             for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
@@ -164,40 +152,19 @@ namespace ImageSandbox.Model
                 imageHeight, isBlackAndWhite);
              }
              */
-                if (currentXPoint == 684)
-                {
-                    var doNothing = 0;
-                }
-            
-             pixelColor = getMatchingImagePixelColor(matchingImage, matchingImageX, matchingImageY);
+                
+             pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
+
                     //coordinates have been swapped
              ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint,  pixelColor, imageWidth,
                 imageHeight, isBlackAndWhite);
              
-
-
                     
              matchingImageX++;
              }
 
              matchingImageY++;
             }
-        }
-
-        private static Color getMatchingImagePixelColor(FolderImage matchingImage, int matchingImageX, int matchingImageY)
-        {
-            Color pixelColor;
-            var matchingWidth = (uint) matchingImage.ImageBitmap.PixelWidth;
-
-
-            var matchHeight = (uint) matchingImage.ImageBitmap.PixelHeight;
-
-            var matchingPixels = matchingImage.ImageBitmap.PixelBuffer.ToArray();
-
-
-            pixelColor = ImagePixel.GetPixelBgra8(matchingPixels, matchingImageX, matchingImageY,
-                matchingWidth, matchHeight);
-            return pixelColor;
         }
 
 

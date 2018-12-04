@@ -310,6 +310,8 @@ namespace ImageSandbox.ViewModel
                     this.AlterImageDisplay = this.modifiedImage;
                 }
             }
+            this.hasMosaic = true;
+            this.CanSave = true;
         }
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
