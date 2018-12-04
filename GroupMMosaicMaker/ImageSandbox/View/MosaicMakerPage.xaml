@@ -15,6 +15,7 @@
             </CommandBar.Content>
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
             <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
+            <AppBarButton x:Name="AddImagePallette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Pallette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
         </CommandBar>
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" Height="420" Margin="479,80,0,0" VerticalAlignment="Top" Width="994"/>
         <Grid Height="420" Margin="451,552,0,0" VerticalAlignment="Top" Width="994">
@@ -33,6 +34,6 @@
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
         <Button Content="Submit" Command="{Binding ChangeBlockSize, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="259,103,0,0" Height="33"/>
         <Button x:Name="btnPictureMosaic"  IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}" Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
-        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="38,409,0,0"/>
+        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="38,577,0,0"/>
     </Grid>
 </Page>

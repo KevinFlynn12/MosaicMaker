@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -46,6 +47,8 @@ namespace ImageSandbox.ViewModel
 
         public RelayCommand CreateSolidMosaic { get; set; }
         public RelayCommand ChangeBlockSize { get; set; }
+
+        public String LoadedFileType { get; private set; }
 
         public bool IsCreatePictureMosaicEnabled
         {
@@ -188,7 +191,7 @@ namespace ImageSandbox.ViewModel
         private void changeBlockSize(object obj)
         {
             this.blockSizeNumber = int.Parse(this.BlockSize);
-            this.IsCreatePictureMosaicEnabled = this.orignalImage != null;
+            this.CheckToEnablePictureMosaic();
             this.IsGridCheckEnabled = true;
             this.CreateSolidMosaic.OnCanExecuteChanged();
         }
@@ -319,6 +322,7 @@ namespace ImageSandbox.ViewModel
                     var count = storedFolder.Count;
                     await LoadAllImagesInFolder(storedFolder);
                 }
+                this.CheckToEnablePictureMosaic();
             }
             catch (Exception e)
             {
@@ -357,7 +361,8 @@ namespace ImageSandbox.ViewModel
                     var sourcePixels = pixelData.DetachPixelData();
 
                     var fileWriteableBitmap =
-                        new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
+                        new WriteableBitmap((int) transform.ScaledWidth, (int) transform.ScaledHeight);
+                    
                     using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
                     {
                         await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
@@ -383,6 +388,8 @@ namespace ImageSandbox.ViewModel
         public async Task LoadPicture(StorageFile imageFile)
         {
             this.selectedImageFile = imageFile;
+
+            this.LoadedFileType = imageFile.FileType;
 
             if (this.selectedImageFile != null)
             {
@@ -419,7 +426,12 @@ namespace ImageSandbox.ViewModel
                 }
             }
 
-            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0;
+            CheckToEnablePictureMosaic();
+        }
+
+        private void CheckToEnablePictureMosaic()
+        {
+            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0 && this.orignalImage != null;
         }
 
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)

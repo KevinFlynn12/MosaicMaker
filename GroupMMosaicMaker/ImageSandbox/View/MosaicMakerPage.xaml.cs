@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Media.Devices;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.UI.Notifications;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,6 +36,8 @@ namespace ImageSandbox
         private StorageFile selectedImageFile;
         private readonly MosaicMakerPageViewModel viewModel;
 
+        private StorageFolder selectedFolder;
+
         #endregion
 
         #region Constructors
@@ -41,6 +45,7 @@ namespace ImageSandbox
         public MainPage()
         {
             this.InitializeComponent();
+
             this.btnPictureMosaic.IsEnabled = false;
             this.ModifyMosaicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
@@ -88,11 +93,47 @@ namespace ImageSandbox
             var fileSavePicker = new FileSavePicker {
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary,
                 SuggestedFileName = "image"
+                
             };
-            fileSavePicker.FileTypeChoices.Add("PNG files", new List<string> {".png"});
+
+            var displayFileType = this.viewModel.LoadedFileType.Remove(0,1);
+
+            fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> { this.viewModel.LoadedFileType });
+
+
+            handleRemainingFileTypes(fileSavePicker);
+            
+           
+
             var savefile = await fileSavePicker.PickSaveFileAsync();
 
             await this.viewModel.SavePicture(savefile);
+        }
+
+        private void handleRemainingFileTypes(FileSavePicker fileSavePicker)
+        {
+            var fileTypes = new List<String>();
+           
+            fileTypes.Add(".png");
+            fileTypes.Add(".jpg");
+            fileTypes.Add(".jpeg");
+            fileTypes.Add(".bmp");
+
+
+
+            foreach (var currType in fileTypes)
+            {
+                
+                if (!currType.Equals(this.viewModel.LoadedFileType))
+                {
+                    var displayFileType = currType.Remove(0, 1);
+
+                    fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> { currType });
+                }
+            }
+
+               
+           
         }
 
         private async void LoadButton_OnClick(object sender, RoutedEventArgs e)
@@ -128,10 +169,15 @@ namespace ImageSandbox
 
         private async void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedFolder = await this.selectImageFileFolder();
-            this.viewModel.DisplayPictureMosaic(selectedFolder);
+            this.viewModel.DisplayPictureMosaic(this.selectedFolder);
         }
 
         #endregion
+
+        private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.selectedFolder = await this.selectImageFileFolder();
+            
+        }
     }
 }
