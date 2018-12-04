@@ -106,7 +106,7 @@ namespace ImageSandbox.Model
             var closestValue = 1000;
             foreach (var currentImage in this.selectedFolderImages)
             {
-                var matchingValue = ColorDifference.GetColorDifference(color, currentImage.FindAverageColor());
+                var matchingValue = ColorDifference.GetColorDifference(currentImage.FindAverageColor(), color);
 
                 if (matchingValue == 0)
                 {
