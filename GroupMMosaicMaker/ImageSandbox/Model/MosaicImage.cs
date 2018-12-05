@@ -96,7 +96,7 @@ namespace ImageSandbox.Model
             
         }
 
-        public async Task CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
+        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
             FolderImageRegistry loadedImages)
         {
 
@@ -121,7 +121,7 @@ namespace ImageSandbox.Model
 
      
 
-        private async void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+        private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
             int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages)
         {
@@ -132,39 +132,39 @@ namespace ImageSandbox.Model
 
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
 
-                            
-            var matchingImageY = 0;
-          
-            for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
-            {
+                var matchingImageY = 0;
 
-            var matchingImageX = 0;
-            for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
-            {
-             Color pixelColor;
-             /*
-             if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
-                                                  || currentXPoint == startingXPoint ||
-                                                  xStoppingPoint == currentXPoint))
-             {
-                pixelColor = Colors.White;
-                ImagePixel.setPixelBgra8(sourcePixels,  currentXPoint, currentYPoint, pixelColor, imageWidth,
-                imageHeight, isBlackAndWhite);
-             }
-             */
-                
-             pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
+                for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
+                {
 
-                    //coordinates have been swapped
-             ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint,  pixelColor, imageWidth,
-                imageHeight, isBlackAndWhite);
-             
-                    
-             matchingImageX++;
-             }
+                    var matchingImageX = 0;
+                    for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
+                    {
+                        Color pixelColor;
+                        /*
+                        if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
+                                                             || currentXPoint == startingXPoint ||
+                                                             xStoppingPoint == currentXPoint))
+                        {
+                           pixelColor = Colors.White;
+                           ImagePixel.setPixelBgra8(sourcePixels,  currentXPoint, currentYPoint, pixelColor, imageWidth,
+                           imageHeight, isBlackAndWhite);
+                        }
+                        */
 
-             matchingImageY++;
-            }
+                        pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
+
+                        //coordinates have been swapped
+                        ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
+                            imageHeight, isBlackAndWhite);
+
+
+                        matchingImageX++;
+                    }
+
+                    matchingImageY++;
+                }
+            
         }
 
 

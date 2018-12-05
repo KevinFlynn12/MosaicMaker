@@ -299,7 +299,7 @@ namespace ImageSandbox.ViewModel
                 }
                 else
                 {
-                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
+                     this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
                         decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
                 }
 
@@ -321,7 +321,7 @@ namespace ImageSandbox.ViewModel
                 if (selectedFolder != null)
                 {
                     var storedFolder = await selectedFolder.GetFilesAsync();
-                    var count = storedFolder.Count;
+
                     await LoadAllImagesInFolder(storedFolder);
                 }
                 this.CheckToEnablePictureMosaic();
@@ -336,7 +336,6 @@ namespace ImageSandbox.ViewModel
         {
             foreach (var currentFile in storedFolder)
             {
-                var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(currentFile);
 
                 using (var fileStream = await currentFile.OpenAsync(FileAccessMode.Read))
 
