@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
 
@@ -170,7 +172,8 @@ namespace ImageSandbox.Model
             return triangleCoordinates;
 
         }
-        public static Color FindAverageColorForBottomTriangle(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+
+        public Color FindAverageColorForBottomTriangle(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int YStoppingPoint, int startingXPoint,
             int XStoppingPoint, int blockSize, int iteration, bool isBottom)
         {
@@ -178,39 +181,77 @@ namespace ImageSandbox.Model
             var totalRed = 0.0;
             var totalBlue = 0.0;
             var totalGreen = 0.0;
+            var triangleCoordinates = FindTrianglePoints(imageWidth, imageHeight, blockSize);
+            var bottomPoints = triangleCoordinates.Where(coordinate =>
+                coordinate.Item1 >= startingYPoint && coordinate.Item1 <= YStoppingPoint &&
+                coordinate.Item2 >= coordinate.Item1).ToList();
+            var topPoints = triangleCoordinates.Where(coordinate =>
+                coordinate.Item1 >= startingYPoint && coordinate.Item1 <= YStoppingPoint &&
+                coordinate.Item2 >= coordinate.Item1).ToList();
 
-            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            if (isBottom)
             {
-                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
-                {
-                    if (isBottom)
-                    {
-                        if (currentYPoint <= -currentXPoint + blockSize * iteration || (-currentXPoint + blockSize * iteration < 0 && currentYPoint > currentXPoint))
-                        {
-                            pixelCount++;
-                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
-                                imageHeight);
-                            totalRed += pixelColor.R;
-                            totalBlue += pixelColor.B;
-                            totalGreen += pixelColor.G;
-                        }
-                    }
-                    else
-                    {
-                        if (currentYPoint > -currentXPoint + blockSize * iteration || (-currentXPoint + blockSize * iteration < 0 && currentYPoint > currentXPoint))
-                        {
-                            pixelCount++;
-                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
-                                imageHeight);
-                            totalRed += pixelColor.R;
-                            totalBlue += pixelColor.B;
-                            totalGreen += pixelColor.G;
-                        }
-                    }
-                    
-                    
+                foreach(var coordinates in bottomPoints) { 
+                    pixelCount++;
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, coordinates.Item2, coordinates.Item2,
+                        imageWidth,
+                        imageHeight);
+                    totalRed += pixelColor.R;
+                    totalBlue += pixelColor.B;
+                    totalGreen += pixelColor.G;
                 }
+        }
+            else
+            {
+                foreach(var topPoint in topPoints) { 
+                    pixelCount++;
+                var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels,topPoint.Item2, topPoint.Item2,
+                    imageWidth,
+                    imageHeight);
+                totalRed += pixelColor.R;
+                totalBlue += pixelColor.B;
+                totalGreen += pixelColor.G;
             }
+}
+        
+        
+
+        /*
+        for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+        {
+            
+            for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+            {
+                if (isBottom)
+                {
+                    
+                    if (currentYPoint <= -(currentXPoint - blockSize * iteration) || currentXPoint >= -(currentYPoint - blockSize * iteration))
+                    {
+                        pixelCount++;
+                        var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                            imageHeight);
+                        totalRed += pixelColor.R;
+                        totalBlue += pixelColor.B;
+                        totalGreen += pixelColor.G;
+                    }
+                }
+                else
+                {
+                    if (currentYPoint >= -(currentXPoint -blockSize * iteration) || currentXPoint <= -(currentYPoint - blockSize * iteration)) 
+                    {
+                        pixelCount++;
+                        var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                            imageHeight);
+                        totalRed += pixelColor.R;
+                        totalBlue += pixelColor.B;
+                        totalGreen += pixelColor.G;
+                    }
+                }
+                
+                */
+        
+                
+            
 
             var averageRed = totalRed / pixelCount;
             var averageBlue = totalBlue / pixelCount;
@@ -291,25 +332,29 @@ namespace ImageSandbox.Model
                 {
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
-                    if (currentYPoint >= -currentXPoint + blockSize * iteration || currentXPoint >= -currentYPoint + blockSize * iteration)
+
+
+                    /*
+                    if (currentYPoint <= -currentXPoint + blockSize * iteration || currentXPoint < -currentYPoint + blockSize * iteration)
                     {
-                        pixelColor.R = averageColorBottom.R;
-                        pixelColor.B = averageColorBottom.B;
-                        pixelColor.G = averageColorBottom.G;
+                        pixelColor.R = 0;//averageColorBottom.R;
+                        pixelColor.B = 0;// averageColorBottom.B;
+                        pixelColor.G = 0;//averageColorBottom.G;
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
                             imageHeight, isBlackAndWhite);
                     }
 
                     
-                    else if (currentYPoint <= -currentXPoint + blockSize * iteration  || currentXPoint < -currentYPoint +  blockSize * iteration )
+                    else if (currentYPoint >= -(currentXPoint - blockSize * iteration)  || currentXPoint >= -currentYPoint +  blockSize * iteration )
 
                     {
-                        pixelColor.R = averageColorTop.R;
-                        pixelColor.B = averageColorTop.B;
-                        pixelColor.G = averageColorTop.G;
+                        pixelColor.R = 255;//averageColorTop.R;
+                        pixelColor.B = 255;//averageColorTop.B;
+                        pixelColor.G = 255;//averageColorTop.G;
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
                             imageHeight, isBlackAndWhite);
                     }
+                    */
                 }
             }
         }
