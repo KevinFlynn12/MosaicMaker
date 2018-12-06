@@ -185,7 +185,7 @@ namespace ImageSandbox.Model
                 {
                     if (isBottom)
                     {
-                        if (currentYPoint <= -currentXPoint + blockSize * iteration || currentYPoint <= currentXPoint)
+                        if (currentYPoint <= -currentXPoint + blockSize * iteration || (-currentXPoint + blockSize * iteration < 0 && currentYPoint > currentXPoint))
                         {
                             pixelCount++;
                             var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
@@ -197,7 +197,7 @@ namespace ImageSandbox.Model
                     }
                     else
                     {
-                        if (currentYPoint > -currentXPoint + blockSize * iteration || currentYPoint <= currentXPoint)
+                        if (currentYPoint > -currentXPoint + blockSize * iteration || (-currentXPoint + blockSize * iteration < 0 && currentYPoint > currentXPoint))
                         {
                             pixelCount++;
                             var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
@@ -291,7 +291,7 @@ namespace ImageSandbox.Model
                 {
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
-                    if (currentYPoint <= -currentXPoint + blockSize * iteration)
+                    if (currentYPoint >= -currentXPoint + blockSize * iteration || currentXPoint >= -currentYPoint + blockSize * iteration)
                     {
                         pixelColor.R = averageColorBottom.R;
                         pixelColor.B = averageColorBottom.B;
@@ -299,7 +299,9 @@ namespace ImageSandbox.Model
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
                             imageHeight, isBlackAndWhite);
                     }
-                    else if (currentYPoint > -currentXPoint + blockSize * iteration)
+
+                    
+                    else if (currentYPoint <= -currentXPoint + blockSize * iteration  || currentXPoint < -currentYPoint +  blockSize * iteration )
 
                     {
                         pixelColor.R = averageColorTop.R;
