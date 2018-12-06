@@ -49,7 +49,7 @@ namespace ImageSandbox
             this.NoGrid.IsChecked = true;
             this.btnPictureMosaic.IsEnabled = false;
             this.ModifyMosaicButton.IsEnabled = false;
-            this.RefreshMosaicButton.IsEnabled = false;
+
             this.viewModel = new MosaicMakerPageViewModel();
             DataContext = this.viewModel;
             ApplicationView.PreferredLaunchViewSize = new Size {Width = ApplicationWidth, Height = ApplicationHeight};
