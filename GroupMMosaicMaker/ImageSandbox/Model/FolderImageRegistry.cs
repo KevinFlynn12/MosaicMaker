@@ -134,25 +134,7 @@ namespace ImageSandbox.Model
             return currentImage.FindAverageColor().R == color.R && currentImage.FindAverageColor().B == color.B && currentImage.FindAverageColor().G == color.G;
         }
 
-        /// <summary>
-        ///     Resizes all images in folder.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">List cannot be null</exception>
-        public async Task ResizeAllImagesInFolder(uint width, uint height)
-        {
-            if (this.selectedFolderImages == null)
-            {
-                throw new ArgumentException("List cannot be null");
-            }
-
-            foreach (var currentImage in this.selectedFolderImages)
-            {
-                await currentImage.ResizeWritableBitmap(width, height);
-            }
-        }
+       
 
         #endregion
     }

@@ -25,15 +25,18 @@
         </Grid>
         <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="10,805,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
 
-        <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="25,231,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic, Mode=TwoWay}" />
-        <Button x:Name="ModifyMosaicButton" Content="Modify Mosaic" HorizontalAlignment="Left" Margin="21,710,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
+        <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="21,376,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic, Mode=TwoWay}" />
+        <Button x:Name="ModifyMosaicButton" Content="View Image Palette" HorizontalAlignment="Left" Margin="32,552,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <CheckBox x:Name="gridCheckbox" Click="GirdCheckbox_OnClick" IsEnabled="{Binding IsGridCheckEnabled}" Content="Show Grid" HorizontalAlignment="Left" Margin="25,150,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.54,1.526"/>
         <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="337,762,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
         <Button Content="Submit" Command="{Binding ChangeBlockSize, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="259,103,0,0" Height="33"/>
-        <Button x:Name="btnPictureMosaic"  IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}" Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="25,322,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
-        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="38,577,0,0"/>
+        <Button x:Name="btnPictureMosaic"  IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}" Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="27,0,0,0" Height="56" Width="174" Click="PictureMosaicButton_Click"/>
+        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,314,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="32,159,0,0" Text="Select What Grid You Would Like" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="32,179,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked" />
+        <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,216,0,0" Checked="RadioButton_Checked"  />
+        <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="32,253,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
     </Grid>
 </Page>

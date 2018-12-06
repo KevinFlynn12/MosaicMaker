@@ -7,6 +7,7 @@ using Windows.Media.Devices;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Notifications;
+using Windows.UI.Text.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -45,7 +46,7 @@ namespace ImageSandbox
         public MainPage()
         {
             this.InitializeComponent();
-
+            this.NoGrid.IsChecked = true;
             this.btnPictureMosaic.IsEnabled = false;
             this.ModifyMosaicButton.IsEnabled = false;
             this.RefreshMosaicButton.IsEnabled = false;
@@ -155,11 +156,7 @@ namespace ImageSandbox
             }
         }
 
-        private async void GirdCheckbox_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.viewModel.HasGrid = (bool) this.gridCheckbox.IsChecked;
-            await this.viewModel.GridCheckboxChanged();
-        }
+      
 
         private async void BlackAndWhiteCheckbox_OnClick(object sender, RoutedEventArgs e)
         {
@@ -178,6 +175,27 @@ namespace ImageSandbox
         {
             this.selectedFolder = await this.selectImageFileFolder();
             
+        }
+
+        private async void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (this.NoGrid.IsChecked == true)
+            {
+                this.btnPictureMosaic.IsEnabled = true;
+
+            }
+            else if (this.squareGrid.IsChecked == true)
+            {
+                this.viewModel.HasGrid = (bool) this.squareGrid.IsChecked;
+                await this.viewModel.GridCheckboxChanged();
+                this.btnPictureMosaic.IsEnabled = true;
+
+            }
+
+            else if (this.TriangleGrid.IsChecked == true)
+            {
+                this.btnPictureMosaic.IsEnabled = false;
+            }
         }
     }
 }

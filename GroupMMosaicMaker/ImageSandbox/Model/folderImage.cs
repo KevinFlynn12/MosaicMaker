@@ -2,31 +2,40 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
+using Windows.Foundation;
 
 namespace ImageSandbox.Model
 {
     public class FolderImage
     {
+        private WriteableBitmap fileWriteableBitmap;
+        private string name;
+        private IAsyncOperation<StorageItemThumbnail> thumbnail;
         #region Properties
 
         public WriteableBitmap ImageBitmap { get; private set; }
 
         public string FileName { get; }
 
+        public IAsyncOperation<StorageItemThumbnail> ThumbNail { get; private set; }
+
         #endregion
 
         #region Constructors
 
-        public FolderImage(WriteableBitmap loadedBitmap, string fileName)
+        public FolderImage(WriteableBitmap loadedBitmap, string fileName, IAsyncOperation<StorageItemThumbnail> pictureThumbNail)
         {
+            this.ThumbNail = pictureThumbNail;
             this.ImageBitmap = loadedBitmap;
             this.FileName = fileName;
         }
 
+   
         #endregion
 
         #region Methods
@@ -57,40 +66,7 @@ namespace ImageSandbox.Model
         public async Task ResizeWritableBitmap(uint width, uint height)
         {
                        
-            var stream = this.ImageBitmap.PixelBuffer.AsStream();
-            var pixels = new byte[(uint) stream.Length];
-            await stream.ReadAsync(pixels, 0, pixels.Length);
-
-            var inMemoryRandomStream = new InMemoryRandomAccessStream();
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, inMemoryRandomStream);
-            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96, 96, pixels);
-            await encoder.FlushAsync();
-
-            var transform = new BitmapTransform {
-                ScaledWidth = width,
-                ScaledHeight = height
-            };
-            inMemoryRandomStream.Seek(0);
-            var decoder = await BitmapDecoder.CreateAsync(inMemoryRandomStream);
-            var pixelData = await decoder.GetPixelDataAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Straight,
-                transform,
-                ExifOrientationMode.RespectExifOrientation,
-                ColorManagementMode.DoNotColorManage);
-
-            var sourceDecodedPixels = pixelData.DetachPixelData();
-
-            var inMemoryRandomStream2 = new InMemoryRandomAccessStream();
-            var encoder2 = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, inMemoryRandomStream2);
-            encoder2.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96, 96,
-                sourceDecodedPixels);
-            await encoder2.FlushAsync();
-            inMemoryRandomStream2.Seek(0);
-
-            var bitmap = new WriteableBitmap((int) width, (int) height);
-            await bitmap.SetSourceAsync(inMemoryRandomStream2);
-            this.ImageBitmap = bitmap;
+            
             
         }
 

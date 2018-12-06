@@ -7,8 +7,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
 using ImageSandbox.Model;
@@ -336,7 +338,6 @@ namespace ImageSandbox.ViewModel
         {
             foreach (var currentFile in storedFolder)
             {
-
                 using (var fileStream = await currentFile.OpenAsync(FileAccessMode.Read))
 
                 {
@@ -361,6 +362,8 @@ namespace ImageSandbox.ViewModel
 
                     var sourcePixels = pixelData.DetachPixelData();
 
+                    var thumbnail = currentFile.GetThumbnailAsync(ThumbnailMode.PicturesView, (uint)5);
+
                     var fileWriteableBitmap =
                         new WriteableBitmap((int) transform.ScaledWidth, (int) transform.ScaledHeight);
                     
@@ -368,7 +371,7 @@ namespace ImageSandbox.ViewModel
                     {
                         await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
 
-                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name);
+                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name, thumbnail);
 
                         this.selectedFolderImages.Add(selectedFolderImage);
                     }
