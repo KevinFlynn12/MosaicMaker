@@ -172,9 +172,15 @@ namespace ImageSandbox
 
         private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
         {
-            this.selectedFolder = await this.selectImageFileFolder();
-            await this.viewModel.LoadFolderImage(this.selectedFolder);
+            var selectedFolder = await this.selectImageFileFolder();
+            if (selectedFolder != null)
+            {
+                await this.viewModel.LoadAllFolderImages(selectedFolder);
+            }
 
+
+
+        }
 
         }
 
