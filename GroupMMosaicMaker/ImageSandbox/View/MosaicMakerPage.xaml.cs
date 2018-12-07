@@ -175,7 +175,7 @@ namespace ImageSandbox
             var selectedFolder = await this.selectImageFileFolder();
             if (selectedFolder != null)
             {
-                await this.viewModel.LoadAllFolderImages(selectedFolder);
+                await this.viewModel.LoadFolderImage(selectedFolder);
             }
 
 
@@ -186,4 +186,3 @@ namespace ImageSandbox
 
         
     }
-}

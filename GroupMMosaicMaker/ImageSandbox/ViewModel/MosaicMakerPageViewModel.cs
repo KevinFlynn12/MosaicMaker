@@ -167,6 +167,18 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+        private string numberOfImages;
+        public string NumberOfImages
+        {
+            get => this.numberOfImages;
+            set
+            {
+                this.numberOfImages = value;
+                this.OnPropertyChanged();
+                
+                
+            }
+        }
         public MosaicImage MosaicImage
         {
             get => this.mosaicImage;
@@ -189,6 +201,7 @@ namespace ImageSandbox.ViewModel
             this.loadAllCommands();
             this.SelectedFolderImages = new List<WriteableBitmap>();
             this.imagePallete = new FolderImageRegistry();
+            this.NumberOfImages = "" + 0;
 
         }
 
@@ -438,7 +451,7 @@ namespace ImageSandbox.ViewModel
                     {
                         await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
 
-                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name, thumbnail);
+                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile);
 
                         this.imagePallete.Add(selectedFolderImage);
                         this.SelectedFolderImages.Add(selectedFolderImage.ImageBitmap);
@@ -446,6 +459,8 @@ namespace ImageSandbox.ViewModel
                     }
                 }
             }
+
+            this.NumberOfImages = "" + this.SelectedFolderImages.Count;
         }
 
         private bool canAlwaysExecute(object obj)

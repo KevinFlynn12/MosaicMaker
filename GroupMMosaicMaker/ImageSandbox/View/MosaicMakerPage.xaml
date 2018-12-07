@@ -17,7 +17,11 @@
             <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
             <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
         </CommandBar>
-        <Image x:Name="imageDisplay" Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" Height="359" Width="664" Margin="508,103,0,0" VerticalAlignment="Top" />
+        <Grid Height="359" Margin="508,103,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Image Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664" />
+            </ScrollViewer>
+        </Grid>
         <Grid Height="317" Margin="496,527,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" Margin="0,0,10,0" Height="359" Width="664"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image Source="{Binding AlterImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664"/>
@@ -49,5 +53,7 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
+        <TextBlock x:Name="ImagePaletteCount" TextAlignment="{Binding NumberOfImages}" HorizontalAlignment="Left" Margin="27,635,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="18" Height="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="84,635,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
     </Grid>
 </Page>
