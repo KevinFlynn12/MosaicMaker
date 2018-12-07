@@ -173,29 +173,32 @@ namespace ImageSandbox
         private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
         {
             var selectedFolder = await this.selectImageFileFolder();
+            if (selectedFolder != null)
+            {
+                await this.viewModel.LoadAllFolderImages(selectedFolder);
+            }
 
-            this.viewModel.LoadAllFolderImages(selectedFolder);
+
 
         }
 
         private async void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (this.NoGrid.IsChecked == true)
+            if (this.NoGrid.IsChecked == true  && this.selectedImageFile != null)
             {
-                this.btnPictureMosaic.IsEnabled = true;
-
+                await this.viewModel.LoadPicture(this.selectedImageFile);
             }
             else if (this.squareGrid.IsChecked == true)
             {
                 this.viewModel.HasGrid = (bool) this.squareGrid.IsChecked;
                 await this.viewModel.GridCheckboxChanged();
-                this.btnPictureMosaic.IsEnabled = true;
+
 
             }
 
             else if (this.TriangleGrid.IsChecked == true)
             {
-                this.btnPictureMosaic.IsEnabled = false;
+
             }
         }
     }

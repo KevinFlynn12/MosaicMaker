@@ -38,5 +38,7 @@
         <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked" />
         <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Checked="RadioButton_Checked"  />
         <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
+        <TextBlock x:Name="ImagePeletteCount" HorizontalAlignment="Left" Margin="27,635,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="18" Height="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="84,635,0,0" Text="Image Palettes have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
     </Grid>
 </Page>

@@ -49,6 +49,7 @@ namespace ImageSandbox.ViewModel
         }
         private bool hasMosaic;
         private bool canSave;
+        private bool hasImagePalette;
         private bool isBlackAndWhite;
         private bool hasGrid;
 
@@ -243,6 +244,8 @@ namespace ImageSandbox.ViewModel
             this.CanSave = true;
         }
 
+
+        
         private async Task handleCreatingSolidMosaicImage()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -365,6 +368,7 @@ namespace ImageSandbox.ViewModel
         public async Task LoadAllFolderImages(StorageFolder selectedFolder)
         {
             this.loadedFolder = await this.folderReader.LoadSelectedFolder(selectedFolder);
+            this.CheckToEnablePictureMosaic();
         }
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
@@ -487,7 +491,7 @@ namespace ImageSandbox.ViewModel
 
         private void CheckToEnablePictureMosaic()
         {
-            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0 && this.orignalImage != null;
+            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0 && this.orignalImage != null && this.checkForImagePalette();
         }
 
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
@@ -669,6 +673,14 @@ namespace ImageSandbox.ViewModel
                 }
             }
         }
+
+
+        private bool checkForImagePalette()
+        {
+            return this.loadedFolder.Any() || this.imagePallete.Any();
+        }
+
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

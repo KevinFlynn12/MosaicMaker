@@ -37,32 +37,8 @@ namespace ImageSandbox.Model
         #endregion
 
         #region Methods
-        /*
-        private async void createSourcePixels()
-        {
-            var imageTask = this.CreateAImageFromFile(this.ImageFile);
-            var image = imageTask.Result;
-            using (var fileStream = await this.ImageFile.OpenAsync(FileAccessMode.Read))
-            {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+       
 
-                var transform = new BitmapTransform {
-                    ScaledWidth = Convert.ToUInt32(image.PixelWidth),
-                    ScaledHeight = Convert.ToUInt32(image.PixelHeight)
-                };
-
-                var pixelData = await decoder.GetPixelDataAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Straight,
-                    transform,
-                    ExifOrientationMode.IgnoreExifOrientation,
-                    ColorManagementMode.DoNotColorManage
-                );
-
-               // this.sourcePixels = pixelData.DetachPixelData();
-            }
-        }
-        */
         private async Task<BitmapImage> CreateAImageFromFile(StorageFile imageFile)
         {
             IRandomAccessStream inputStream = await imageFile.OpenReadAsync();
@@ -141,20 +117,10 @@ namespace ImageSandbox.Model
                     for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                     {
                         Color pixelColor;
-                        /*
-                        if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
-                                                             || currentXPoint == startingXPoint ||
-                                                             xStoppingPoint == currentXPoint))
-                        {
-                           pixelColor = Colors.White;
-                           ImagePixel.setPixelBgra8(sourcePixels,  currentXPoint, currentYPoint, pixelColor, imageWidth,
-                           imageHeight, isBlackAndWhite);
-                        }
-                        */
-
+                      
+                        
                         pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
 
-                        //coordinates have been swapped
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
                             imageHeight, isBlackAndWhite);
 

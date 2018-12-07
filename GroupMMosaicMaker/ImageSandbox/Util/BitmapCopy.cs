@@ -12,6 +12,11 @@ namespace ImageSandbox.Util
     public static class BitmapCopy
     {
 
+        /// <summary>
+        /// Makes a copy of the file to work on.
+        /// </summary>
+        /// <param name="imageFile">The image file.</param>
+        /// <returns>Bitmap Image</returns>
         public static async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {
             IRandomAccessStream inputstream = await imageFile.OpenReadAsync();
