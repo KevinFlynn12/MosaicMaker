@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
@@ -119,8 +120,51 @@ namespace ImageSandbox.Model
             }
         }
 
-     
 
+        public List<Tuple<int, int>> FindTrianglePoints(uint imageWidth, uint imageHeight, int blockSize)
+        {
+            int iterations;
+            if (imageWidth % blockSize == 0)
+            {
+                iterations = (int)imageWidth / blockSize;
+            }
+            else
+            {
+                iterations = (int)imageWidth / blockSize + 1;
+            }
+
+            var triangleCoordinates = new List<Tuple<int, int>>();
+
+            for (var x = 0; x <= imageHeight; x += blockSize)
+            {
+                for (var y = 0; y <= imageHeight; y += blockSize)
+                {
+                    for (var currentXPoint = x;
+                        currentXPoint < this.UpdateStoppingPoint(imageWidth, x, blockSize);
+                        currentXPoint++)
+                    {
+                        for (var currentYPoint = y;
+                            currentYPoint < this.UpdateStoppingPoint(imageHeight, y, blockSize);
+                            currentYPoint++)
+                        {
+                            for (int i = 0; i < iterations; i++)
+                            {
+                                if (currentYPoint == currentXPoint + (blockSize * i) ||
+                                    currentXPoint == currentYPoint + (blockSize * i))
+                                {
+                                    var coordinate = new Tuple<int, int>(currentXPoint, currentYPoint);
+                                    triangleCoordinates.Add(coordinate);
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return triangleCoordinates;
+
+        }
         private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
             int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages)

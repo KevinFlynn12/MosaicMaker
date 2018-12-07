@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -26,7 +27,7 @@ namespace ImageSandbox.View
 {
     public sealed partial class ReviseImagePalletteDialog : ContentDialog, INotifyPropertyChanged
     {
-        private List<WriteableBitmap> images;
+        private List<IAsyncOperation<StorageItemThumbnail>> thumbnails;
         private int imageCount;
         public int ImageCount { 
             get=>this.imageCount;
@@ -37,18 +38,19 @@ namespace ImageSandbox.View
             }
         }
 
-        public List<WriteableBitmap> Images
+        public List<IAsyncOperation<StorageItemThumbnail>> Images
         {
-            get => this.images;
+            get => this.thumbnails;
             set
             {
-                this.images = value;
+                this.thumbnails = value;
                 this.OnPropertyChanged();
             }
         }
 
         public ReviseImagePalletteDialog()
         {
+            this.thumbnails = new List<IAsyncOperation<StorageItemThumbnail>>();
             this.InitializeComponent();
 
         }
@@ -61,10 +63,11 @@ namespace ImageSandbox.View
         {
             foreach (var folderImage in imageFolder)
             {
-                images.Add(folderImage.ImageBitmap);
+                thumbnails.Add(folderImage.ThumbNail);
             }
 
-            this.ImageCount = images.Count;
+            this.ImagePaletteView.ItemsSource = this.thumbnails;
+            this.ImageCount = thumbnails.Count;
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
