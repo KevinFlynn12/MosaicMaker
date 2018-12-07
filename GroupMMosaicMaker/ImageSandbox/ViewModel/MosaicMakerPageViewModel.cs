@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
+using ImageSandbox.Datatier;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
 using ImageSandbox.View;
@@ -33,14 +34,16 @@ namespace ImageSandbox.ViewModel
         private StorageFile selectedImageFile;
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
+        private ImageFolderReader folderReader;
         private MosaicImage mosaicImage;
-        private FolderImageRegistry selectedFolderImages;
+        private FolderImageRegistry imagePallete;
+        private ICollection<FolderImage> loadedFolder;
         public FolderImageRegistry SelectedFolderImages
         {
-            get => this.selectedFolderImages;
+            get => this.imagePallete;
             set
             {
-                this.selectedFolderImages = value;
+                this.imagePallete = value;
                 this.ViewPalette.OnCanExecuteChanged();
             }
         }
@@ -178,7 +181,9 @@ namespace ImageSandbox.ViewModel
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
-            this.selectedFolderImages = new FolderImageRegistry();
+            this.imagePallete = new FolderImageRegistry();
+            this.loadedFolder = new List<FolderImage>();
+            this.folderReader = new ImageFolderReader();
         }
 
         #endregion
@@ -196,13 +201,13 @@ namespace ImageSandbox.ViewModel
 
         private bool canViewPallette(object obj)
         {
-            return this.selectedFolderImages != null;
+            return this.imagePallete != null;
         }
 
         private async void viewPalette(object obj)
         {
             var contentDialog = new ReviseImagePalletteDialog();
-            contentDialog.GenerateImages(selectedFolderImages);
+            contentDialog.GenerateImages(imagePallete);
             await contentDialog.ShowAsync();
         }
 
@@ -290,7 +295,12 @@ namespace ImageSandbox.ViewModel
         /// <param name="selectedFolder">The selected folder.</param>
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
-            await this.LoadFolderImage(selectedFolder);
+            if (this.loadedFolder.Any())
+            {
+                this.LoadAllImagesIntoImagePallete();
+            }
+
+           await this.imagePallete.ResizeAllImages(this.blockSizeNumber);
 
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
@@ -325,7 +335,7 @@ namespace ImageSandbox.ViewModel
                 else
                 {
                      this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                        decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
+                        decoder.PixelHeight, this.blockSizeNumber, this.imagePallete);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -337,6 +347,24 @@ namespace ImageSandbox.ViewModel
             }
             this.hasMosaic = true;
             this.CanSave = true;
+        }
+
+
+        public void LoadAllImagesIntoImagePallete()
+        {
+            foreach (var currImage in this.loadedFolder)
+            {
+                this.imagePallete.Add(currImage);
+            }
+
+            this.loadedFolder.Clear();
+        }
+
+
+
+        public async Task LoadAllFolderImages(StorageFolder selectedFolder)
+        {
+            this.loadedFolder = await this.folderReader.LoadSelectedFolder(selectedFolder);
         }
 
         private async Task LoadFolderImage(StorageFolder selectedFolder)
@@ -395,9 +423,9 @@ namespace ImageSandbox.ViewModel
                     {
                         await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
 
-                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name, thumbnail);
+                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile);
 
-                        this.selectedFolderImages.Add(selectedFolderImage);
+                        this.imagePallete.Add(selectedFolderImage);
                     }
                 }
             }

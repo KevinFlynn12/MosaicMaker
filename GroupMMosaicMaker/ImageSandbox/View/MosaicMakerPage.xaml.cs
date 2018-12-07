@@ -173,8 +173,10 @@ namespace ImageSandbox
 
         private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
         {
-            this.selectedFolder = await this.selectImageFileFolder();
-            
+            var selectedFolder = await this.selectImageFileFolder();
+
+            this.viewModel.LoadAllFolderImages(selectedFolder);
+
         }
 
         private async void RadioButton_Checked(object sender, RoutedEventArgs e)

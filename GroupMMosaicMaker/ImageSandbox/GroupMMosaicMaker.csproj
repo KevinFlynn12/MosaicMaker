@@ -95,9 +95,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Datatier\ImageFolderReader.cs" />
     <Compile Include="Model\FolderImage.cs" />
     <Compile Include="Model\MosaicImage.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Util\BitmapCopy.cs" />
     <Compile Include="Util\ColorDifference.cs" />
     <Compile Include="Util\ImageAverageColor.cs" />
     <Compile Include="Util\ImagePixel.cs" />

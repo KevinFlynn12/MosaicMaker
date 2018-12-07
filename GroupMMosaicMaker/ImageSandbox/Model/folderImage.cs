@@ -8,6 +8,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
 using Windows.Foundation;
+using Windows.Storage;
 
 namespace ImageSandbox.Model
 {
@@ -16,6 +17,7 @@ namespace ImageSandbox.Model
         private WriteableBitmap fileWriteableBitmap;
         private string name;
         private IAsyncOperation<StorageItemThumbnail> thumbnail;
+        private StorageFile loadedImageFile;
         #region Properties
 
         public WriteableBitmap ImageBitmap { get; private set; }
@@ -28,11 +30,12 @@ namespace ImageSandbox.Model
 
         #region Constructors
 
-        public FolderImage(WriteableBitmap loadedBitmap, string fileName, IAsyncOperation<StorageItemThumbnail> pictureThumbNail)
+        public FolderImage(WriteableBitmap loadedBitmap, StorageFile loadedFile)
         {
-            this.ThumbNail = pictureThumbNail;
+
             this.ImageBitmap = loadedBitmap;
-            this.FileName = fileName;
+            this.loadedImageFile = loadedFile;
+
         }
 
    
@@ -63,11 +66,46 @@ namespace ImageSandbox.Model
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <returns>Nothing</returns>
-        public async Task ResizeWritableBitmap(uint width, uint height)
+        public async Task ResizeWritableBitmap(int blockSize)
         {
-                       
-            
-            
+
+
+            using (var fileStream = await this.loadedImageFile.OpenAsync(FileAccessMode.Read))
+
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(blockSize),
+                    ScaledHeight = Convert.ToUInt32(blockSize)
+                };
+
+                
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                
+                var fileWriteableBitmap =
+                    new WriteableBitmap((int)transform.ScaledWidth, (int)transform.ScaledHeight);
+
+                using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
+                {
+                    await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+
+                    this.ImageBitmap = fileWriteableBitmap;
+
+                }
+            }
+
+
         }
 
         public override string ToString()

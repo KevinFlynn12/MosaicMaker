@@ -90,6 +90,22 @@ namespace ImageSandbox.Model
             return this.selectedFolderImages.GetEnumerator();
         }
 
+
+
+
+
+        public async Task ResizeAllImages(int blockSize)
+        {
+            foreach (var currImage in this.selectedFolderImages)
+            {
+                await currImage.ResizeWritableBitmap(blockSize);
+            }
+        }
+
+
+
+
+
         /// <summary>
         ///     Finds the closest matching image.
         /// </summary>
