@@ -79,7 +79,8 @@ namespace ImageSandbox.Model
             bool isGrid)
         {
             var y = 0;
-            var multiplicity = 0;
+            var multiplicityX = 0;
+            var multiplicityY = 0;
             var triangleCoordinates = this.FindTrianglePoints(imageWidth, imageHeight, blockSize);
             while (y < imageHeight)
             {
@@ -91,14 +92,16 @@ namespace ImageSandbox.Model
                     var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
                     this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
-                        isGrid, false, blockSize, multiplicity);
+                        isGrid, false, blockSize, multiplicityX, multiplicityY);
 
                     x += blockSize;
+                    multiplicityY++;
                 }
 
                 y += blockSize;
-                multiplicity++;
+                multiplicityX++;
             }
+            /*
             foreach (var currentPoint in triangleCoordinates)
             {
                 var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentPoint.Item2, currentPoint.Item1, imageWidth,imageHeight);
@@ -106,6 +109,7 @@ namespace ImageSandbox.Model
                 ImagePixel.setPixelBgra8(sourcePixels, currentPoint.Item2, currentPoint.Item1, pixelColor, imageWidth,
                     imageHeight, false);
             }
+            */
 
         }
 
@@ -179,7 +183,7 @@ namespace ImageSandbox.Model
 
         public Color FindAverageColorForBottomTriangle(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int YStoppingPoint, int startingXPoint,
-            int XStoppingPoint, int blockSize, int iteration, bool isBottom)
+            int XStoppingPoint, int blockSize, int iterationX, int iterationY, bool isBottom)
         {
             var pixelCount = 0.0;
             var totalRed = 0.0;
@@ -197,21 +201,21 @@ namespace ImageSandbox.Model
                     {
                         if (isBottom)
                         {
-                            if (-currentYPoint + (blockSize * iteration) >= -currentXPoint + (blockSize * iteration) )
+                            if (currentYPoint - (blockSize * iterationY) >= -currentXPoint + (blockSize * iterationX) )
                             {
                                 bottomPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
-                            }else if (currentYPoint >= currentXPoint && -currentXPoint + blockSize * iteration > 0)
+                            }else if (currentYPoint - (blockSize * iterationY) >= currentXPoint && -currentXPoint + blockSize * iterationX > 0)
                             {
                                 bottomPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
                             }
                         }
                         else
                         {
-                            if (currentYPoint + (blockSize * iteration) < -currentXPoint + (blockSize * iteration))
+                            if (currentYPoint + (blockSize * iterationY) < -currentXPoint + (blockSize * iterationX))
                             {
                                 topPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
                             }
-                            else if (currentYPoint <= currentXPoint && -currentXPoint + blockSize * iteration > 0)
+                            else if (currentYPoint <= currentXPoint && -currentXPoint + blockSize * iterationX > 0)
                             {
                                 topPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
                             }
@@ -260,9 +264,9 @@ namespace ImageSandbox.Model
                     pixelCount++;
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, points.Item2, points.Item1, imageWidth,
                         imageHeight);
-                    pixelColor.R = newColor.R;
-                    pixelColor.B = newColor.B;
-                    pixelColor.G = newColor.G;
+                    pixelColor.R = 255;//newColor.R;
+                    pixelColor.B = 255;//newColor.B;
+                    pixelColor.G = 255;//newColor.G;
                     ImagePixel.setPixelBgra8(sourcePixels, points.Item2, points.Item1, pixelColor, imageWidth,
                         imageHeight, false);
                 }
@@ -376,7 +380,7 @@ namespace ImageSandbox.Model
 
         private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint,
             int yStoppingPoint, int startingXPoint, int xStoppingPoint, bool isGrid, bool isBlackAndWhite,
-            int blockSize, int iteration)
+            int blockSize, int iterationX, int iterationY)
         {
 
 
@@ -385,19 +389,13 @@ namespace ImageSandbox.Model
                     yStoppingPoint, startingXPoint, xStoppingPoint);
             var averageColorBottom = FindAverageColorForBottomTriangle(sourcePixels, imageWidth, imageHeight,
                 startingYPoint,
-                yStoppingPoint, startingXPoint, xStoppingPoint, blockSize, iteration, true);
+                yStoppingPoint, startingXPoint, xStoppingPoint, blockSize, iterationX, iterationY, true);
+            /*
            var averageColorTop = FindAverageColorForBottomTriangle(sourcePixels, imageWidth, imageHeight,
                 startingYPoint,
                 yStoppingPoint, startingXPoint, xStoppingPoint, blockSize, iteration, false);
             var triangleCoordinates = FindTrianglePoints(imageWidth, imageHeight, blockSize);
-            var bottomPoints = triangleCoordinates.Where(coordinate =>
-                coordinate.Item1 >= startingYPoint &&
-                coordinate.Item1 <= yStoppingPoint &&
-                coordinate.Item2 >= coordinate.Item1).ToList();
-            var topPoints = triangleCoordinates.Where(coordinate =>
-                coordinate.Item1 >= startingYPoint &&
-                coordinate.Item1 <= xStoppingPoint &&
-                coordinate.Item2 >= coordinate.Item1).ToList();
+            */
             /*
             foreach (var point in bottomPoints)
             {
