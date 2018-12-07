@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="TITLE"
+    Title="Image Gallery"
     PrimaryButtonText="Button1"
     SecondaryButtonText="Button2"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
@@ -14,5 +14,17 @@
 
     <Grid>
         <ListView HorizontalAlignment="Left" Height="372" VerticalAlignment="Center" Width="459" Margin="0,0,0,0"/>
+        <GridView SelectionMode="Multiple" ItemsSource="{Binding Images, Mode = TwoWay}">
+            <GridView.ItemTemplate>
+                <DataTemplate x:Name="ImageGalleryDataTemplate">
+                    <Image  Height="180" Width="180" Stretch="UniformToFill"/>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
     </Grid>
 </ContentDialog>

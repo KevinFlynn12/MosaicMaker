@@ -7,7 +7,7 @@ using ImageSandbox.Util;
 
 namespace ImageSandbox.Model
 {
-    internal class FolderImageRegistry : IList<FolderImage>
+    public class FolderImageRegistry : IList<FolderImage>
     {
         #region Data members
 

@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
+using ImageSandbox.View;
 
 namespace ImageSandbox.ViewModel
 {
@@ -33,7 +34,16 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private readonly FolderImageRegistry selectedFolderImages;
+        private FolderImageRegistry selectedFolderImages;
+        public FolderImageRegistry SelectedFolderImages
+        {
+            get => this.selectedFolderImages;
+            set
+            {
+                this.selectedFolderImages = value;
+                this.ViewPalette.OnCanExecuteChanged();
+            }
+        }
         private bool hasMosaic;
         private bool canSave;
         private bool isBlackAndWhite;
@@ -49,7 +59,7 @@ namespace ImageSandbox.ViewModel
 
         public RelayCommand CreateSolidMosaic { get; set; }
         public RelayCommand ChangeBlockSize { get; set; }
-
+        public RelayCommand ViewPalette { get; set; }
         public String LoadedFileType { get; private set; }
 
         public bool IsCreatePictureMosaicEnabled
@@ -181,6 +191,19 @@ namespace ImageSandbox.ViewModel
         {
             this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canSolidMosaic);
             this.ChangeBlockSize = new RelayCommand(this.changeBlockSize, this.canChangeBlockSize);
+            this.ViewPalette  = new RelayCommand(this.viewPalette, this.canViewPallette);
+        }
+
+        private bool canViewPallette(object obj)
+        {
+            return this.selectedFolderImages != null;
+        }
+
+        private async void viewPalette(object obj)
+        {
+            var contentDialog = new ReviseImagePalletteDialog();
+            contentDialog.GenerateImages(selectedFolderImages);
+            await contentDialog.ShowAsync();
         }
 
         private bool canChangeBlockSize(object obj)
@@ -327,6 +350,7 @@ namespace ImageSandbox.ViewModel
                     await LoadAllImagesInFolder(storedFolder);
                 }
                 this.CheckToEnablePictureMosaic();
+                
             }
             catch (Exception e)
             {

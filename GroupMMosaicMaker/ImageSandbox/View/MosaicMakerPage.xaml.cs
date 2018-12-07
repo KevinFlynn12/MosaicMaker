@@ -48,7 +48,7 @@ namespace ImageSandbox
             this.InitializeComponent();
             this.NoGrid.IsChecked = true;
             this.btnPictureMosaic.IsEnabled = false;
-            this.ModifyMosaicButton.IsEnabled = false;
+            this.ViewPaletteButton.IsEnabled = false;
 
             this.viewModel = new MosaicMakerPageViewModel();
             DataContext = this.viewModel;

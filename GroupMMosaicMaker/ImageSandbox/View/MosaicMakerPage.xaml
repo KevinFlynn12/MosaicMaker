@@ -15,7 +15,7 @@
             </CommandBar.Content>
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
             <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
-            <AppBarButton x:Name="AddImagePallette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Pallette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
+            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
         </CommandBar>
         <Image x:Name="imageDisplay" Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" Height="359" Width="664" Margin="508,103,0,0" VerticalAlignment="Top" />
         <Grid Height="317" Margin="496,527,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
@@ -26,7 +26,7 @@
         <Button x:Name="RefreshMosaicButton" Content="Refresh" HorizontalAlignment="Left" Margin="33,527,0,0" VerticalAlignment="Top"  Width="174" Height="56" />
 
         <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="32,231,0,0" VerticalAlignment="Top" Height="63" Width="174" Command="{Binding CreateSolidMosaic, Mode=TwoWay}" />
-        <Button x:Name="ModifyMosaicButton" Content="View Image Palette" HorizontalAlignment="Left" Margin="32,425,0,0" VerticalAlignment="Top" Height="62" Width="174"/>
+        <Button x:Name="ViewPaletteButton" Content="View Image Palette" HorizontalAlignment="Left" Margin="32,425,0,0" VerticalAlignment="Top" Height="62" Width="174" Command="{Binding ViewPalette, Mode=TwoWay}"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="354,631,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
