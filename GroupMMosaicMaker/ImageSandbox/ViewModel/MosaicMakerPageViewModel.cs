@@ -196,13 +196,13 @@ namespace ImageSandbox.ViewModel
 
         private bool canViewPallette(object obj)
         {
-            return this.selectedFolderImages != null;
+            return true;
         }
 
         private async void viewPalette(object obj)
         {
             var contentDialog = new ReviseImagePalletteDialog();
-            contentDialog.GenerateImages(selectedFolderImages);
+            contentDialog.GenerateImages(this.SelectedFolderImages);
             await contentDialog.ShowAsync();
         }
 
@@ -325,7 +325,7 @@ namespace ImageSandbox.ViewModel
                 else
                 {
                      this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                        decoder.PixelHeight, this.blockSizeNumber, this.selectedFolderImages);
+                        decoder.PixelHeight, this.blockSizeNumber, this.SelectedFolderImages);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -397,7 +397,7 @@ namespace ImageSandbox.ViewModel
 
                         var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile.Name, thumbnail);
 
-                        this.selectedFolderImages.Add(selectedFolderImage);
+                        this.SelectedFolderImages.Add(selectedFolderImage);
                     }
                 }
             }
