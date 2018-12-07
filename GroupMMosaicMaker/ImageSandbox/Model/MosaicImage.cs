@@ -40,6 +40,7 @@ namespace ImageSandbox.Model
         #endregion
 
         #region Methods
+
         /*
         private async void createSourcePixels()
         {
@@ -79,7 +80,7 @@ namespace ImageSandbox.Model
         {
             var y = 0;
             var multiplicity = 0;
-            var triangleCoordinates = this.FindTrianglePoints(imageWidth, imageHeight,blockSize);
+            var triangleCoordinates = this.FindTrianglePoints(imageWidth, imageHeight, blockSize);
             while (y < imageHeight)
             {
                 var x = 0;
@@ -94,10 +95,10 @@ namespace ImageSandbox.Model
 
                     x += blockSize;
                 }
+
                 y += blockSize;
                 multiplicity++;
             }
-            /*
             foreach (var currentPoint in triangleCoordinates)
             {
                 var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentPoint.Item2, currentPoint.Item1, imageWidth,imageHeight);
@@ -105,21 +106,20 @@ namespace ImageSandbox.Model
                 ImagePixel.setPixelBgra8(sourcePixels, currentPoint.Item2, currentPoint.Item1, pixelColor, imageWidth,
                     imageHeight, false);
             }
-            */
-            
+
         }
 
         public async Task CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
             FolderImageRegistry loadedImages)
         {
 
-            for(int y=0; y < imageHeight ; y+=blockSize)
+            for (int y = 0; y < imageHeight; y += blockSize)
             {
                 var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
                 for (int x = 0; x < imageWidth; x += blockSize)
                 {
-                    
+
 
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x, blockSize);
 
@@ -137,22 +137,26 @@ namespace ImageSandbox.Model
             int iterations;
             if (imageWidth % blockSize == 0)
             {
-                iterations = (int)imageWidth / blockSize;
+                iterations = (int) imageWidth / blockSize;
             }
             else
             {
-                iterations = (int)imageWidth / blockSize + 1;
+                iterations = (int) imageWidth / blockSize + 1;
             }
 
             var triangleCoordinates = new List<Tuple<int, int>>();
-            
+
             for (var x = 0; x <= imageHeight; x += blockSize)
             {
                 for (var y = 0; y <= imageHeight; y += blockSize)
                 {
-                    for (var currentXPoint = x; currentXPoint < this.UpdateStoppingPoint(imageWidth, x, blockSize); currentXPoint++)
+                    for (var currentXPoint = x;
+                        currentXPoint < this.UpdateStoppingPoint(imageWidth, x, blockSize);
+                        currentXPoint++)
                     {
-                        for (var currentYPoint = y; currentYPoint < this.UpdateStoppingPoint(imageHeight, y, blockSize); currentYPoint++)
+                        for (var currentYPoint = y;
+                            currentYPoint < this.UpdateStoppingPoint(imageHeight, y, blockSize);
+                            currentYPoint++)
                         {
                             for (int i = 0; i < iterations; i++)
                             {
@@ -182,49 +186,116 @@ namespace ImageSandbox.Model
             var totalBlue = 0.0;
             var totalGreen = 0.0;
             var triangleCoordinates = FindTrianglePoints(imageWidth, imageHeight, blockSize);
-            var bottomPoints = triangleCoordinates.Where(coordinate =>
-                coordinate.Item1 >= startingYPoint && coordinate.Item1 <= YStoppingPoint &&
-                coordinate.Item2 >= coordinate.Item1).ToList();
-            var topPoints = triangleCoordinates.Where(coordinate =>
-                coordinate.Item1 >= startingYPoint && coordinate.Item1 <= YStoppingPoint &&
-                coordinate.Item2 >= coordinate.Item1).ToList();
+            var bottomPoints = new List<Tuple<int, int>>();
+            var topPoints = new List<Tuple<int, int>>();
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            {
+
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                {
+                    if (!triangleCoordinates.Contains(new Tuple<int, int>(currentXPoint, currentYPoint)))
+                    {
+                        if (isBottom)
+                        {
+                            if (-currentYPoint + (blockSize * iteration) >= -currentXPoint + (blockSize * iteration) )
+                            {
+                                bottomPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
+                            }else if (currentYPoint >= currentXPoint && -currentXPoint + blockSize * iteration > 0)
+                            {
+                                bottomPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
+                            }
+                        }
+                        else
+                        {
+                            if (currentYPoint + (blockSize * iteration) < -currentXPoint + (blockSize * iteration))
+                            {
+                                topPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
+                            }
+                            else if (currentYPoint <= currentXPoint && -currentXPoint + blockSize * iteration > 0)
+                            {
+                                topPoints.Add(new Tuple<int, int>(currentXPoint, currentYPoint));
+                            }
+                        }
+                    }
+                }
+            }
 
             if (isBottom)
             {
-                foreach(var coordinates in bottomPoints) { 
+                foreach (var points in bottomPoints)
+                {
                     pixelCount++;
-                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, coordinates.Item2, coordinates.Item2,
-                        imageWidth,
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, points.Item2, points.Item1, imageWidth,
                         imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
                     totalGreen += pixelColor.G;
                 }
-        }
+            }
             else
             {
-                foreach(var topPoint in topPoints) { 
+                foreach (var points in topPoints)
+                {
                     pixelCount++;
-                var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels,topPoint.Item2, topPoint.Item2,
-                    imageWidth,
-                    imageHeight);
-                totalRed += pixelColor.R;
-                totalBlue += pixelColor.B;
-                totalGreen += pixelColor.G;
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, points.Item2, points.Item1, imageWidth,
+                        imageHeight);
+                    totalRed += pixelColor.R;
+                    totalBlue += pixelColor.B;
+                    totalGreen += pixelColor.G;
+                }
             }
-}
+            
+            var averageRed = totalRed / pixelCount;
+            var averageBlue = totalBlue / pixelCount;
+            var averageGreen = totalGreen / pixelCount;
+
+            var newColor = new Color();
+            newColor.R = (byte) averageRed;
+            newColor.B = (byte) averageBlue;
+            newColor.G = (byte) averageGreen;
+            if (isBottom)
+            {
+                foreach (var points in bottomPoints)
+                {
+                    pixelCount++;
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, points.Item2, points.Item1, imageWidth,
+                        imageHeight);
+                    pixelColor.R = newColor.R;
+                    pixelColor.B = newColor.B;
+                    pixelColor.G = newColor.G;
+                    ImagePixel.setPixelBgra8(sourcePixels, points.Item2, points.Item1, pixelColor, imageWidth,
+                        imageHeight, false);
+                }
+            }
+            else
+            {
+                foreach (var points in topPoints)
+                {
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, points.Item2, points.Item1, imageWidth,
+                        imageHeight);
+                    pixelColor.R = 0;//newColor.R;
+                    pixelColor.B = 0;// newColor.B;
+                    pixelColor.G =0;// newColor.G;
+                    ImagePixel.setPixelBgra8(sourcePixels, points.Item2, points.Item1, pixelColor, imageWidth,
+                        imageHeight,false);
+                }
+            }
         
-        
+            return newColor;
+            
+        }
+
+
 
         /*
         for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
         {
-            
+
             for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
             {
                 if (isBottom)
                 {
-                    
+
                     if (currentYPoint <= -(currentXPoint - blockSize * iteration) || currentXPoint >= -(currentYPoint - blockSize * iteration))
                     {
                         pixelCount++;
@@ -247,22 +318,14 @@ namespace ImageSandbox.Model
                         totalGreen += pixelColor.G;
                     }
                 }
-                
+
                 */
-        
-                
-            
 
-            var averageRed = totalRed / pixelCount;
-            var averageBlue = totalBlue / pixelCount;
-            var averageGreen = totalGreen / pixelCount;
 
-            var newColor = new Color();
-            newColor.R = (byte) averageRed;
-            newColor.B = (byte) averageBlue;
-            newColor.G = (byte) averageGreen;
-            return newColor;
-        }
+
+
+
+
 
         private async void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
@@ -275,38 +338,38 @@ namespace ImageSandbox.Model
 
             var matchingImage = loadedImages.FindClosestMatchingImage(averageColor);
 
-                            
+
             var matchingImageY = 0;
-          
+
             for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
             {
 
-            var matchingImageX = 0;
-            for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
-            {
-             Color pixelColor;
-             /*
-             if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
-                                                  || currentXPoint == startingXPoint ||
-                                                  xStoppingPoint == currentXPoint))
-             {
-                pixelColor = Colors.White;
-                ImagePixel.setPixelBgra8(sourcePixels,  currentXPoint, currentYPoint, pixelColor, imageWidth,
-                imageHeight, isBlackAndWhite);
-             }
-             */
-                
-             pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
+                var matchingImageX = 0;
+                for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
+                {
+                    Color pixelColor;
+                    /*
+                    if ((currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
+                                                         || currentXPoint == startingXPoint ||
+                                                         xStoppingPoint == currentXPoint))
+                    {
+                       pixelColor = Colors.White;
+                       ImagePixel.setPixelBgra8(sourcePixels,  currentXPoint, currentYPoint, pixelColor, imageWidth,
+                       imageHeight, isBlackAndWhite);
+                    }
+                    */
+
+                    pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
 
                     //coordinates have been swapped
-             ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint,  pixelColor, imageWidth,
-                imageHeight, isBlackAndWhite);
-             
-                    
-             matchingImageX++;
-             }
+                    ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
+                        imageHeight, isBlackAndWhite);
 
-             matchingImageY++;
+
+                    matchingImageX++;
+                }
+
+                matchingImageY++;
             }
         }
 
@@ -323,9 +386,31 @@ namespace ImageSandbox.Model
             var averageColorBottom = FindAverageColorForBottomTriangle(sourcePixels, imageWidth, imageHeight,
                 startingYPoint,
                 yStoppingPoint, startingXPoint, xStoppingPoint, blockSize, iteration, true);
-            var averageColorTop = FindAverageColorForBottomTriangle(sourcePixels, imageWidth, imageHeight,
+           var averageColorTop = FindAverageColorForBottomTriangle(sourcePixels, imageWidth, imageHeight,
                 startingYPoint,
                 yStoppingPoint, startingXPoint, xStoppingPoint, blockSize, iteration, false);
+            var triangleCoordinates = FindTrianglePoints(imageWidth, imageHeight, blockSize);
+            var bottomPoints = triangleCoordinates.Where(coordinate =>
+                coordinate.Item1 >= startingYPoint &&
+                coordinate.Item1 <= yStoppingPoint &&
+                coordinate.Item2 >= coordinate.Item1).ToList();
+            var topPoints = triangleCoordinates.Where(coordinate =>
+                coordinate.Item1 >= startingYPoint &&
+                coordinate.Item1 <= xStoppingPoint &&
+                coordinate.Item2 >= coordinate.Item1).ToList();
+            /*
+            foreach (var point in bottomPoints)
+            {
+                var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, point.Item2, point.Item1, imageWidth,
+                    imageHeight);
+                pixelColor.R = averageColorBottom.R;
+                pixelColor.B = averageColorBottom.B;
+                pixelColor.G = averageColorBottom.G;
+                ImagePixel.setPixelBgra8(sourcePixels, point.Item2, point.Item1, pixelColor, imageWidth,
+                    imageHeight, isBlackAndWhite);
+            }
+
+            *
             for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
@@ -354,9 +439,10 @@ namespace ImageSandbox.Model
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
                             imageHeight, isBlackAndWhite);
                     }
-                    */
+                    *
                 }
             }
+            */
         }
         /*
         if (isGrid)
@@ -401,7 +487,7 @@ namespace ImageSandbox.Model
         }
         */
 
-            
+
 
 
 
@@ -416,9 +502,9 @@ namespace ImageSandbox.Model
             return coordinateStoppingPoint;
         }
 
-       
 
-        
+
+
 
         /// <summary>
         ///     Creates the black and white mosaic.
