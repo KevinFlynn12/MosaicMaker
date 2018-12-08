@@ -14,7 +14,6 @@ namespace ImageSandbox.Model
 {
     public class FolderImage
     {
-        private WriteableBitmap fileWriteableBitmap;
         private string name;
         private IAsyncOperation<StorageItemThumbnail> thumbnail;
         private StorageFile loadedImageFile;
@@ -60,11 +59,12 @@ namespace ImageSandbox.Model
             return averageColor;
         }
 
+
+
         /// <summary>
-        ///     Resizes the writable bitmap.
+        /// Resizes the writable bitmap.
         /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
+        /// <param name="blockSize">Size of the block.</param>
         /// <returns>Nothing</returns>
         public async Task ResizeWritableBitmap(int blockSize)
         {

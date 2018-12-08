@@ -41,7 +41,7 @@
         <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Command="{Binding GridChecked}" />
         <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Command="{Binding TriangleGridChecked}"  />
         <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Command="{Binding NoGridChecked}"/>
-        <GridView ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="236" Height="429" Margin="27,527,0,0" >
+        <GridView ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="236" Height="360" Margin="27,596,0,0" >
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageGalleryDataTemplate">
                     <Image  Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill"/>
@@ -53,7 +53,7 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="27,635,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="18" Height="16"/>
-        <TextBlock HorizontalAlignment="Left" Margin="84,635,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
+        <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,527,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20"/>
+        <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
     </Grid>
 </Page>

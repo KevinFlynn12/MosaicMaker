@@ -60,13 +60,14 @@ namespace ImageSandbox.Model
             while (y < imageHeight)
             {
                 var x = 0;
+                var yStoppingPoint = this.UpdateStoppingPoint(imageHeight-1, y, blockSize);
+
                 while (x < imageWidth)
                 {
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth-1, x, blockSize);
 
-                    var yStoppingPoint = this.UpdateStoppingPoint(imageHeight-1, y, blockSize);
 
-                    this.TopTriangle(sourcePixels, imageWidth, imageHeight, x, y, xStoppingPoint, yStoppingPoint, iterationX, iterationY, blockSize);
+                    this.TriangleMosaic(sourcePixels, imageWidth, imageHeight, x, y, xStoppingPoint, yStoppingPoint, iterationX, iterationY, blockSize);
                     //this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
                       //  isGrid, false, blockSize);
 
@@ -106,40 +107,75 @@ namespace ImageSandbox.Model
         public List<Tuple<int, int>> FindTrianglePoints(uint imageWidth, uint imageHeight, int blockSize)
         {
             int iterations;
-            if (imageWidth % blockSize == 0)
+            if (imageWidth > imageHeight)
             {
-                iterations = (int)imageWidth / blockSize;
+                if (imageWidth % blockSize == 0)
+                {
+                    iterations = (int)imageWidth / blockSize;
+                }
+                else
+                {
+                    iterations = (int)imageWidth / blockSize + 1;
+                }
             }
             else
             {
-                iterations = (int)imageWidth / blockSize + 1;
+                if (imageHeight % blockSize == 0)
+                {
+                    iterations = (int)imageHeight / blockSize;
+                }
+                else
+                {
+                    iterations = (int)imageHeight / blockSize + 1;
+                }
             }
 
+            
             var triangleCoordinates = new List<Tuple<int, int>>();
 
             for (var x = 0; x <= imageHeight; x += blockSize)
             {
                 for (var y = 0; y <= imageHeight; y += blockSize)
                 {
+                    var currentX = 0;
                     for (var currentXPoint = x;
                         currentXPoint < this.UpdateStoppingPoint(imageWidth, x, blockSize);
                         currentXPoint++)
                     {
+                        
+                        var currentY = 0;
                         for (var currentYPoint = y;
                             currentYPoint < this.UpdateStoppingPoint(imageHeight, y, blockSize);
                             currentYPoint++)
                         {
-                            for (int i = 0; i < iterations; i++)
+                            if (currentYPoint == y || this.UpdateStoppingPoint(imageHeight, y, blockSize) == currentYPoint
+                                                                || currentXPoint == x ||
+                                                   this.UpdateStoppingPoint(imageWidth, x, blockSize) == currentXPoint)
                             {
-                                if (currentYPoint == currentXPoint + (blockSize * i) ||
-                                    currentXPoint == currentYPoint + (blockSize * i))
+                                var coordinate = new Tuple<int, int>(currentXPoint, currentYPoint);
+                                triangleCoordinates.Add(coordinate);
+                            }
+                            else if (currentX == currentY)
+                            {
+                                var coordinate = new Tuple<int, int>(currentXPoint, currentYPoint);
+                                triangleCoordinates.Add(coordinate);
+                            }
+                            currentY++;
+                            /*
+                            for (int i = 0; i <= iterations*2; i++)
+                            {
+                                if ( currentYPoint == currentXPoint + (blockSize * i) ||
+                                    currentXPoint == currentYPoint + (blockSize * i) || currentYPoint + blockSize*i == currentXPoint + blockSize*i || currentYPoint== currentXPoint - (blockSize * i)||
+                                     currentXPoint == currentYPoint - (blockSize * i))
                                 {
                                     var coordinate = new Tuple<int, int>(currentXPoint, currentYPoint);
                                     triangleCoordinates.Add(coordinate);
 
                                 }
                             }
+                            */
                         }
+                        currentX++;
                     }
                 }
             }
@@ -208,40 +244,8 @@ namespace ImageSandbox.Model
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
                     
-                    if (isGrid)
-                    {
-                        
-                        if (currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
-                                                            || currentXPoint == startingXPoint ||
-                                                            xStoppingPoint == currentXPoint)
-                        {
-                            pixelColor = Colors.White;
-                           
-                        }
-                        
-                        else if (isBlackAndWhite)
-                        {
-                            var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
-                            pixelColor.R = (byte) averageBlack;
-                            pixelColor.B = (byte) averageBlack;
-                            pixelColor.G = (byte) averageBlack;
-                        }
-                        else
-                        {
-                            pixelColor.R = averageColor.R;
-                            pixelColor.B = averageColor.B;
-                            pixelColor.G = averageColor.G;
-                        }
-                        for (int i = 0; i < iterations; i++)
-                        {
-                            if (currentYPoint == currentXPoint + (40 * i) ||
-                                currentXPoint == currentYPoint + (40 * i))
-                            {
-                                pixelColor = Colors.White;
-                            }
-                        }
-                    }
-                    else if (isBlackAndWhite & !isGrid)
+                    
+                   if (isBlackAndWhite)
                     {
                         var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
                         if (averageBlack >= 127.5)
@@ -323,58 +327,78 @@ namespace ImageSandbox.Model
 
 
 
-        private void TopTriangle(byte[] sourcePixels, uint imageHeight, uint imageWidth, int xStart, int yStart, int xStopping, int yStoppingPoint, int iterationX, int iterationY, int blockSize)
+        private void TriangleMosaic(byte[] sourcePixels, uint imageHeight, uint imageWidth, int xStart, int yStart, int xStopping, int yStoppingPoint, int iterationX, int iterationY, int blockSize)
         {
             var topTriangleColors = new List<Color>();
             var topTriangleCoordinates = new List<Tuple<int, int>>();
-            for (int y = yStoppingPoint; y > yStart; y--)
+            var bottomTriangleColors = new List<Color>();
+            var bottomTriangleCoordinates = new List<Tuple<int, int>>();
+            var currentY = 0;
+            for (int y = yStart;  y < yStoppingPoint; y++)
             {
-                for (int x = xStopping; x > xStart; x--)
+                var currentX = 0;
+                for (int x = xStart; x < xStopping ; x++)
                 {
-                    if (-y + blockSize * iterationY < 0)
-                    {
-                        if (-y + blockSize * iterationY < -x + blockSize * iterationX)
-                        {
-                            topTriangleCoordinates.Add(new Tuple<int, int>(x, y));
-                            var color = new Color();
-                            color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
-                            topTriangleColors.Add(color);
-
-                        }
-                    }
-                    if (-y + blockSize * iterationY < -x + blockSize * iterationX)
+                    if (currentY <currentX )
                     {
                         topTriangleCoordinates.Add(new Tuple<int, int>(x, y));
                         var color = new Color();
                         color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
                         topTriangleColors.Add(color);
-
+                    }else if (currentY >= currentX)
+                    {
+                        bottomTriangleCoordinates.Add(new Tuple<int, int>(x, y));
+                        var color = new Color();
+                        color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
+                        bottomTriangleColors.Add(color);
                     }
-                    
+                    currentX++;
                 }
+                currentY++;
             }
-
-            var totalRed = 0;
-            var totalBlue = 0;
-            var totalGreen = 0;
+            var topTotalRed = 0;
+            var topTotalBlue = 0;
+            var topTotalGreen = 0;
             foreach (var currentColor in topTriangleColors)
             {
-                totalRed += currentColor.R;
-                totalBlue += currentColor.B;
-                totalGreen += currentColor.G;
+                topTotalRed += currentColor.R;
+                topTotalBlue += currentColor.B;
+                topTotalGreen += currentColor.G;
 
             }
-
-            var averageRed = (byte) (totalRed / topTriangleColors.Count);
-            var averageBlue = (byte)(totalBlue / topTriangleColors.Count);
-            var averageGreen = (byte)(totalGreen / topTriangleColors.Count);
+            
+            var averageTopRed = (byte) (topTotalRed / topTriangleColors.Count);
+            var averageTopBlue = (byte)(topTotalBlue / topTriangleColors.Count);
+            var averageTopGreen = (byte)(topTotalGreen / topTriangleColors.Count);
             var newColor = new Color();
-            newColor.R = averageRed;
-            newColor.G = averageGreen;
-            newColor.B = averageBlue;
+            newColor.R = averageTopRed;
+            newColor.G = averageTopGreen;
+            newColor.B = averageTopBlue;
             foreach (var coordinate in topTriangleCoordinates)
             {    
                 ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item1, coordinate.Item2, newColor, imageWidth, imageHeight, false);
+            }
+            var bottomTotalRed = 0; 
+            var bottomTotalBlue = 0;
+            var bottomTotalGreen = 0;
+            foreach (var currentColor in bottomTriangleColors)
+            {
+                bottomTotalRed += currentColor.R;
+                bottomTotalBlue += currentColor.B;
+                bottomTotalGreen += currentColor.G;
+
+            }
+
+            var bottomAverageTopRed = (byte)(bottomTotalRed / bottomTriangleColors.Count);
+            var bottomAverageTopBlue = (byte)(bottomTotalBlue / bottomTriangleColors.Count);
+            var bottomAverageTopGreen = (byte)(bottomTotalGreen / bottomTriangleColors.Count);
+            var newBottomColor = new Color();
+            newBottomColor.R = bottomAverageTopRed;
+            newBottomColor.G = bottomAverageTopGreen;
+            newBottomColor.B = bottomAverageTopBlue;
+            foreach (var coordinate in bottomTriangleCoordinates)
+            {
+                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item1, coordinate.Item2, newBottomColor, imageWidth, imageHeight, false);
             }
         }
 
