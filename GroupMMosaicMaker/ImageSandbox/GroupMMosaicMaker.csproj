@@ -119,6 +119,20 @@
     <None Include="ImageSandbox_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\Display Images\All images used once example 2.PNG" />
+    <Content Include="Images\Display Images\black and white mosaic example 2.PNG" />
+    <Content Include="Images\Display Images\black and white solid mosaic.PNG" />
+    <Content Include="Images\Display Images\Picture Mosaic All IMages Used Once.PNG" />
+    <Content Include="Images\Display Images\Picture Mosaic Example 2.PNG" />
+    <Content Include="Images\Display Images\Picture Mosaic.PNG" />
+    <Content Include="Images\Display Images\Solid Block Mosiac.PNG" />
+    <Content Include="Images\Display Images\Solid Mosiac Example 2.PNG" />
+    <Content Include="Images\Display Images\Square Grid Outline Example 2.PNG" />
+    <Content Include="Images\Display Images\Square Grid outline.PNG" />
+    <Content Include="Images\Display Images\Triangle Grid Outline Example 2.PNG" />
+    <Content Include="Images\Display Images\Triangle Grid Outline.PNG" />
+    <Content Include="Images\Display Images\Triangle Mosaic Example 2.PNG" />
+    <Content Include="Images\Display Images\Triangle Solid Mosaic.PNG" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
