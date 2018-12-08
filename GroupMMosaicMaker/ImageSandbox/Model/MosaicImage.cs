@@ -331,6 +331,17 @@ namespace ImageSandbox.Model
             {
                 for (int x = xStopping; x > xStart; x--)
                 {
+                    if (-y + blockSize * iterationY < 0)
+                    {
+                        if (-y + blockSize * iterationY < -x + blockSize * iterationX)
+                        {
+                            topTriangleCoordinates.Add(new Tuple<int, int>(x, y));
+                            var color = new Color();
+                            color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
+                            topTriangleColors.Add(color);
+
+                        }
+                    }
                     if (-y + blockSize * iterationY < -x + blockSize * iterationX)
                     {
                         topTriangleCoordinates.Add(new Tuple<int, int>(x, y));

@@ -13,6 +13,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Annotations;
+using ImageSandbox.Datatier;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
 using ImageSandbox.View;
@@ -36,6 +37,8 @@ namespace ImageSandbox.ViewModel
         private MosaicImage mosaicImage;
         private FolderImageRegistry imagePallete;
         private List<WriteableBitmap> selectedFolderImages;
+        private ImageFolderReader folderReader;
+        private List<FolderImage> loadedFolder;
 
         public List<WriteableBitmap> SelectedFolderImages
         {
@@ -198,6 +201,8 @@ namespace ImageSandbox.ViewModel
             this.dpiY = 0;
             this.loadAllCommands();
             this.SelectedFolderImages = new List<WriteableBitmap>();
+            this.folderReader = new ImageFolderReader();
+            this.loadedFolder = new List<FolderImage>();
             this.imagePallete = new FolderImageRegistry();
             this.NumberOfImages = "" + 0;
 
@@ -341,7 +346,11 @@ namespace ImageSandbox.ViewModel
         /// <param name="selectedFolder">The selected folder.</param>
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
-            await this.LoadFolderImage(selectedFolder);
+            if (this.loadedFolder.Any())
+            {
+                this.LoadAllImagesIntoImagePallete();
+            }
+            await this.imagePallete.ResizeAllImages(this.blockSizeNumber);
 
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
@@ -356,8 +365,7 @@ namespace ImageSandbox.ViewModel
                     ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                 };
 
-                this.dpiX = decoder.DpiX;
-                this.dpiY = decoder.DpiY;
+             
 
                 var pixelData = await decoder.GetPixelDataAsync(
                     BitmapPixelFormat.Bgra8,
@@ -392,73 +400,32 @@ namespace ImageSandbox.ViewModel
             this.CanSave = true;
         }
 
-        public async Task LoadFolderImage(StorageFolder selectedFolder)
+
+        public void LoadAllImagesIntoImagePallete()
         {
-            try
+            foreach (var currImage in this.loadedFolder)
             {
-                if (selectedFolder != null)
-                {
-                    var storedFolder = await selectedFolder.GetFilesAsync();
-
-                    await LoadAllImagesInFolder(storedFolder);
-                }
-
-                this.CheckToEnablePictureMosaic();
-
+                this.imagePallete.Add(currImage);
             }
-            catch (Exception e)
-            {
-                //TODO
-            }
+            this.loadedFolder.Clear();
         }
-
-        private async Task LoadAllImagesInFolder(IReadOnlyList<StorageFile> storedFolder)
+        public async Task LoadAllFolderImages(StorageFolder selectedFolder)
         {
-            foreach (var currentFile in storedFolder)
-            {
-                using (var fileStream = await currentFile.OpenAsync(FileAccessMode.Read))
 
-                {
-                    var decoder = await BitmapDecoder.CreateAsync(fileStream);
-
-                    var transform = new BitmapTransform
-                    {
-                        ScaledWidth = Convert.ToUInt32(this.BlockSize),
-                        ScaledHeight = Convert.ToUInt32(this.BlockSize)
-                    };
-
-                    this.dpiX = decoder.DpiX;
-                    this.dpiY = decoder.DpiY;
-
-                    var pixelData = await decoder.GetPixelDataAsync(
-                        BitmapPixelFormat.Bgra8,
-                        BitmapAlphaMode.Straight,
-                        transform,
-                        ExifOrientationMode.IgnoreExifOrientation,
-                        ColorManagementMode.DoNotColorManage
-                    );
-
-                    var sourcePixels = pixelData.DetachPixelData();
-
-                    var thumbnail = currentFile.GetThumbnailAsync(ThumbnailMode.PicturesView, (uint) 5);
-
-                    var fileWriteableBitmap =
-                        new WriteableBitmap((int) transform.ScaledWidth, (int) transform.ScaledHeight);
-
-                    using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
-                    {
-                        await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
-
-                        var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile);
-
-                        this.imagePallete.Add(selectedFolderImage);
-                    }
-                }
-            }
+            this.loadedFolder = (List<FolderImage>) await this.folderReader.LoadSelectedFolder(selectedFolder);
+            this.CheckToEnablePictureMosaic();
 
             this.NumberOfImages = "" + this.imagePallete.Count;
+
         }
 
+
+
+
+
+
+
+        
         private bool canAlwaysExecute(object obj)
         {
             return true;
@@ -518,10 +485,18 @@ namespace ImageSandbox.ViewModel
 
         private void CheckToEnablePictureMosaic()
         {
-            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0 && this.orignalImage != null;
+            this.IsCreatePictureMosaicEnabled = this.blockSizeNumber != 0 && this.orignalImage != null && this.checkForImagePalette();
         }
 
-       
+
+        private bool checkForImagePalette()
+        {
+            return this.loadedFolder.Any() || this.imagePallete.Any();
+        }
+
+
+
+
 
         private async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {

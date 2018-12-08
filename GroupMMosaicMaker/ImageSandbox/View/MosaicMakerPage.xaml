@@ -53,7 +53,7 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <TextBlock x:Name="ImagePaletteCount" TextAlignment="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="27,635,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="18" Height="16"/>
+        <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="27,635,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="18" Height="16"/>
         <TextBlock HorizontalAlignment="Left" Margin="84,635,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
     </Grid>
 </Page>
