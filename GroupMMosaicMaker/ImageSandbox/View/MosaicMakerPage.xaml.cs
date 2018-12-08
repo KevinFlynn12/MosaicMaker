@@ -176,6 +176,7 @@ namespace ImageSandbox
             if (selectedFolder != null)
             {
                 await this.viewModel.LoadAllFolderImages(selectedFolder);
+                this.viewModel.LoadAllImagesIntoImagePalette();
             }
 
 
