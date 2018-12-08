@@ -101,6 +101,7 @@
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Util\BitmapCopy.cs" />
     <Compile Include="Util\ColorDifference.cs" />
+    <Compile Include="Util\CompareBItMaps.cs" />
     <Compile Include="Util\ImageAverageColor.cs" />
     <Compile Include="Util\ImagePixel.cs" />
     <Compile Include="Util\RelayCommand.cs" />

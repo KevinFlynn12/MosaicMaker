@@ -35,7 +35,7 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
         private  ImagePalette imagePalete;
-       
+        private ImagePalette selectedImages;
         private ObservableCollection<WriteableBitmap> selectedFolderImages;
         private readonly ImageFolderReader folderReader;
         private List<FolderImage> loadedFolder;
@@ -614,7 +614,7 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+            //this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
@@ -623,6 +623,23 @@ namespace ImageSandbox.ViewModel
 
             this.loadedFolder.Clear();
         }
+
+
+        public void RemoveSelectedItem(WriteableBitmap selectedImage)
+        {
+            var count = this.selectedFolderImages.Count;
+            foreach (var currImage in this.SelectedFolderImages)
+            {
+                if (currImage.Equals(selectedImage))
+                {
+                    this.selectedFolderImages.Remove(selectedImage);
+                }
+            }
+
+        }
+
+
+
 
         /// <summary>
         /// Loads all folder images.

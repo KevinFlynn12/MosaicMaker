@@ -8,6 +8,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.ViewModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -175,12 +176,21 @@ namespace ImageSandbox
 
         #endregion
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void AddImageButton_Click(object sender, RoutedEventArgs e)
         {
             this.selectedImageFile = await this.selectSourceImageFile();
             if (this.selectedImageFile != null)
             {
                 await this.viewModel.AddImage(this.selectedImageFile);
+                
+            }
+        }
+
+        private void RemoveSelectedImages_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var selectedImage in this.GridView.SelectedItems)
+            {
+                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
         }
     }

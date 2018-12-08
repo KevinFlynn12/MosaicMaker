@@ -41,7 +41,7 @@
         <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Command="{Binding GridChecked, Mode=TwoWay}" />
         <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Command="{Binding TriangleGridChecked, Mode=TwoWay}"  />
         <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Command="{Binding NoGridChecked, Mode=TwoWay}"/>
-        <GridView ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
+        <GridView x:Name="GridView" ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageGalleryDataTemplate">
                     <Image  Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill"/>
@@ -56,8 +56,9 @@
         <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,527,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20"/>
         <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
         <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="32,305,0,0" RenderTransformOrigin="0.461,0.963"/>
-        <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="33,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="Button_Click"/>
+        <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="AddImageButton_Click"/>
         <Button Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="293,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}"/>
         <CheckBox x:Name="UseImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left" Margin="25,137,0,0" VerticalAlignment="Top" Command="{Binding UseImageOnce, Mode=TwoWay}"   />
+        <Button x:Name="RemoveSelectedImages" Content="Remove Selected Images" HorizontalAlignment="Left" Margin="120,927,0,0" VerticalAlignment="Top" Width="125" Height="32" Click="RemoveSelectedImages_Click"/>
     </Grid>
 </Page>
