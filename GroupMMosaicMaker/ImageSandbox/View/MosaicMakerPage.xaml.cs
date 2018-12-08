@@ -180,7 +180,7 @@ namespace ImageSandbox
             this.selectedImageFile = await this.selectSourceImageFile();
             if (this.selectedImageFile != null)
             {
-                await this.viewModel.LoadPicture(this.selectedImageFile);
+                await this.viewModel.AddImage(this.selectedImageFile);
             }
         }
     }
