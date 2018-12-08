@@ -12,6 +12,7 @@ namespace ImageSandbox.Model
         #region Data members
 
         private readonly IList<FolderImage> selectedFolderImages;
+        private readonly IList<FolderImage> reservedImagePalette;
 
         #endregion
 
@@ -51,6 +52,7 @@ namespace ImageSandbox.Model
         public ImagePalette()
         {
             this.selectedFolderImages = new List<FolderImage>();
+            this.reservedImagePalette = new List<FolderImage>();
         }
 
         #endregion
@@ -64,6 +66,7 @@ namespace ImageSandbox.Model
         public void Add(FolderImage item)
         {
             this.selectedFolderImages.Add(item);
+            this.reservedImagePalette.Add(item);
         }
 
         /// <summary>
@@ -127,6 +130,7 @@ namespace ImageSandbox.Model
         public void Insert(int index, FolderImage item)
         {
             this.selectedFolderImages.Insert(index, item);
+            this.reservedImagePalette.Insert(index,item);
         }
 
         /// <summary>
@@ -208,6 +212,18 @@ namespace ImageSandbox.Model
                    currentImage.FindAverageColor().G == color.G;
         }
 
+
+
+        /// <summary>
+        /// Repopulates the image pallette.
+        /// </summary>
+        public void RepopulateImagePallette()
+        {
+            foreach (var currImage in this.reservedImagePalette)
+            {
+                this.selectedFolderImages.Add(currImage);
+            }
+        }
         #endregion
     }
 }

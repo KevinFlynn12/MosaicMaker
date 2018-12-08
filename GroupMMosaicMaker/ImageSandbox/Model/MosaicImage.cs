@@ -89,12 +89,15 @@ namespace ImageSandbox.Model
         }
 
 
+
+
         /// <summary>
         /// Creates the picture mosaic.
         /// </summary>
         /// <param name="sourcePixels">The source pixels.</param>
         /// <param name="loadedImages">The loaded images.</param>
-        public void CreatePictureMosaic(byte[] sourcePixels, ImagePalette loadedImages)
+        /// <param name="useAllImages">if set to <c>true</c> [use all images].</param>
+        public async Task CreatePictureMosaic(byte[] sourcePixels, ImagePalette loadedImages, bool useAllImages)
         {
             for (var y = 0; y < imageHeight; y += this.BlockSize)
             {
@@ -104,15 +107,15 @@ namespace ImageSandbox.Model
                 {
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    this.setPictureMosaic(sourcePixels, y, yStoppingPoint, x,
-                        xStoppingPoint, loadedImages);
+                    await this.setPictureMosaic(sourcePixels, y, yStoppingPoint, x,
+                        xStoppingPoint, loadedImages, true);
                 }
             }
         }
         
 
-        private void setPictureMosaic(byte[] sourcePixels,int startingYPoint, int yStoppingPoint,
-            int startingXPoint, int xStoppingPoint, ImagePalette loadedImages)
+        private async Task setPictureMosaic(byte[] sourcePixels,int startingYPoint, int yStoppingPoint,
+            int startingXPoint, int xStoppingPoint, ImagePalette loadedImages, bool useAllImages)
         {
             var averageColor =
                 ImageAverageColor.FindAverageColorForSelectedArea(sourcePixels, imageWidth, imageHeight, startingYPoint,
@@ -138,6 +141,19 @@ namespace ImageSandbox.Model
 
                 matchingImageY++;
             }
+
+            if (useAllImages)
+            {
+                loadedImages.Remove(matchingImage);
+
+                if (!loadedImages.Any())
+                {
+                    loadedImages.RepopulateImagePallette();
+                    await loadedImages.ResizeAllImages(this.BlockSize);
+                }
+            }
+
+
         }
 
         private void setNewColorValue(byte[] sourcePixels, int startingYPoint,

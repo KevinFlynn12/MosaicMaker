@@ -146,11 +146,18 @@ namespace ImageSandbox
 
         private async void BlackAndWhiteCheckbox_OnClick(object sender, RoutedEventArgs e)
         {
-            this.viewModel.IsBlackAndWhite = (bool) this.blackAndWhiteCheckBox.IsChecked;
-            await this.viewModel.BlackAndWhiteCheckboxChanged();
+            if (this.blackAndWhiteCheckBox.IsChecked != null)
+            {
+                this.viewModel.IsBlackAndWhite = (bool)this.blackAndWhiteCheckBox.IsChecked;
+                await this.viewModel.BlackAndWhiteCheckboxChanged();
+            }
+           
         }
+        
 
-        private async void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
+
+
+        private void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
         {
             this.viewModel.DisplayPictureMosaic(this.selectedFolder);
         }

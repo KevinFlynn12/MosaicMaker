@@ -35,6 +35,8 @@ namespace ImageSandbox.Datatier
 
             foreach (var currentFile in storedFolder)
             {
+                var stored = storedFolder.Count;
+
                 try
                 {
                     var copyBitmapImage = await BitmapCopy.MakeACopyOfTheFileToWorkOn(currentFile);

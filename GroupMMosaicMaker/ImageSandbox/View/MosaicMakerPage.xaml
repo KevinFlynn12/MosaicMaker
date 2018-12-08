@@ -58,5 +58,6 @@
         <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="32,305,0,0" RenderTransformOrigin="0.461,0.963"/>
         <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="33,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="Button_Click"/>
         <Button Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="293,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}"/>
+        <CheckBox x:Name="UseImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left" Margin="25,137,0,0" VerticalAlignment="Top" Command="{Binding UseImageOnce}"   />
     </Grid>
 </Page>

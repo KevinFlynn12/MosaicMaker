@@ -44,6 +44,7 @@ namespace ImageSandbox.ViewModel
         private bool hasBlockSizeChanged;
         private bool canSave;
         private bool isBlackAndWhite;
+        private bool useAllImagesOnce;
         private bool hasGrid;
 
         private bool isCreatePictureMosaicEnabled;
@@ -118,6 +119,7 @@ namespace ImageSandbox.ViewModel
         public RelayCommand NoGridChecked { get; set; }
         
         public RelayCommand ClearPalette { get; set; }
+        public RelayCommand UseImagesOnce { get; set; }
 
         /// <summary>
         /// Gets the type of the loaded file.
@@ -208,6 +210,17 @@ namespace ImageSandbox.ViewModel
             set
             {
                 this.hasTriangleGrid = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+
+        public bool UseAllImagesOnce
+        {
+            get => this.useAllImagesOnce;
+            set
+            {
+                this.useAllImagesOnce = value;
                 this.OnPropertyChanged();
             }
         }
@@ -349,16 +362,23 @@ namespace ImageSandbox.ViewModel
             this.NoGridChecked = new RelayCommand(this.createNoGrid, this.canAlwaysExecute);
             
             this.ClearPalette = new RelayCommand(this.clearPalette, this.canClearPalette);
+            this.UseImagesOnce = new RelayCommand(this.useImagesOnce, this.canAlwaysExecute);
+        }
+
+        private void useImagesOnce(object obj)
+        {
+            this.UseAllImagesOnce = true;
         }
 
         private bool canClearPalette(object obj)
         {
-            throw new NotImplementedException();
+            //TODO
+            return true;
         }
 
         private void clearPalette(object obj)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         
 
@@ -379,6 +399,8 @@ namespace ImageSandbox.ViewModel
         {
             return (this.selectedImageFile != null) & (this.blockSizeNumber >= 5) & (this.blockSizeNumber <= 50) &  (!this.hasTriangleMosaic || this.hasBlockSizeChanged);
         }
+
+
 
         private bool canCreateGrid(object obj)
         {
@@ -526,7 +548,7 @@ namespace ImageSandbox.ViewModel
                 );
 
                 var sourcePixels = pixelData.DetachPixelData();
-                this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete);
+                await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.useAllImagesOnce);
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
