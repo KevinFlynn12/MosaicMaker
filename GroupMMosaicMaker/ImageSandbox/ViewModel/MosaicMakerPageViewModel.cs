@@ -175,8 +175,6 @@ namespace ImageSandbox.ViewModel
             {
                 this.numberOfImages = value;
                 this.OnPropertyChanged();
-                
-                
             }
         }
         public MosaicImage MosaicImage
@@ -454,13 +452,11 @@ namespace ImageSandbox.ViewModel
                         var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile);
 
                         this.imagePallete.Add(selectedFolderImage);
-                        this.SelectedFolderImages.Add(selectedFolderImage.ImageBitmap);
-                        this.SelectedFolderImages = this.SelectedFolderImages;
                     }
                 }
             }
 
-            this.NumberOfImages = "" + this.SelectedFolderImages.Count;
+            this.NumberOfImages = "" + this.imagePallete.Count;
         }
 
         private bool canAlwaysExecute(object obj)

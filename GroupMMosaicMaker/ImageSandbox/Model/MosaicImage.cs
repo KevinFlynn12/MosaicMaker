@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using System.Xml;
+using Windows.Globalization.DateTimeFormatting;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.Web.UI;
 using ImageSandbox.Util;
 
 namespace ImageSandbox.Model
@@ -52,23 +55,26 @@ namespace ImageSandbox.Model
             bool isGrid)
         {
             var y = 0;
-            var multiplicity = 0;
+            var iterationX = 0;
+            var iterationY = 0;
             while (y < imageHeight)
             {
                 var x = 0;
                 while (x < imageWidth)
                 {
-                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x, blockSize);
+                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth-1, x, blockSize);
 
-                    var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
+                    var yStoppingPoint = this.UpdateStoppingPoint(imageHeight-1, y, blockSize);
 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
-                        isGrid, false, blockSize);
+                    this.TopTriangle(sourcePixels, imageWidth, imageHeight, x, y, xStoppingPoint, yStoppingPoint, iterationX, iterationY, blockSize);
+                    //this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
+                      //  isGrid, false, blockSize);
 
                     x += blockSize;
+                    iterationX++;
                 }
                 y += blockSize;
-                multiplicity++;
+                iterationY++;
             }
             
         }
@@ -312,6 +318,52 @@ namespace ImageSandbox.Model
                 }
 
                 y += blockSize;
+            }
+        }
+
+
+
+        private void TopTriangle(byte[] sourcePixels, uint imageHeight, uint imageWidth, int xStart, int yStart, int xStopping, int yStoppingPoint, int iterationX, int iterationY, int blockSize)
+        {
+            var topTriangleColors = new List<Color>();
+            var topTriangleCoordinates = new List<Tuple<int, int>>();
+            for (int y = yStoppingPoint; y > yStart; y--)
+            {
+                for (int x = xStopping; x > xStart; x--)
+                {
+                    if (-y + blockSize * iterationY < -x + blockSize * iterationX)
+                    {
+                        topTriangleCoordinates.Add(new Tuple<int, int>(x, y));
+                        var color = new Color();
+                        color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
+                        topTriangleColors.Add(color);
+
+                    }
+                    
+                }
+            }
+
+            var totalRed = 0;
+            var totalBlue = 0;
+            var totalGreen = 0;
+            foreach (var currentColor in topTriangleColors)
+            {
+                totalRed += currentColor.R;
+                totalBlue += currentColor.B;
+                totalGreen += currentColor.G;
+
+            }
+
+            var averageRed = (byte) (totalRed / topTriangleColors.Count);
+            var averageBlue = (byte)(totalBlue / topTriangleColors.Count);
+            var averageGreen = (byte)(totalGreen / topTriangleColors.Count);
+            var newColor = new Color();
+            newColor.R = averageRed;
+            newColor.G = averageGreen;
+            newColor.B = averageBlue;
+            foreach (var coordinate in topTriangleCoordinates)
+            {    
+                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item1, coordinate.Item2, newColor, imageWidth, imageHeight, false);
             }
         }
 
