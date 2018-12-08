@@ -82,7 +82,8 @@ namespace ImageSandbox.Model
         /// Creates the triangle mosaic.
         /// </summary>
         /// <param name="sourcePixels">The source pixels.</param>
-        public void CreateTriangleMosaic(byte[] sourcePixels)
+        /// <param name="isBlackAndWhite">if set to <c>true</c> [is black and white].</param>
+        public void CreateTriangleMosaic(byte[] sourcePixels, bool isBlackAndWhite)
         {
             var y = 0;
             while (y < imageHeight)
@@ -95,7 +96,7 @@ namespace ImageSandbox.Model
                     var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    this.TriangleMosaic(sourcePixels, x, y, xStoppingPoint, yStoppingPoint);
+                    this.TriangleMosaic(sourcePixels, x, y, xStoppingPoint, yStoppingPoint, isBlackAndWhite);
 
                     x += this.BlockSize;
                 }
@@ -293,7 +294,7 @@ namespace ImageSandbox.Model
         }
 
         private void TriangleMosaic(byte[] sourcePixels, int xStart, int yStart,
-            int xStopping, int yStoppingPoint)
+            int xStopping, int yStoppingPoint, bool isBlackAndWhite)
         {
             var topTriangleColors = new List<Color>();
             var topTriangleCoordinates = new List<Tuple<int, int>>();
@@ -326,35 +327,69 @@ namespace ImageSandbox.Model
 
                 currentY++;
             }
-            this.colorTriangle(sourcePixels, topTriangleColors, topTriangleCoordinates);
+            this.colorTriangle(sourcePixels, topTriangleColors, topTriangleCoordinates, isBlackAndWhite);
            
-            this.colorTriangle(sourcePixels, bottomTriangleColors, bottomTriangleCoordinates);
+            this.colorTriangle(sourcePixels, bottomTriangleColors, bottomTriangleCoordinates, isBlackAndWhite);
         }
 
-        private void colorTriangle(byte[] sourcePixels,List<Color> triangleColors, List<Tuple<int, int>> triangleCoordinates)
+        private void colorTriangle(byte[] sourcePixels,List<Color> triangleColors, List<Tuple<int, int>> triangleCoordinates, bool isBlackAndWhite)
         {
-            var totalRed = 0;
-            var totalBlue = 0;
-            var totalGreen = 0;
-            foreach (var currentColor in triangleColors)
+            if (isBlackAndWhite)
             {
-                totalRed += currentColor.R;
-                totalBlue += currentColor.B;
-                totalGreen += currentColor.G;
-            }
+                var sumOfColors = 0;
+                foreach (var currentColor in triangleColors)
+                {
+                    sumOfColors += currentColor.R + currentColor.B + currentColor.G;
 
-            var averageTopRed = (byte) (totalRed / triangleColors.Count);
-            var averageTopBlue = (byte) (totalBlue / triangleColors.Count);
-            var averageTopGreen = (byte) (totalGreen / triangleColors.Count);
-            var newColor = new Color();
-            newColor.R = averageTopRed;
-            newColor.G = averageTopGreen;
-            newColor.B = averageTopBlue;
-            foreach (var coordinate in triangleCoordinates)
-            {
-                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item2, coordinate.Item1, newColor, imageWidth,
-                    imageHeight);
+                }
+
+               var averageAllColors = sumOfColors / 3;
+                var newColor = new Color();
+                if (averageAllColors >= 127.5)
+                {
+                    newColor.R = 255;
+                    newColor.G = 255;
+                    newColor.B = 255;
+
+                }
+                else
+                {
+                    newColor.R =0;
+                    newColor.G = 0;
+                    newColor.B = 0;
+                }
+                foreach (var coordinate in triangleCoordinates)
+                {
+                    ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item2, coordinate.Item1, newColor, imageWidth,
+                        imageHeight);
+                }
             }
+            else
+            {
+                var totalRed = 0;
+                var totalBlue = 0;
+                var totalGreen = 0;
+                foreach (var currentColor in triangleColors)
+                {
+                    totalRed += currentColor.R;
+                    totalBlue += currentColor.B;
+                    totalGreen += currentColor.G;
+                }
+
+                var averageTopRed = (byte)(totalRed / triangleColors.Count);
+                var averageTopBlue = (byte)(totalBlue / triangleColors.Count);
+                var averageTopGreen = (byte)(totalGreen / triangleColors.Count);
+                var newColor = new Color();
+                newColor.R = averageTopRed;
+                newColor.G = averageTopGreen;
+                newColor.B = averageTopBlue;
+                foreach (var coordinate in triangleCoordinates)
+                {
+                    ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item2, coordinate.Item1, newColor, imageWidth,
+                        imageHeight);
+                }
+            }
+            
         }
 
         #endregion
