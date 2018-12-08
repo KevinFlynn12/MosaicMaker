@@ -13,18 +13,21 @@ namespace ImageSandbox.Datatier
 {
     public class ImageFolderReader
     {
-        public async Task<ICollection<FolderImage>> LoadSelectedFolder(StorageFolder selectedFolder)
+        public async Task<IList<FolderImage>> LoadSelectedFolder(StorageFolder selectedFolder)
         {
-            var loadedImage = new List<FolderImage>();
 
             var storedFolder = await selectedFolder.GetFilesAsync();
 
-            return await loadImagesFromFolder(storedFolder, loadedImage);
+            return await loadImagesFromFolder(storedFolder);
         }
 
-        private static async Task<ICollection<FolderImage>> loadImagesFromFolder(
-            IReadOnlyList<StorageFile> storedFolder, List<FolderImage> loadedImage)
+        private  async Task<IList<FolderImage>> loadImagesFromFolder(
+            IReadOnlyList<StorageFile> storedFolder)
         {
+
+            var loadedImage = new List<FolderImage>();
+
+
             foreach (var currentFile in storedFolder)
                 try
                 {
