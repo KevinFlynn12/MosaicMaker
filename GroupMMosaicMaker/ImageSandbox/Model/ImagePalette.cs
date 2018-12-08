@@ -90,10 +90,6 @@ namespace ImageSandbox.Model
             return this.selectedFolderImages.GetEnumerator();
         }
 
-
-
-
-
         public async Task ResizeAllImages(int blockSize)
         {
             foreach (var currImage in this.selectedFolderImages)
@@ -101,10 +97,6 @@ namespace ImageSandbox.Model
                 await currImage.ResizeWritableBitmap(blockSize);
             }
         }
-
-
-
-
 
         /// <summary>
         ///     Finds the closest matching image.
@@ -135,7 +127,7 @@ namespace ImageSandbox.Model
                     matchingImage = currentImage;
                 }
 
-                if (Math.Abs(matchingValue) < closestValue && closestValue!= 0)
+                if (Math.Abs(matchingValue) < closestValue && closestValue != 0)
                 {
                     closestValue = matchingValue;
                     matchingImage = currentImage;
@@ -147,10 +139,9 @@ namespace ImageSandbox.Model
 
         private static bool ColorsAreADirectMatch(Color color, FolderImage currentImage)
         {
-            return currentImage.FindAverageColor().R == color.R && currentImage.FindAverageColor().B == color.B && currentImage.FindAverageColor().G == color.G;
+            return currentImage.FindAverageColor().R == color.R && currentImage.FindAverageColor().B == color.B &&
+                   currentImage.FindAverageColor().G == color.G;
         }
-
-       
 
         #endregion
     }

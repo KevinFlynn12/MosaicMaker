@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Media.Devices;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.UI.Notifications;
-using Windows.UI.Text.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -93,17 +90,14 @@ namespace ImageSandbox
             var fileSavePicker = new FileSavePicker {
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary,
                 SuggestedFileName = "image"
-                
             };
 
-            var displayFileType = this.viewModel.LoadedFileType.Remove(0,1);
+            var displayFileType = this.viewModel.LoadedFileType.Remove(0, 1);
 
-            fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> { this.viewModel.LoadedFileType });
+            fileSavePicker.FileTypeChoices.Add(displayFileType + " files",
+                new List<string> {this.viewModel.LoadedFileType});
 
-
-            handleRemainingFileTypes(fileSavePicker);
-            
-           
+            this.handleRemainingFileTypes(fileSavePicker);
 
             var savefile = await fileSavePicker.PickSaveFileAsync();
 
@@ -112,28 +106,22 @@ namespace ImageSandbox
 
         private void handleRemainingFileTypes(FileSavePicker fileSavePicker)
         {
-            var fileTypes = new List<String>();
-           
+            var fileTypes = new List<string>();
+
             fileTypes.Add(".png");
             fileTypes.Add(".jpg");
             fileTypes.Add(".jpeg");
             fileTypes.Add(".bmp");
 
-
-
             foreach (var currType in fileTypes)
             {
-                
                 if (!currType.Equals(this.viewModel.LoadedFileType))
                 {
                     var displayFileType = currType.Remove(0, 1);
 
-                    fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> { currType });
+                    fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> {currType});
                 }
             }
-
-               
-           
         }
 
         private async void LoadButton_OnClick(object sender, RoutedEventArgs e)
@@ -155,8 +143,6 @@ namespace ImageSandbox
             }
         }
 
-      
-
         private async void BlackAndWhiteCheckbox_OnClick(object sender, RoutedEventArgs e)
         {
             this.viewModel.IsBlackAndWhite = (bool) this.blackAndWhiteCheckBox.IsChecked;
@@ -168,8 +154,6 @@ namespace ImageSandbox
             this.viewModel.DisplayPictureMosaic(this.selectedFolder);
         }
 
-        #endregion
-
         private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
         {
             var selectedFolder = await this.selectImageFileFolder();
@@ -178,12 +162,8 @@ namespace ImageSandbox
                 await this.viewModel.LoadAllFolderImages(selectedFolder);
                 this.viewModel.LoadAllImagesIntoImagePalette();
             }
-
-
-
         }
 
-        }
-
-        
+        #endregion
     }
+}

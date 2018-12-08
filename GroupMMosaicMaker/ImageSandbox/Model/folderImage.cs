@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Graphics.Imaging;
+using Windows.Storage;
 using Windows.Storage.FileProperties;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
-using Windows.Foundation;
-using Windows.Storage;
 
 namespace ImageSandbox.Model
 {
     public class FolderImage
     {
-        private string name;
-        private IAsyncOperation<StorageItemThumbnail> thumbnail;
-        private StorageFile loadedImageFile;
+        #region Data members
+        
+        private readonly StorageFile loadedImageFile;
+
+        #endregion
+
         #region Properties
 
         public WriteableBitmap ImageBitmap { get; private set; }
@@ -31,13 +33,10 @@ namespace ImageSandbox.Model
 
         public FolderImage(WriteableBitmap loadedBitmap, StorageFile loadedFile)
         {
-
             this.ImageBitmap = loadedBitmap;
             this.loadedImageFile = loadedFile;
-
         }
 
-   
         #endregion
 
         #region Methods
@@ -59,29 +58,23 @@ namespace ImageSandbox.Model
             return averageColor;
         }
 
-
-
         /// <summary>
-        /// Resizes the writable bitmap.
+        ///     Resizes the writable bitmap.
         /// </summary>
         /// <param name="blockSize">Size of the block.</param>
         /// <returns>Nothing</returns>
         public async Task ResizeWritableBitmap(int blockSize)
         {
-
-
             using (var fileStream = await this.loadedImageFile.OpenAsync(FileAccessMode.Read))
 
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                var transform = new BitmapTransform
-                {
+                var transform = new BitmapTransform {
                     ScaledWidth = Convert.ToUInt32(blockSize),
                     ScaledHeight = Convert.ToUInt32(blockSize)
                 };
 
-                
                 var pixelData = await decoder.GetPixelDataAsync(
                     BitmapPixelFormat.Bgra8,
                     BitmapAlphaMode.Straight,
@@ -92,20 +85,16 @@ namespace ImageSandbox.Model
 
                 var sourcePixels = pixelData.DetachPixelData();
 
-                
                 var fileWriteableBitmap =
-                    new WriteableBitmap((int)transform.ScaledWidth, (int)transform.ScaledHeight);
+                    new WriteableBitmap((int) transform.ScaledWidth, (int) transform.ScaledHeight);
 
                 using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
 
                     this.ImageBitmap = fileWriteableBitmap;
-
                 }
             }
-
-
         }
 
         public override string ToString()

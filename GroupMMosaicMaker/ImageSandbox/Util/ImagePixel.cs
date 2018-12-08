@@ -33,7 +33,6 @@ namespace ImageSandbox.Util
         /// <param name="color">The color.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-
         public static void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
             var offset = (x * (int) width + y) * 4;

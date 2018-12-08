@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -11,9 +8,10 @@ namespace ImageSandbox.Util
 {
     public static class BitmapCopy
     {
+        #region Methods
 
         /// <summary>
-        /// Makes a copy of the file to work on.
+        ///     Makes a copy of the file to work on.
         /// </summary>
         /// <param name="imageFile">The image file.</param>
         /// <returns>Bitmap Image</returns>
@@ -24,5 +22,7 @@ namespace ImageSandbox.Util
             newImage.SetSource(inputstream);
             return newImage;
         }
+
+        #endregion
     }
 }

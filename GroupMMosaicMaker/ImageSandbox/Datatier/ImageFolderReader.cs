@@ -13,27 +13,27 @@ namespace ImageSandbox.Datatier
 {
     public class ImageFolderReader
     {
+        #region Methods
+
         /// <summary>
-        /// Loads the selected folder.
+        ///     Loads the selected folder.
         /// </summary>
         /// <param name="selectedFolder">The selected folder.</param>
         /// <returns></returns>
         public async Task<IList<FolderImage>> LoadSelectedFolder(StorageFolder selectedFolder)
         {
-
             var storedFolder = await selectedFolder.GetFilesAsync();
 
             return await this.loadImagesFromFolder(storedFolder);
         }
 
-        private  async Task<IList<FolderImage>> loadImagesFromFolder(
+        private async Task<IList<FolderImage>> loadImagesFromFolder(
             IReadOnlyList<StorageFile> storedFolder)
         {
-
             var loadedImage = new List<FolderImage>();
 
-
             foreach (var currentFile in storedFolder)
+            {
                 try
                 {
                     var copyBitmapImage = await BitmapCopy.MakeACopyOfTheFileToWorkOn(currentFile);
@@ -43,12 +43,10 @@ namespace ImageSandbox.Datatier
                     {
                         var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                        var transform = new BitmapTransform
-                        {
+                        var transform = new BitmapTransform {
                             ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                             ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                         };
-
 
                         var pixelData = await decoder.GetPixelDataAsync(
                             BitmapPixelFormat.Bgra8,
@@ -59,7 +57,6 @@ namespace ImageSandbox.Datatier
                         );
 
                         var sourcePixels = pixelData.DetachPixelData();
-
 
                         var thumbnail = currentFile.GetThumbnailAsync(ThumbnailMode.PicturesView, 5);
 
@@ -78,10 +75,12 @@ namespace ImageSandbox.Datatier
                 }
                 catch (Exception)
                 {
-
                 }
+            }
 
             return loadedImage;
         }
+
+        #endregion
     }
 }
