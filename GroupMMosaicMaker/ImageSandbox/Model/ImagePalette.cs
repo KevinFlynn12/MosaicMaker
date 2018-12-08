@@ -7,7 +7,7 @@ using ImageSandbox.Util;
 
 namespace ImageSandbox.Model
 {
-    public class FolderImageRegistry : IList<FolderImage>
+    public class ImagePalette : IList<FolderImage>
     {
         #region Data members
 
@@ -31,7 +31,7 @@ namespace ImageSandbox.Model
 
         #region Constructors
 
-        public FolderImageRegistry()
+        public ImagePalette()
         {
             this.selectedFolderImages = new List<FolderImage>();
         }

@@ -59,7 +59,7 @@ namespace ImageSandbox.View
         /// Generates the images.
         /// </summary>
         /// <param name="imageFolder">The image folder.</param>
-        public void GenerateImages(FolderImageRegistry imageFolder)
+        public void GenerateImages(ImagePalette imageFolder)
         {
             foreach (var folderImage in imageFolder)
             {

@@ -108,7 +108,7 @@
     <Compile Include="View\MosaicMakerPage.xaml.cs">
       <DependentUpon>MosaicMakerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\FolderImageRegistry.cs" />
+    <Compile Include="Model\ImagePalette.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\ReviseImagePalletteDialog.xaml.cs">
       <DependentUpon>ReviseImagePalletteDialog.xaml</DependentUpon>
