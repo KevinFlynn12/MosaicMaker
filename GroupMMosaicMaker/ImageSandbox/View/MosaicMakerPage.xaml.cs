@@ -45,7 +45,7 @@ namespace ImageSandbox
             this.InitializeComponent();
             this.NoGrid.IsChecked = true;
             this.btnPictureMosaic.IsEnabled = false;
-
+            this.selectedFolder = null;
             this.viewModel = new MosaicMakerPageViewModel();
             DataContext = this.viewModel;
 
@@ -107,12 +107,13 @@ namespace ImageSandbox
 
         private void handleRemainingFileTypes(FileSavePicker fileSavePicker)
         {
-            var fileTypes = new List<string>();
-
-            fileTypes.Add(".png");
-            fileTypes.Add(".jpg");
-            fileTypes.Add(".jpeg");
-            fileTypes.Add(".bmp");
+            var fileTypes = new List<string>
+            {
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".bmp"
+            };
 
             foreach (var currType in fileTypes)
             {

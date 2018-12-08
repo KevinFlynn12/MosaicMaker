@@ -281,10 +281,12 @@ namespace ImageSandbox.Model
             var averageTopRed = (byte) (totalRed / triangleColors.Count);
             var averageTopBlue = (byte) (totalBlue / triangleColors.Count);
             var averageTopGreen = (byte) (totalGreen / triangleColors.Count);
-            var newColor = new Color();
-            newColor.R = averageTopRed;
-            newColor.G = averageTopGreen;
-            newColor.B = averageTopBlue;
+            var newColor = new Color
+            {
+                R = averageTopRed,
+                G = averageTopGreen,
+                B = averageTopBlue
+            };
             return newColor;
         }
 
