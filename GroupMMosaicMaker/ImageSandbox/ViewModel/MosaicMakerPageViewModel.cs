@@ -40,6 +40,7 @@ namespace ImageSandbox.ViewModel
         private bool hasMosaic;
         private bool canSave;
         private bool isBlackAndWhite;
+        private bool useAllImagesOnce;
         private bool hasGrid;
 
         private bool isCreatePictureMosaicEnabled;
@@ -125,6 +126,19 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
+
+
+        public bool UseAllImagesOnce
+        {
+            get => this.useAllImagesOnce;
+            set
+            {
+                this.useAllImagesOnce = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+
 
         public bool IsBlackAndWhite
         {
@@ -228,6 +242,8 @@ namespace ImageSandbox.ViewModel
             await this.handleCreatingSolidMosaicImage(true);
 
         }
+
+
 
         private bool canCreateGrid(object obj)
         {
@@ -373,7 +389,7 @@ namespace ImageSandbox.ViewModel
                 }
                 else
                 {
-                    this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete);
+                 await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.useAllImagesOnce);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);

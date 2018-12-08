@@ -15,7 +15,7 @@
             </CommandBar.Content>
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
             <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
-            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
+            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePalette_OnClick"/>
         </CommandBar>
         <Grid Height="359" Margin="508,103,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -56,5 +56,6 @@
         <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,527,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20"/>
         <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
         <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="32,305,0,0" RenderTransformOrigin="0.461,0.963"/>
+        <CheckBox x:Name="UseImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left" Margin="25,137,0,0" VerticalAlignment="Top" Click ="AllImagesUsedOnceCheckbox_OnClick"  />
     </Grid>
 </Page>
