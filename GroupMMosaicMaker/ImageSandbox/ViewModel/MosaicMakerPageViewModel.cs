@@ -31,7 +31,7 @@ namespace ImageSandbox.ViewModel
             SelectedFolderImages = new List<WriteableBitmap>();
             folderReader = new ImageFolderReader();
             loadedFolder = new List<FolderImage>();
-            imagePallete = new FolderImageRegistry();
+            imagePalete = new ImagePalette();
             NumberOfImages = "" + 0;
         }
 
@@ -50,7 +50,7 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private readonly FolderImageRegistry imagePallete;
+        private readonly ImagePalette imagePalete;
         private List<WriteableBitmap> selectedFolderImages;
         private readonly ImageFolderReader folderReader;
         private List<FolderImage> loadedFolder;
@@ -318,7 +318,7 @@ namespace ImageSandbox.ViewModel
                         blockSizeNumber, HasGrid);
                 else
                     MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight,
-                        blockSizeNumber, HasGrid);
+                        blockSizeNumber);
 
                 modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = modifiedImage.PixelBuffer.AsStream())
@@ -335,7 +335,7 @@ namespace ImageSandbox.ViewModel
         /// <param name="selectedFolder">The selected folder.</param>
         public async void DisplayPictureMosaic(StorageFolder selectedFolder)
         {
-            await imagePallete.ResizeAllImages(blockSizeNumber);
+            await imagePalete.ResizeAllImages(blockSizeNumber);
 
             var copyBitmapImage = await MakeACopyOfTheFileToWorkOn(selectedImageFile);
 
@@ -366,7 +366,7 @@ namespace ImageSandbox.ViewModel
                         blockSizeNumber, HasGrid);
                 else
                     MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                        decoder.PixelHeight, blockSizeNumber, imagePallete);
+                        decoder.PixelHeight, blockSizeNumber, imagePalete);
 
                 modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = modifiedImage.PixelBuffer.AsStream())
@@ -383,7 +383,7 @@ namespace ImageSandbox.ViewModel
 
         public void LoadAllImagesIntoImagePalette()
         {
-            foreach (var currImage in loadedFolder) imagePallete.Add(currImage);
+            foreach (var currImage in loadedFolder) imagePalete.Add(currImage);
             loadedFolder.Clear();
         }
 
@@ -397,7 +397,7 @@ namespace ImageSandbox.ViewModel
 
         private void UpdateImagePaletteCount()
         {
-            NumberOfImages = "" + imagePallete.Count;
+            NumberOfImages = "" + imagePalete.Count;
         }
 
 
@@ -460,7 +460,7 @@ namespace ImageSandbox.ViewModel
 
         private bool checkForImagePalette()
         {
-            return loadedFolder.Any() || imagePallete.Any();
+            return loadedFolder.Any() || imagePalete.Any();
         }
 
 
@@ -508,6 +508,9 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+
+
+
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             bool isTriangle)
         {
@@ -520,21 +523,35 @@ namespace ImageSandbox.ViewModel
                     var XStoppingPoint = UpdateStoppingPoint(imageWidth, startingXpoint);
 
                     var YStoppingPoint = UpdateStoppingPoint(imageHeight, startingYpoint);
-
+                    var lineY = 0;
                     for (var currentYPoint = startingYpoint; currentYPoint < YStoppingPoint; currentYPoint++)
-                    for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                     {
-                        var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint,
-                            imageWidth, imageHeight);
-
-                        if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
-                                                            || currentXPoint == startingXpoint ||
-                                                            XStoppingPoint == currentXPoint)
+                        var lineX = 0;
+                        for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
                         {
-                            pixelColor = Colors.White;
-                            ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
-                                imageWidth, imageHeight, isBlackAndWhite);
+                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint,
+                                imageWidth, imageHeight);
+
+                            if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
+                                                                || currentXPoint == startingXpoint ||
+                                                                XStoppingPoint == currentXPoint)
+                            {
+                                pixelColor = Colors.White;
+                                ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
+                                    imageWidth, imageHeight);
+                            }
+                            else if (isTriangle && lineX == lineY)
+                            {
+                                pixelColor = Colors.White;
+                                ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
+                                    imageWidth, imageHeight);
+                            }
+
+
+                            lineX++;
                         }
+
+                        lineY++;
                     }
 
                     startingXpoint += blockSizeNumber;
@@ -542,6 +559,13 @@ namespace ImageSandbox.ViewModel
 
                 startingYpoint += blockSizeNumber;
             }
+
+
+
+
+
+
+
 
             var triangleCoordinates =
                 MosaicImage.FindTrianglePoints(imageWidth, imageHeight, blockSizeNumber);
@@ -553,7 +577,7 @@ namespace ImageSandbox.ViewModel
                         imageWidth, imageHeight);
                     pixelColor = Colors.White;
                     ImagePixel.setPixelBgra8(sourcePixels, currentPoint.Item2, currentPoint.Item1, pixelColor,
-                        imageWidth, imageHeight, false);
+                        imageWidth, imageHeight);
                 }
         }
 

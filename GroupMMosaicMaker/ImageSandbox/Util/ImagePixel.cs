@@ -33,9 +33,8 @@ namespace ImageSandbox.Util
         /// <param name="color">The color.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        /// <param name="isBlackAndWhite">if set to <c>true</c> [is black and white].</param>
-        public static void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height,
-            bool isBlackAndWhite)
+
+        public static void setPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
             var offset = (x * (int) width + y) * 4;
             pixels[offset + 2] = color.R;

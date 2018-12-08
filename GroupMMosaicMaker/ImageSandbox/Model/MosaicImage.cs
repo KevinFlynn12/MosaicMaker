@@ -51,8 +51,7 @@ namespace ImageSandbox.Model
             return newImage;
         }
 
-        public void CreateSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
-            bool isGrid)
+        public void CreateSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize)
         {
             var y = 0;
             var iterationX = 0;
@@ -81,7 +80,7 @@ namespace ImageSandbox.Model
         }
 
         public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight, int blockSize,
-            FolderImageRegistry loadedImages)
+            ImagePalette loadedImages)
         {
 
             for(int y=0; y < imageHeight ; y+=blockSize)
@@ -185,7 +184,7 @@ namespace ImageSandbox.Model
         }
         private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
             int startingYPoint, int yStoppingPoint,
-            int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, FolderImageRegistry loadedImages)
+            int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, ImagePalette loadedImages)
         {
 
             var averageColor =
@@ -208,7 +207,7 @@ namespace ImageSandbox.Model
                         pixelColor = matchingImage.ImageBitmap.GetPixel(matchingImageX, matchingImageY);
 
                         ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
-                            imageHeight, isBlackAndWhite);
+                            imageHeight);
 
 
                         matchingImageX++;
@@ -221,7 +220,7 @@ namespace ImageSandbox.Model
 
 
         private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint,
-            int yStoppingPoint, int startingXPoint, int xStoppingPoint, bool isGrid, bool isBlackAndWhite, int blockSize)
+            int yStoppingPoint, int startingXPoint, int xStoppingPoint, bool isBlackAndWhite, int blockSize)
         {
             int iterations;
             if (imageWidth % blockSize == 0)
@@ -271,7 +270,7 @@ namespace ImageSandbox.Model
                     }
                     
                     ImagePixel.setPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor, imageWidth,
-                        imageHeight, isBlackAndWhite);
+                        imageHeight);
                 }
                 
             }
@@ -315,8 +314,7 @@ namespace ImageSandbox.Model
 
                     var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y, blockSize);
 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
-                        isGrid, true,blockSize);
+                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint, true,blockSize);
 
                     x += blockSize;
                 }
