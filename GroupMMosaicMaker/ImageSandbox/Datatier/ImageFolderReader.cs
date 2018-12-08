@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
@@ -19,7 +20,7 @@ namespace ImageSandbox.Datatier
         ///     Loads the selected folder.
         /// </summary>
         /// <param name="selectedFolder">The selected folder.</param>
-        /// <returns></returns>
+        /// <returns>The images in the folder</returns>
         public async Task<IList<FolderImage>> LoadSelectedFolder(StorageFolder selectedFolder)
         {
             var storedFolder = await selectedFolder.GetFilesAsync();
@@ -58,8 +59,6 @@ namespace ImageSandbox.Datatier
 
                         var sourcePixels = pixelData.DetachPixelData();
 
-                        var thumbnail = currentFile.GetThumbnailAsync(ThumbnailMode.PicturesView, 5);
-
                         var fileWriteableBitmap =
                             new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
 
@@ -75,6 +74,8 @@ namespace ImageSandbox.Datatier
                 }
                 catch (Exception)
                 {
+                    var failLoadDialog = new ContentDialog { Title = "The file was unable to load", CloseButtonText = "OK" };
+                    await failLoadDialog.ShowAsync();
                 }
             }
 

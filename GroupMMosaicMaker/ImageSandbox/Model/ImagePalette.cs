@@ -17,20 +17,37 @@ namespace ImageSandbox.Model
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the <see cref="FolderImage"/> at the specified index.
+        /// </summary>
+        /// <value>
+        /// The <see cref="FolderImage"/>.
+        /// </value>
+        /// <param name="index">The index.</param>
+        /// <returns>The image at the given index</returns>
         public FolderImage this[int index]
         {
             get => this.selectedFolderImages[index];
             set => this.selectedFolderImages[index] = value;
         }
 
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
         public int Count => this.selectedFolderImages.Count;
 
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+        /// </summary>
         public bool IsReadOnly => this.selectedFolderImages.IsReadOnly;
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImagePalette"/> class.
+        /// </summary>
         public ImagePalette()
         {
             this.selectedFolderImages = new List<FolderImage>();

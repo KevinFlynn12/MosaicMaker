@@ -25,12 +25,15 @@ namespace ImageSandbox.Model
 
         public string FileName { get; }
 
-        public IAsyncOperation<StorageItemThumbnail> ThumbNail { get; private set; }
-
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FolderImage"/> class.
+        /// </summary>
+        /// <param name="loadedBitmap">The loaded bitmap.</param>
+        /// <param name="loadedFile">The loaded file.</param>
         public FolderImage(WriteableBitmap loadedBitmap, StorageFile loadedFile)
         {
             this.ImageBitmap = loadedBitmap;
@@ -44,7 +47,7 @@ namespace ImageSandbox.Model
         /// <summary>
         ///     Finds the average color for the stored image
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The average color</returns>
         public Color FindAverageColor()
         {
             var imageWidth = (uint) this.ImageBitmap.PixelWidth;
@@ -62,7 +65,7 @@ namespace ImageSandbox.Model
         ///     Resizes the writable bitmap.
         /// </summary>
         /// <param name="blockSize">Size of the block.</param>
-        /// <returns>Nothing</returns>
+        /// <returns>A task</returns>
         public async Task ResizeWritableBitmap(int blockSize)
         {
             using (var fileStream = await this.loadedImageFile.OpenAsync(FileAccessMode.Read))
@@ -97,6 +100,12 @@ namespace ImageSandbox.Model
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return this.FileName;
