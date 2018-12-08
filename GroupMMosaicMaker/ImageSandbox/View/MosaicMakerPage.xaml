@@ -15,15 +15,15 @@
             </CommandBar.Content>
             <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
             <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
-            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePallette_OnClick"/>
+            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePalette_OnClick"/>
         </CommandBar>
-        <Grid Height="359" Margin="508,103,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+        <Grid Height="359" Margin="708,103,28,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664" />
             </ScrollViewer>
         </Grid>
-        <Grid Height="317" Margin="496,527,328,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" Margin="0,0,10,0" Height="359" Width="664"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid Height="359" Margin="708,527,28,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Image Source="{Binding AlterImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664"/>
             </ScrollViewer>
         </Grid>
@@ -31,8 +31,8 @@
         <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="32,231,0,0" VerticalAlignment="Top" Height="69" Width="174" Command="{Binding CreateSolidMosaic, Mode=TwoWay}" />
         <Button x:Name="ViewPaletteButton" Content="View Image Palette" HorizontalAlignment="Left" Margin="32,438,0,0" VerticalAlignment="Top" Height="62" Width="176" Command="{Binding ViewPalette, Mode=TwoWay}"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,109,0,0" Text="Specify Block Size: " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="354,253,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="354,631,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="538,289,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="567,668,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="163,103,0,0"/>
         <Button Content="Submit" Command="{Binding ChangeBlockSize, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="259,103,0,0" Height="33"/>
         <Button x:Name="btnPictureMosaic"  IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}" Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,377,0,0" Height="56" Width="176" Click="PictureMosaicButton_Click" RenderTransformOrigin="0.522,0.232"/>
@@ -41,7 +41,7 @@
         <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Command="{Binding GridChecked}" />
         <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Command="{Binding TriangleGridChecked}"  />
         <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Command="{Binding NoGridChecked}"/>
-        <GridView ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="236" Height="360" Margin="27,596,0,0" >
+        <GridView ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageGalleryDataTemplate">
                     <Image  Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill"/>
@@ -49,12 +49,14 @@
             </GridView.ItemTemplate>
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                    <ItemsWrapGrid MaximumRowsOrColumns="6" Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
         <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,527,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20"/>
         <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
         <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="32,305,0,0" RenderTransformOrigin="0.461,0.963"/>
+        <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="33,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="Button_Click"/>
+        <Button Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="293,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}"/>
     </Grid>
 </Page>

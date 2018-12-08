@@ -48,6 +48,7 @@ namespace ImageSandbox
 
             this.viewModel = new MosaicMakerPageViewModel();
             DataContext = this.viewModel;
+
             ApplicationView.PreferredLaunchViewSize = new Size {Width = ApplicationWidth, Height = ApplicationHeight};
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(ApplicationWidth, ApplicationHeight));
@@ -154,7 +155,7 @@ namespace ImageSandbox
             this.viewModel.DisplayPictureMosaic(this.selectedFolder);
         }
 
-        private async void AddImagePallette_OnClick(object sender, RoutedEventArgs e)
+        private async void AddImagePalette_OnClick(object sender, RoutedEventArgs e)
         {
             var selectedFolder = await this.selectImageFileFolder();
             if (selectedFolder != null)
@@ -165,5 +166,14 @@ namespace ImageSandbox
         }
 
         #endregion
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.selectedImageFile = await this.selectSourceImageFile();
+            if (this.selectedImageFile != null)
+            {
+                await this.viewModel.LoadPicture(this.selectedImageFile);
+            }
+        }
     }
 }

@@ -74,8 +74,8 @@ namespace ImageSandbox.Datatier
                 }
                 catch (Exception)
                 {
-                    var failLoadDialog = new ContentDialog { Title = "The file was unable to load", CloseButtonText = "OK" };
-                    await failLoadDialog.ShowAsync();
+                    var folderLoadDialog = new ContentDialog { Title = "The folder was loaded", CloseButtonText = "OK" };
+                    await folderLoadDialog.ShowAsync();
                 }
             }
 

@@ -13,22 +13,22 @@ namespace ImageSandbox.Util
         /// <param name="imageWidth">Width of the image.</param>
         /// <param name="imageHeight">Height of the image.</param>
         /// <param name="startingYPoint">The starting y point.</param>
-        /// <param name="YStoppingPoint">The y stopping point.</param>
+        /// <param name="yStoppingPoint">The y stopping point.</param>
         /// <param name="startingXPoint">The starting x point.</param>
-        /// <param name="XStoppingPoint">The x stopping point.</param>
+        /// <param name="xStoppingPoint">The x stopping point.</param>
         /// <returns> The average color for that area </returns>
         public static Color FindAverageColorForSelectedArea(byte[] sourcePixels, uint imageWidth, uint imageHeight,
-            int startingYPoint, int YStoppingPoint, int startingXPoint,
-            int XStoppingPoint)
+            int startingYPoint, int yStoppingPoint, int startingXPoint,
+            int xStoppingPoint)
         {
             var pixelCount = 0.0;
             var totalRed = 0.0;
             var totalBlue = 0.0;
             var totalGreen = 0.0;
 
-            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
             {
-                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                 {
                     pixelCount++;
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
@@ -50,18 +50,16 @@ namespace ImageSandbox.Util
             return newColor;
         }
         public static Color FindAverageBlackAndWhiteColorForSelectedArea(byte[] sourcePixels, uint imageWidth, uint imageHeight,
-            int startingYPoint, int YStoppingPoint, int startingXPoint,
-            int XStoppingPoint)
+            int startingYPoint, int yStoppingPoint, int startingXPoint,
+            int xStoppingPoint)
         {
-            var pixelCount = 0.0;
             var totalBlack = 0.0;
             var totalWhite = 0.0;
 
-            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
             {
-                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                 {
-                    pixelCount++;
                     var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
                     var averageBlack = pixelColor.R + pixelColor.B + pixelColor.G / 3;
