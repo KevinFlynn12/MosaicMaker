@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
+using ImageMagick.Defines;
 using ImageSandbox.Annotations;
 using ImageSandbox.Datatier;
 using ImageSandbox.Model;
@@ -32,8 +34,9 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private readonly ImagePalette imagePalete;
-        private List<WriteableBitmap> selectedFolderImages;
+        private  ImagePalette imagePalete;
+       
+        private ObservableCollection<WriteableBitmap> selectedFolderImages;
         private readonly ImageFolderReader folderReader;
         private List<FolderImage> loadedFolder;
 
@@ -65,7 +68,7 @@ namespace ImageSandbox.ViewModel
         /// <value>
         /// The selected folder images.
         /// </value>
-        public List<WriteableBitmap> SelectedFolderImages
+        public ObservableCollection<WriteableBitmap> SelectedFolderImages
         {
             get => this.selectedFolderImages;
             set
@@ -81,14 +84,14 @@ namespace ImageSandbox.ViewModel
         /// <value>
         /// The create solid mosaic.
         /// </value>
-        public RelayCommand CreateSolidMosaic { get; set; }
+        public RelayCommandAsync CreateSolidMosaic { get; set; }
         /// <summary>
         /// Gets or sets the triangle mosaic.
         /// </summary>
         /// <value>
         /// The triangle mosaic.
         /// </value>
-        public RelayCommand TriangleMosaic { get; set; }
+        public RelayCommandAsync TriangleMosaic { get; set; }
         /// <summary>
         /// Gets or sets the size of the change block.
         /// </summary>
@@ -292,6 +295,7 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
                 this.ChangeBlockSize.OnCanExecuteChanged();
                 this.hasBlockSizeChanged = true;
+                this.OnPropertyChanged();
             }
         }
 
@@ -339,7 +343,7 @@ namespace ImageSandbox.ViewModel
             this.dpiX = 0;
             this.dpiY = 0;
             this.loadAllCommands();
-            this.SelectedFolderImages = new List<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             this.folderReader = new ImageFolderReader();
             this.loadedFolder = new List<FolderImage>();
             this.imagePalete = new ImagePalette();
@@ -354,8 +358,8 @@ namespace ImageSandbox.ViewModel
 
         private void loadAllCommands()
         {
-            this.CreateSolidMosaic = new RelayCommand(this.createSolidMosaic, this.canSolidMosaic);
-            this.TriangleMosaic = new RelayCommand(this.createTriangleMosaic, this.canTriangleMosaic);
+            this.CreateSolidMosaic = new RelayCommandAsync(this.createSolidMosaic, this.canSolidMosaic);
+            this.TriangleMosaic = new RelayCommandAsync(this.createTriangleMosaic, this.canTriangleMosaic);
             this.ChangeBlockSize = new RelayCommand(this.changeBlockSize, this.canChangeBlockSize);
             this.TriangleGridChecked = new RelayCommand(this.createTriangleGrid, this.canCreateGrid);
             this.GridChecked = new RelayCommand(this.createGrid, this.canCreateGrid);
@@ -372,26 +376,62 @@ namespace ImageSandbox.ViewModel
 
         private bool canClearPalette(object obj)
         {
-            //TODO
-            return true;
+            return !this.SelectedFolderImages.Any();
         }
 
         private void clearPalette(object obj)
         {
-            //throw new NotImplementedException();
+            this.NumberOfImages = "" + 0;
+            this.imagePalete.Clear();
+            this.SelectedFolderImages= new ObservableCollection<WriteableBitmap>();
         }
         
 
-        private void addImage(StorageFile file)
+        public async Task AddImage(StorageFile file)
         {
-            //this.imagePalete.Add(new FolderImage());
+
+            using (var fileStream = await file.OpenAsync(FileAccessMode.Read))
+
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(50),
+                    ScaledHeight = Convert.ToUInt32(50)
+                };
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+
+                var fileWriteableBitmap =
+                    new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
+
+                using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
+                {
+                    await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
+
+                    var selectedFolderImage = new FolderImage(fileWriteableBitmap, file);
+                    this.imagePalete.Add(selectedFolderImage);
+                    this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>(this.imagePalete.Select(image => image.ImageBitmap).ToList());
+                    this.NumberOfImages = this.imagePalete.Count + "";
+
+                }  
+            }
 
         }
 
-        private async void createSolidMosaic(object obj)
+        private async Task createSolidMosaic(object obj)
         {
             this.changeMosaicType(true, false, false);
-            await this.handleCreatingSolidMosaicImage();
+            await this.handleCreatingMosaic();
             
             this.CanSave = true;
         }
@@ -434,7 +474,7 @@ namespace ImageSandbox.ViewModel
             return parsedBlockSize >= 5 && parsedBlockSize <= 50;
         }
 
-        private void changeBlockSize(object obj)
+        private async void changeBlockSize(object obj)
         {
             this.blockSizeNumber = int.Parse(this.BlockSize);
 
@@ -444,7 +484,9 @@ namespace ImageSandbox.ViewModel
             if (this.MosaicImage != null)
             {
                 this.MosaicImage.BlockSize = this.blockSizeNumber;
+
             }
+            this.changeMosaicType(false, false, false);
             this.CheckToEnablePictureMosaic();
             this.CreateSolidMosaic.OnCanExecuteChanged();
             this.TriangleMosaic.OnCanExecuteChanged();
@@ -459,11 +501,11 @@ namespace ImageSandbox.ViewModel
                    (!this.hasSolidMosaic || this.hasBlockSizeChanged);
         }
 
-        private async void createTriangleMosaic(object obj)
+        private async Task createTriangleMosaic(object obj)
         {
             this.changeMosaicType(false, true, false);
 
-            await this.handleCreatingSolidMosaicImage();
+            await this.handleCreatingMosaic();
             if (this.HasGrid)
             {
                 await this.creatingOutlineOrignalImage();
@@ -475,7 +517,7 @@ namespace ImageSandbox.ViewModel
         {
             return true;
         }
-        private async Task handleCreatingSolidMosaicImage()
+        private async Task handleCreatingMosaic()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
@@ -505,9 +547,14 @@ namespace ImageSandbox.ViewModel
                 { 
                     this.MosaicImage.CreateTriangleMosaic(sourcePixels, isBlackAndWhite);
                     
-                }else
+                }else if(this.hasPictureMosaic)
+                {
+                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.useAllImagesOnce);
+                }
+                else
                 {
                     this.MosaicImage.CreateSolidMosaic(sourcePixels, this.isBlackAndWhite);
+
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -567,7 +614,7 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-            this.SelectedFolderImages = new List<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
@@ -650,6 +697,7 @@ namespace ImageSandbox.ViewModel
                     if (this.AlterImageDisplay != null)
                     {
                         this.AlterImageDisplay = null;
+                        this.CanSave = false;
                     }
                     var sourcePixels = pixelData.DetachPixelData();
                     this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber, decoder.PixelHeight, decoder.PixelWidth);
@@ -821,7 +869,7 @@ namespace ImageSandbox.ViewModel
             if (this.MosaicImage != null & this.orignalImage != null)
             {
                 this.ImageDisplay = this.orignalImage;
-                await this.handleCreatingSolidMosaicImage();
+                await this.handleCreatingMosaic();
             }
             else if(this.orignalImage != null)
             {

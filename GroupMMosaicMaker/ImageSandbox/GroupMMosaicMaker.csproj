@@ -104,6 +104,7 @@
     <Compile Include="Util\ImageAverageColor.cs" />
     <Compile Include="Util\ImagePixel.cs" />
     <Compile Include="Util\RelayCommand.cs" />
+    <Compile Include="Util\RelayCommandAsync.cs" />
     <Compile Include="ViewModel\MosaicMakerPageViewModel.cs" />
     <Compile Include="View\MosaicMakerPage.xaml.cs">
       <DependentUpon>MosaicMakerPage.xaml</DependentUpon>
