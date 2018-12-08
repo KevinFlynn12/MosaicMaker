@@ -49,7 +49,52 @@ namespace ImageSandbox.Util
             newColor.G = (byte) averageGreen;
             return newColor;
         }
+        public static Color FindAverageBlackAndWhiteColorForSelectedArea(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+            int startingYPoint, int YStoppingPoint, int startingXPoint,
+            int XStoppingPoint)
+        {
+            var pixelCount = 0.0;
+            var totalBlack = 0.0;
+            var totalWhite = 0.0;
 
+            for (var currentYPoint = startingYPoint; currentYPoint < YStoppingPoint; currentYPoint++)
+            {
+                for (var currentXPoint = startingXPoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                {
+                    pixelCount++;
+                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                        imageHeight);
+                    var averageBlack = pixelColor.R + pixelColor.B + pixelColor.G / 3;
+                    if (averageBlack >= 127.5)
+                    {
+                        totalWhite++;
+                    }
+                    else
+                    {
+                        totalBlack++;
+                    }
+                    
+                }
+            }
+            var newColor = new Color();
+            if (totalBlack > totalWhite)
+            {
+                newColor.R = (byte)0;
+                newColor.B = (byte)0;
+                newColor.G = (byte)0;
+            }
+            else
+            {
+                newColor.R = (byte)255;
+                newColor.B = (byte) 255;
+                newColor.G = (byte)255;
+
+            }
+
+            
+           
+            return newColor;
+        }
         /// <summary>
         ///     Finds the average color of entire image.
         /// </summary>

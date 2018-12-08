@@ -319,13 +319,13 @@ namespace ImageSandbox.ViewModel
                 var sourcePixels = pixelData.DetachPixelData();
                 if (this.IsBlackAndWhite)
                 {
-                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels);
                 }else if (isTriangleMosaic)
                 { 
-                    this.MosaicImage.CreateTriangleMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+                    this.MosaicImage.CreateTriangleMosaic(sourcePixels);
                 }else
                 {
-                    this.MosaicImage.CreateSolidMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+                    this.MosaicImage.CreateSolidMosaic(sourcePixels);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -369,12 +369,11 @@ namespace ImageSandbox.ViewModel
 
                 if (this.IsBlackAndWhite)
                 {
-                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels, decoder.PixelWidth, decoder.PixelHeight);
+                    this.MosaicImage.CreateBlackAndWhiteMosaic(sourcePixels);
                 }
                 else
                 {
-                    this.MosaicImage.CreatePictureMosaic(sourcePixels, decoder.PixelWidth,
-                        decoder.PixelHeight, this.imagePalete);
+                    this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete);
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -430,7 +429,6 @@ namespace ImageSandbox.ViewModel
 
             if (this.selectedImageFile != null)
             {
-                this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber);
 
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
@@ -455,6 +453,7 @@ namespace ImageSandbox.ViewModel
                     );
 
                     var sourcePixels = pixelData.DetachPixelData();
+                    this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber, decoder.PixelHeight, decoder.PixelWidth);
                     await this.createOriginalImage(decoder, sourcePixels);
                     if (this.HasGrid)
                     {
@@ -566,7 +565,7 @@ namespace ImageSandbox.ViewModel
                 startingYpoint += this.blockSizeNumber;
             }
 
-            var triangleCoordinates = this.MosaicImage.FindTrianglePoints(imageWidth, imageHeight);
+            var triangleCoordinates = this.MosaicImage.FindTrianglePoints();
             if (this.HasTriangleGrid)
 
             {

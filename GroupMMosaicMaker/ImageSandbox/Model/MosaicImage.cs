@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -17,16 +18,29 @@ namespace ImageSandbox.Model
         public StorageFile ImageFile { get; set; }
 
         public int BlockSize { get; set; }
+        private readonly uint imageHeight;
+        private readonly uint imageWidth;
 
         #endregion
 
         #region Constructors
 
-        public MosaicImage(StorageFile imageFile, int blockSize)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MosaicImage"/> class.
+        /// </summary>
+        /// <param name="imageFile">The image file.</param>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <param name="imageHeight">Height of the image.</param>
+        /// <param name="imageWidth">Width of the image.</param>
+        public MosaicImage(StorageFile imageFile, int blockSize, uint imageHeight, uint imageWidth)
         {
             this.ImageFile = imageFile;
             this.BlockSize = blockSize;
+            
+            this.imageHeight = imageHeight;
+            this.imageWidth = imageWidth;
         }
+
 
         #endregion
 
@@ -40,19 +54,23 @@ namespace ImageSandbox.Model
             return newImage;
         }
 
-        public void CreateSolidMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
+        /// <summary>
+        /// Creates the solid mosaic.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        public void CreateSolidMosaic(byte[] sourcePixels)
         {
             var y = 0;
             while (y < imageHeight)
             {
                 var x = 0;
-                var yStoppingPoint = this.UpdateStoppingPoint(imageHeight - 1, y);
+                var yStoppingPoint = this.UpdateStoppingPoint(imageHeight , y);
 
                 while (x < imageWidth)
                 {
-                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth - 1, x);
+                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
                 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint, false);
+                    this.setNewColorValue(sourcePixels, y, yStoppingPoint, x, xStoppingPoint, false);
 
                     x += this.BlockSize;
                 }
@@ -60,19 +78,24 @@ namespace ImageSandbox.Model
                 y += this.BlockSize;
             }
         }
-        public void CreateTriangleMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
+        /// <summary>
+        /// Creates the triangle mosaic.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        public void CreateTriangleMosaic(byte[] sourcePixels)
         {
             var y = 0;
             while (y < imageHeight)
             {
                 var x = 0;
-                var yStoppingPoint = this.UpdateStoppingPoint(imageHeight - 1, y);
+                
 
                 while (x < imageWidth)
                 {
-                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth - 1, x);
+                    var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
+                    var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    this.TriangleMosaic(sourcePixels, imageWidth, imageHeight, x, y, xStoppingPoint, yStoppingPoint);
+                    this.TriangleMosaic(sourcePixels, x, y, xStoppingPoint, yStoppingPoint);
 
                     x += this.BlockSize;
                 }
@@ -82,8 +105,12 @@ namespace ImageSandbox.Model
         }
 
 
-        public void CreatePictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
-            ImagePalette loadedImages)
+        /// <summary>
+        /// Creates the picture mosaic.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        /// <param name="loadedImages">The loaded images.</param>
+        public void CreatePictureMosaic(byte[] sourcePixels, ImagePalette loadedImages)
         {
             for (var y = 0; y < imageHeight; y += this.BlockSize)
             {
@@ -93,13 +120,17 @@ namespace ImageSandbox.Model
                 {
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
-                    this.setPictureMosaic(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x,
+                    this.setPictureMosaic(sourcePixels, y, yStoppingPoint, x,
                         xStoppingPoint, loadedImages);
                 }
             }
         }
 
-        public List<Tuple<int, int>> FindTrianglePoints(uint imageWidth, uint imageHeight)
+        /// <summary>
+        /// Finds the triangle points.
+        /// </summary>
+        /// <returns>A list of coordinates where the triangle occurs</returns>
+        public List<Tuple<int, int>> FindTrianglePoints()
         {
 
             var triangleCoordinates = new List<Tuple<int, int>>();
@@ -142,8 +173,7 @@ namespace ImageSandbox.Model
             return triangleCoordinates;
         }
 
-        private void setPictureMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight,
-            int startingYPoint, int yStoppingPoint,
+        private void setPictureMosaic(byte[] sourcePixels,int startingYPoint, int yStoppingPoint,
             int startingXPoint, int xStoppingPoint, ImagePalette loadedImages)
         {
             var averageColor =
@@ -173,13 +203,16 @@ namespace ImageSandbox.Model
             }
         }
 
-        private void setNewColorValue(byte[] sourcePixels, uint imageWidth, uint imageHeight, int startingYPoint,
+        private void setNewColorValue(byte[] sourcePixels, int startingYPoint,
             int yStoppingPoint, int startingXPoint, int xStoppingPoint, bool isBlackAndWhite)
         {
 
             var averageColor =
                 ImageAverageColor.FindAverageColorForSelectedArea(sourcePixels, imageWidth, imageHeight, startingYPoint,
                     yStoppingPoint, startingXPoint, xStoppingPoint);
+            var averageBlack = ImageAverageColor.FindAverageBlackAndWhiteColorForSelectedArea(sourcePixels, imageWidth,
+                imageHeight, startingYPoint,
+                yStoppingPoint, startingXPoint, xStoppingPoint);
             for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
@@ -189,19 +222,9 @@ namespace ImageSandbox.Model
 
                     if (isBlackAndWhite)
                     {
-                        var averageBlack = averageColor.R + averageColor.B + averageColor.G / 3;
-                        if (averageBlack >= 127.5)
-                        {
-                            pixelColor.R = 255;
-                            pixelColor.B = 255;
-                            pixelColor.G = 255;
-                        }
-                        else
-                        {
-                            pixelColor.R = 0;
-                            pixelColor.B = 0;
-                            pixelColor.G = 0;
-                        }
+                        pixelColor.R = averageBlack.R;
+                        pixelColor.B = averageBlack.B;
+                        pixelColor.G = averageBlack.G;
                     }
                     else
                     {
@@ -228,14 +251,10 @@ namespace ImageSandbox.Model
         }
 
         /// <summary>
-        ///     Creates the black and white mosaic.
+        /// Creates the black and white mosaic.
         /// </summary>
         /// <param name="sourcePixels">The source pixels.</param>
-        /// <param name="imageWidth">Width of the image.</param>
-        /// <param name="imageHeight">Height of the image.</param>
-        /// <param name="blockSize">Size of the block.</param>
-        /// <param name="isGrid">if set to <c>true</c> [is grid].</param>
-        public void CreateBlackAndWhiteMosaic(byte[] sourcePixels, uint imageWidth, uint imageHeight)
+        public void CreateBlackAndWhiteMosaic(byte[] sourcePixels)
         {
             var y = 0;
             while (y < imageHeight)
@@ -247,7 +266,7 @@ namespace ImageSandbox.Model
 
                     var yStoppingPoint = this.UpdateStoppingPoint(imageHeight, y);
 
-                    this.setNewColorValue(sourcePixels, imageWidth, imageHeight, y, yStoppingPoint, x, xStoppingPoint,
+                    this.setNewColorValue(sourcePixels, y, yStoppingPoint, x, xStoppingPoint,
                         true);
 
                     x += this.BlockSize;
@@ -257,7 +276,7 @@ namespace ImageSandbox.Model
             }
         }
 
-        private void TriangleMosaic(byte[] sourcePixels, uint imageHeight, uint imageWidth, int xStart, int yStart,
+        private void TriangleMosaic(byte[] sourcePixels, int xStart, int yStart,
             int xStopping, int yStoppingPoint)
         {
             var topTriangleColors = new List<Color>();
@@ -265,6 +284,7 @@ namespace ImageSandbox.Model
             var bottomTriangleColors = new List<Color>();
             var bottomTriangleCoordinates = new List<Tuple<int, int>>();
             var currentY = 0;
+
             for (var y = yStart; y < yStoppingPoint; y++)
             {
                 var currentX = 0;
@@ -274,14 +294,14 @@ namespace ImageSandbox.Model
                     {
                         topTriangleCoordinates.Add(new Tuple<int, int>(x, y));
                         var color = new Color();
-                        color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
+                        color = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
                         topTriangleColors.Add(color);
                     }
-                    else if (currentY >= currentX)
+                    else
                     {
                         bottomTriangleCoordinates.Add(new Tuple<int, int>(x, y));
                         var color = new Color();
-                        color = ImagePixel.GetPixelBgra8(sourcePixels, x, y, imageWidth, imageHeight);
+                        color = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
                         bottomTriangleColors.Add(color);
                     }
 
@@ -290,50 +310,33 @@ namespace ImageSandbox.Model
 
                 currentY++;
             }
+            this.colorTriangle(sourcePixels, topTriangleColors, topTriangleCoordinates);
+           
+            this.colorTriangle(sourcePixels, bottomTriangleColors, bottomTriangleCoordinates);
+        }
 
-            var topTotalRed = 0;
-            var topTotalBlue = 0;
-            var topTotalGreen = 0;
-            foreach (var currentColor in topTriangleColors)
+        private void colorTriangle(byte[] sourcePixels,List<Color> triangleColors, List<Tuple<int, int>> triangleCoordinates)
+        {
+            var totalRed = 0;
+            var totalBlue = 0;
+            var totalGreen = 0;
+            foreach (var currentColor in triangleColors)
             {
-                topTotalRed += currentColor.R;
-                topTotalBlue += currentColor.B;
-                topTotalGreen += currentColor.G;
+                totalRed += currentColor.R;
+                totalBlue += currentColor.B;
+                totalGreen += currentColor.G;
             }
 
-            var averageTopRed = (byte) (topTotalRed / topTriangleColors.Count);
-            var averageTopBlue = (byte) (topTotalBlue / topTriangleColors.Count);
-            var averageTopGreen = (byte) (topTotalGreen / topTriangleColors.Count);
+            var averageTopRed = (byte) (totalRed / triangleColors.Count);
+            var averageTopBlue = (byte) (totalBlue / triangleColors.Count);
+            var averageTopGreen = (byte) (totalGreen / triangleColors.Count);
             var newColor = new Color();
             newColor.R = averageTopRed;
             newColor.G = averageTopGreen;
             newColor.B = averageTopBlue;
-            foreach (var coordinate in topTriangleCoordinates)
+            foreach (var coordinate in triangleCoordinates)
             {
-                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item1, coordinate.Item2, newColor, imageWidth,
-                    imageHeight);
-            }
-
-            var bottomTotalRed = 0;
-            var bottomTotalBlue = 0;
-            var bottomTotalGreen = 0;
-            foreach (var currentColor in bottomTriangleColors)
-            {
-                bottomTotalRed += currentColor.R;
-                bottomTotalBlue += currentColor.B;
-                bottomTotalGreen += currentColor.G;
-            }
-
-            var bottomAverageTopRed = (byte) (bottomTotalRed / bottomTriangleColors.Count);
-            var bottomAverageTopBlue = (byte) (bottomTotalBlue / bottomTriangleColors.Count);
-            var bottomAverageTopGreen = (byte) (bottomTotalGreen / bottomTriangleColors.Count);
-            var newBottomColor = new Color();
-            newBottomColor.R = bottomAverageTopRed;
-            newBottomColor.G = bottomAverageTopGreen;
-            newBottomColor.B = bottomAverageTopBlue;
-            foreach (var coordinate in bottomTriangleCoordinates)
-            {
-                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item1, coordinate.Item2, newBottomColor, imageWidth,
+                ImagePixel.setPixelBgra8(sourcePixels, coordinate.Item2, coordinate.Item1, newColor, imageWidth,
                     imageHeight);
             }
         }
