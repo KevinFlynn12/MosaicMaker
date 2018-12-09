@@ -627,15 +627,18 @@ namespace ImageSandbox.ViewModel
 
         public void RemoveSelectedItem(WriteableBitmap selectedImage)
         {
-            var count = this.selectedFolderImages.Count;
-            foreach (var currImage in this.SelectedFolderImages)
+            var count = this.SelectedFolderImages.Count;
+            var removeImages = new List<WriteableBitmap>();
+            foreach (var currentImage in this.SelectedFolderImages)
             {
-                if (currImage.Equals(selectedImage))
+                if (currentImage.Equals(selectedImage))
                 {
-                    this.selectedFolderImages.Remove(selectedImage);
+                    removeImages.Add(selectedImage);
                 }
             }
+            this.SelectedFolderImages.Remove(removeImages.First());
 
+            this.NumberOfImages = "" + this.SelectedFolderImages.Count;
         }
 
 
