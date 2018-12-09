@@ -108,7 +108,7 @@ namespace ImageSandbox.Model
                     var xStoppingPoint = this.UpdateStoppingPoint(imageWidth, x);
 
                     await this.setPictureMosaic(sourcePixels, y, yStoppingPoint, x,
-                        xStoppingPoint, loadedImages, true);
+                        xStoppingPoint, loadedImages, useAllImages);
                 }
             }
         }
