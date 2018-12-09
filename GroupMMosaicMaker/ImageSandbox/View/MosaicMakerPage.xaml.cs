@@ -195,5 +195,15 @@ namespace ImageSandbox
                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
         }
+
+        private void GridView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var images = new List<WriteableBitmap>();
+            foreach (var currentImage in this.GridView.SelectedItems)
+            {
+                images.Add((WriteableBitmap)currentImage);
+            }
+            this.viewModel.SelectedImages = images;
+        }
     }
 }

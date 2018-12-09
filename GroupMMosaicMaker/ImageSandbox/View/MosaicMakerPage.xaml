@@ -41,7 +41,7 @@
         <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Command="{Binding GridChecked, Mode=TwoWay}" />
         <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Command="{Binding TriangleGridChecked, Mode=TwoWay}"  />
         <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Command="{Binding NoGridChecked, Mode=TwoWay}"/>
-        <GridView x:Name="GridView" ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"   SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
+        <GridView x:Name="GridView" ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionChanged="GridView_OnSelectionChanged" SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageGalleryDataTemplate">
                     <Image  Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill"/>

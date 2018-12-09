@@ -35,7 +35,6 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
         private  ImagePalette imagePalete;
-        private ImagePalette selectedImages;
         private ObservableCollection<WriteableBitmap> selectedFolderImages;
         private readonly ImageFolderReader folderReader;
         private List<FolderImage> loadedFolder;
@@ -123,6 +122,8 @@ namespace ImageSandbox.ViewModel
         
         public RelayCommand ClearPalette { get; set; }
         public RelayCommand UseImagesOnce { get; set; }
+
+
 
         /// <summary>
         /// Gets the type of the loaded file.
@@ -330,6 +331,19 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
+
+        private List<WriteableBitmap> selectedImages;
+
+        public List<WriteableBitmap> SelectedImages
+        {
+            get => this.selectedImages;
+            set
+            {
+                this.selectedImages = value;
+                this.OnPropertyChanged();
+            }
+        }
+
 
         #endregion
 
@@ -595,7 +609,16 @@ namespace ImageSandbox.ViewModel
                 );
 
                 var sourcePixels = pixelData.DetachPixelData();
-                await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
+                if (this.selectedImages != null)
+                {
+                    var selectImagePalette = this.createSelectedImagePalette();
+                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, selectImagePalette, this.UseAllImagesOnce);
+                }
+                else
+                {
+                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
+                }
+                
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
@@ -609,6 +632,17 @@ namespace ImageSandbox.ViewModel
             this.CanSave = true;
         }
 
+        private ImagePalette createSelectedImagePalette()
+        {
+            var selectedImagePalette = new ImagePalette();
+            foreach (var image in this.selectedImages)
+            {
+                selectedImagePalette.Add(this.imagePalete.Where(folderImage => folderImage.ImageBitmap.Equals(image)).ToList().First());
+            }
+
+            return selectedImagePalette;
+
+        }
         /// <summary>
         /// Loads all images into image palette.
         /// </summary>
