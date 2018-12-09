@@ -2,6 +2,9 @@
 
 namespace ImageSandbox.Util
 {
+    /// <summary>
+    /// This finds the average color
+    /// </summary>
     public static class ImageAverageColor
     {
         #region Methods

@@ -20,8 +20,20 @@ namespace ImageSandbox.Model
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the image file.
+        /// </summary>
+        /// <value>
+        /// The image file.
+        /// </value>
         public StorageFile ImageFile { get; set; }
 
+        /// <summary>
+        /// Gets or sets the size of the block.
+        /// </summary>
+        /// <value>
+        /// The size of the block.
+        /// </value>
         public int BlockSize { get; set; }
 
         #endregion

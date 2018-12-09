@@ -3,6 +3,10 @@ using System.Windows.Input;
 
 namespace ImageSandbox.Util
 {
+    /// <summary>
+    /// This relays a command
+    /// </summary>
+    /// <seealso cref="System.Windows.Input.ICommand" />
     public class RelayCommand : ICommand
     {
         #region Data members

@@ -235,6 +235,12 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [use all images once].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [use all images once]; otherwise, <c>false</c>.
+        /// </value>
         public bool UseAllImagesOnce
         {
             get => this.useAllImagesOnce;
