@@ -154,7 +154,7 @@ namespace ImageSandbox.Model
 
                 if (!loadedImages.Any())
                 {
-                    loadedImages.RepopulateImagePalettte();
+                    loadedImages.RepopulateImagePalette();
                     await loadedImages.ResizeAllImages(this.BlockSize);
                 }
             }

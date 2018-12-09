@@ -455,6 +455,7 @@ namespace ImageSandbox.ViewModel
                 var fileWritableBitmap =
                     new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
 
+              
                 using (var writeStream = fileWritableBitmap.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);

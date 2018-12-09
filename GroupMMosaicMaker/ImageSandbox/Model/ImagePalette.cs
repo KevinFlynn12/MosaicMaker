@@ -229,7 +229,7 @@ namespace ImageSandbox.Model
         /// <summary>
         ///     Repopulates the image palette.
         /// </summary>
-        public void RepopulateImagePalettte()
+        public void RepopulateImagePalette()
         {
             foreach (var currentImage in this.reservedImagePalette)
             {
