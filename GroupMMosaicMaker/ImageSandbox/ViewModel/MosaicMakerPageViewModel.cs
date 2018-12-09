@@ -382,13 +382,7 @@ namespace ImageSandbox.ViewModel
             this.ClearPalette = new RelayCommand(this.clearPalette, this.canClearPalette);
             this.UseImagesOnce = new RelayCommand(this.useImagesOnce, this.canAlwaysExecute);
         }
-
-
-        private bool canUseImageOnlyOnce()
-        {
-            return this.useAllImagesOnce;
-        }
-
+        
 
 
         private void useImagesOnce(object obj)
@@ -419,8 +413,8 @@ namespace ImageSandbox.ViewModel
 
                 var transform = new BitmapTransform
                 {
-                    ScaledWidth = Convert.ToUInt32(50),
-                    ScaledHeight = Convert.ToUInt32(50)
+                    ScaledWidth = Convert.ToUInt32(decoder.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(decoder.PixelHeight)
                 };
 
                 var pixelData = await decoder.GetPixelDataAsync(
@@ -619,7 +613,7 @@ namespace ImageSandbox.ViewModel
                 var sourcePixels = pixelData.DetachPixelData();
                 if (this.selectedImages != null)
                 {
-                    var selectImagePalette = this.createSelectedImagePalette();
+                    var selectImagePalette = await this.createSelectedImagePalette();
                     await this.MosaicImage.CreatePictureMosaic(sourcePixels, selectImagePalette, this.UseAllImagesOnce);
                 }
                 else
@@ -640,12 +634,34 @@ namespace ImageSandbox.ViewModel
             this.CanSave = true;
         }
 
-        private ImagePalette createSelectedImagePalette()
+        private async Task<ImagePalette> createSelectedImagePalette()
         {
             var selectedImagePalette = new ImagePalette();
-            foreach (var image in this.selectedImages)
+            var selectedFolderImages = new List<WriteableBitmap>();
+            foreach (var selectedImage in this.selectedImages)
             {
-                selectedImagePalette.Add(this.imagePalete.Where(folderImage => folderImage.ImageBitmap.Equals(image)).ToList().First());
+                for (int i = 0; i < this.SelectedFolderImages.Count; i++)
+                {
+
+                    var currentImage = this.selectedFolderImages[i];
+                    if (currentImage.Equals(selectedImage))
+                    {
+                        selectedFolderImages.Add(this.SelectedFolderImages[i]);
+                    }
+
+
+                }
+            }
+            foreach (var image in selectedFolderImages)
+            {
+                foreach (var folderImage in this.imagePalete)
+                {
+                    if (folderImage.ImageBitmap.Equals(image) )
+                    {
+                        selectedImagePalette.Add(folderImage);
+                    }
+                }
+                
             }
 
             return selectedImagePalette;
@@ -668,6 +684,10 @@ namespace ImageSandbox.ViewModel
         }
 
 
+        /// <summary>
+        /// Removes the selected item.
+        /// </summary>
+        /// <param name="selectedImage">The selected image.</param>
         public void RemoveSelectedItem(WriteableBitmap selectedImage)
         {
 
@@ -727,7 +747,7 @@ namespace ImageSandbox.ViewModel
         ///     Loads the picture.
         /// </summary>
         /// <param name="imageFile">The image file.</param>
-        /// <returns></returns>
+        /// <returns>A Task</returns>
         public async Task LoadPicture(StorageFile imageFile)
         {
             this.selectedImageFile = imageFile;
@@ -765,11 +785,13 @@ namespace ImageSandbox.ViewModel
                     }
                     var sourcePixels = pixelData.DetachPixelData();
                     this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber, decoder.PixelHeight, decoder.PixelWidth);
+                    
                     await this.createOriginalImage(decoder, sourcePixels);
                     if (this.HasGrid)
                     {
                         await this.creatingOutlineOrignalImage();
                     }
+                    this.CheckToEnablePictureMosaic();
                 }
             }
         }
