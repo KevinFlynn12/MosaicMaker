@@ -204,5 +204,10 @@ namespace ImageSandbox
         }
 
         #endregion
+
+        private void UseImageOnce_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.viewModel.UseAllImagesOnce = this.UseImageOnce.IsChecked ?? false;
+        }
     }
 }

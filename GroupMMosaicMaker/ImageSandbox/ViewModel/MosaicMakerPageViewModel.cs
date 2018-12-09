@@ -436,10 +436,8 @@ namespace ImageSandbox.ViewModel
 
                     var selectedFolderImage = new FolderImage(fileWriteableBitmap, file);
                     this.imagePalete.Add(selectedFolderImage);
-                    this.SelectedFolderImages =
-                        new ObservableCollection<WriteableBitmap>(this
-                                                                  .imagePalete.Select(image => image.ImageBitmap)
-                                                                  .ToList());
+                    this.SelectedFolderImages.Add(fileWriteableBitmap);
+                                                                  
                     this.NumberOfImages = this.imagePalete.Count + "";
                 }
             }
