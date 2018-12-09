@@ -188,10 +188,13 @@ namespace ImageSandbox
 
         private void RemoveSelectedImages_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var selectedImage in this.GridView.SelectedItems)
+            var obama = this.GridView.SelectedItems.Count;
+            var removeImages = new List<WriteableBitmap>();
+            foreach (var image in this.GridView.SelectedItems)
             {
-                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
+                removeImages.Add((WriteableBitmap)image);
             }
+            this.viewModel.RemoveSelectedItem(removeImages);
         }
     }
 }

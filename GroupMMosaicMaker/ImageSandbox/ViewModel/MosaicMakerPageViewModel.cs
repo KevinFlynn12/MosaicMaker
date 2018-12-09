@@ -376,7 +376,7 @@ namespace ImageSandbox.ViewModel
 
         private bool canClearPalette(object obj)
         {
-            return !this.SelectedFolderImages.Any();
+            return this.SelectedFolderImages.Any();
         }
 
         private void clearPalette(object obj)
@@ -614,7 +614,7 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-            //this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
@@ -625,19 +625,15 @@ namespace ImageSandbox.ViewModel
         }
 
 
-        public void RemoveSelectedItem(WriteableBitmap selectedImage)
+        public void RemoveSelectedItem(List<WriteableBitmap> selectedImages)
         {
-            var count = this.SelectedFolderImages.Count;
             var removeImages = new List<WriteableBitmap>();
-            foreach (var currentImage in this.SelectedFolderImages)
+            foreach (var currentImage in selectedImages)
             {
-                if (currentImage.Equals(selectedImage))
-                {
-                    removeImages.Add(selectedImage);
-                }
+                this.SelectedFolderImages.Remove(currentImage);
             }
-            this.SelectedFolderImages.Remove(removeImages.First());
 
+            this.SelectedFolderImages = this.SelectedFolderImages;
             this.NumberOfImages = "" + this.SelectedFolderImages.Count;
         }
 
@@ -676,8 +672,7 @@ namespace ImageSandbox.ViewModel
         private void changeGridType(bool isGrid, bool isTriangleGrid)
         {
             this.HasGrid = isGrid;
-            this.hasTriangleGrid = isTriangleGrid;
-            
+            this.hasTriangleGrid = isTriangleGrid; 
         }
         /// <summary>
         ///     Loads the picture.
