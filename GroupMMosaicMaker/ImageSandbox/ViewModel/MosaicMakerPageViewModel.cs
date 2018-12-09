@@ -126,7 +126,19 @@ namespace ImageSandbox.ViewModel
         /// </value>
         public RelayCommand NoGridChecked { get; set; }
 
+        /// <summary>
+        /// Gets or sets the clear palette.
+        /// </summary>
+        /// <value>
+        /// The clear palette.
+        /// </value>
         public RelayCommand ClearPalette { get; set; }
+        /// <summary>
+        /// Gets or sets the use images once.
+        /// </summary>
+        /// <value>
+        /// The use images once.
+        /// </value>
         public RelayCommand UseImagesOnce { get; set; }
 
         /// <summary>
@@ -335,6 +347,12 @@ namespace ImageSandbox.ViewModel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the selected images.
+        /// </summary>
+        /// <value>
+        /// The selected images.
+        /// </value>
         public List<WriteableBitmap> SelectedImages
         {
             get => this.selectedImages;
@@ -402,6 +420,11 @@ namespace ImageSandbox.ViewModel
             this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
         }
 
+        /// <summary>
+        /// Adds the image.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns>A Task</returns>
         public async Task AddImage(StorageFile file)
         {
             using (var fileStream = await file.OpenAsync(FileAccessMode.Read))
@@ -606,15 +629,7 @@ namespace ImageSandbox.ViewModel
                 );
 
                 var sourcePixels = pixelData.DetachPixelData();
-                if (this.selectedImages != null)
-                {
-                    var selectImagePalette = await this.createSelectedImagePalette();
-                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, selectImagePalette, this.UseAllImagesOnce);
-                }
-                else
-                {
-                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
-                }
+               await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
@@ -628,38 +643,7 @@ namespace ImageSandbox.ViewModel
             this.CanSave = true;
         }
 
-        private async Task<ImagePalette> createSelectedImagePalette()
-        {
-            var selectedImagePalette = new ImagePalette();
-            var selectedFolderImages = new List<WriteableBitmap>();
-            foreach (var selectedImage in this.selectedImages)
-            {
-                for (int i = 0; i < this.SelectedFolderImages.Count; i++)
-                {
-
-                    var currentImage = this.selectedFolderImages[i];
-                    if (currentImage.Equals(selectedImage))
-                    {
-                        selectedFolderImages.Add(this.SelectedFolderImages[i]);
-                    }
-
-
-                }
-            }
-            foreach (var image in selectedFolderImages)
-            {
-                foreach (var folderImage in this.imagePalete)
-                {
-                    if (folderImage.ImageBitmap.Equals(image) )
-                    {
-                        selectedImagePalette.Add(folderImage);
-                    }
-                }
-                
-            }
-
-            return selectedImagePalette;
-        }
+       
 
         /// <summary>
         ///     Loads all images into image palette.
@@ -778,7 +762,7 @@ namespace ImageSandbox.ViewModel
                     {
                         await this.creatingOutlineOrignalImage();
                     }
-                    this.CheckToEnablePictureMosaic();
+                    this.checkToEnablePictureMosaic();
                 }
             }
         }
