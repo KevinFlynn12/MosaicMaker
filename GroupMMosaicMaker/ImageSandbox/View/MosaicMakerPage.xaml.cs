@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -188,9 +189,10 @@ namespace ImageSandbox
 
         private void RemoveSelectedImages_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var selectedImage in this.GridView.SelectedItems)
+            for(int i = 0 ; i <= this.GridView.SelectedItems.Count; i++)
             {
-                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
+                var selectedImage = this.GridView.SelectedItems[0];
+               this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
         }
     }

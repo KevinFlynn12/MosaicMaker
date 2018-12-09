@@ -549,7 +549,7 @@ namespace ImageSandbox.ViewModel
                     
                 }else if(this.hasPictureMosaic)
                 {
-                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.useAllImagesOnce);
+                    await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
                 }
                 else
                 {
@@ -595,7 +595,7 @@ namespace ImageSandbox.ViewModel
                 );
 
                 var sourcePixels = pixelData.DetachPixelData();
-                await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.useAllImagesOnce);
+                await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
@@ -627,13 +627,17 @@ namespace ImageSandbox.ViewModel
 
         public void RemoveSelectedItem(WriteableBitmap selectedImage)
         {
-            var count = this.selectedFolderImages.Count;
-            foreach (var currImage in this.SelectedFolderImages)
-            {
-                if (currImage.Equals(selectedImage))
+
+
+            for(int i= 0; i < this.SelectedFolderImages.Count; i++){
+
+                var currentImage = this.selectedFolderImages[i];
+                if (currentImage.Equals(selectedImage))
                 {
                     this.selectedFolderImages.Remove(selectedImage);
                 }
+
+             
             }
 
         }
