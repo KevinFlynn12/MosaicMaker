@@ -15,7 +15,7 @@ namespace ImageSandbox.Util
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <returns>The color of the area that you want</returns>
-        public static Color GetPixelBgra8(byte[] pixels, int x, int y, uint width, uint height)
+        public static Color GetPixel(byte[] pixels, int x, int y, uint width, uint height)
         {
             var offset = (x * (int) width + y) * 4;
             var r = pixels[offset + 2];
@@ -33,7 +33,7 @@ namespace ImageSandbox.Util
         /// <param name="color">The color.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public static void SetPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
+        public static void SetPixel(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
             var offset = (x * (int) width + y) * 4;
             pixels[offset + 2] = color.R;

@@ -31,7 +31,7 @@ namespace ImageSandbox.Util
                 for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                 {
                     pixelCount++;
-                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                    var pixelColor = ImagePixel.GetPixel(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
@@ -49,7 +49,20 @@ namespace ImageSandbox.Util
             newColor.G = (byte) averageGreen;
             return newColor;
         }
-        public static Color FindAverageBlackAndWhiteColorForSelectedArea(byte[] sourcePixels, uint imageWidth, uint imageHeight,
+
+        /// <summary>
+        ///     Finds the average black and white color for selected area.
+        /// </summary>
+        /// <param name="sourcePixels">The source pixels.</param>
+        /// <param name="imageWidth">Width of the image.</param>
+        /// <param name="imageHeight">Height of the image.</param>
+        /// <param name="startingYPoint">The starting y point.</param>
+        /// <param name="yStoppingPoint">The y stopping point.</param>
+        /// <param name="startingXPoint">The starting x point.</param>
+        /// <param name="xStoppingPoint">The x stopping point.</param>
+        /// <returns>Black or White depending on average color value</returns>
+        public static Color FindAverageBlackAndWhiteColorForSelectedArea(byte[] sourcePixels, uint imageWidth,
+            uint imageHeight,
             int startingYPoint, int yStoppingPoint, int startingXPoint,
             int xStoppingPoint)
         {
@@ -60,7 +73,7 @@ namespace ImageSandbox.Util
             {
                 for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                 {
-                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, imageWidth,
+                    var pixelColor = ImagePixel.GetPixel(sourcePixels, currentYPoint, currentXPoint, imageWidth,
                         imageHeight);
                     var averageBlack = pixelColor.R + pixelColor.B + pixelColor.G / 3;
                     if (averageBlack >= 127.5)
@@ -71,28 +84,26 @@ namespace ImageSandbox.Util
                     {
                         totalBlack++;
                     }
-                    
                 }
             }
+
             var newColor = new Color();
             if (totalBlack > totalWhite)
             {
-                newColor.R = (byte)0;
-                newColor.B = (byte)0;
-                newColor.G = (byte)0;
+                newColor.R = 0;
+                newColor.B = 0;
+                newColor.G = 0;
             }
             else
             {
-                newColor.R = (byte)255;
-                newColor.B = (byte) 255;
-                newColor.G = (byte)255;
-
+                newColor.R = 255;
+                newColor.B = 255;
+                newColor.G = 255;
             }
 
-            
-           
             return newColor;
         }
+
         /// <summary>
         ///     Finds the average color of entire image.
         /// </summary>
@@ -112,7 +123,7 @@ namespace ImageSandbox.Util
                 for (var x = 0; x < imageHeight; x++)
                 {
                     pixelCount++;
-                    var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, y, x, imageWidth, imageHeight);
+                    var pixelColor = ImagePixel.GetPixel(sourcePixels, y, x, imageWidth, imageHeight);
                     totalRed += pixelColor.R;
                     totalBlue += pixelColor.B;
                     totalGreen += pixelColor.G;

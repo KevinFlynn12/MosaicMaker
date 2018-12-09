@@ -1,13 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Util;
 
@@ -16,7 +12,7 @@ namespace ImageSandbox.Model
     public class FolderImage
     {
         #region Data members
-        
+
         private readonly StorageFile loadedImageFile;
 
         #endregion
@@ -25,14 +21,12 @@ namespace ImageSandbox.Model
 
         public WriteableBitmap ImageBitmap { get; private set; }
 
-        public string FileName { get; }
-
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FolderImage"/> class.
+        ///     Initializes a new instance of the <see cref="FolderImage" /> class.
         /// </summary>
         /// <param name="loadedBitmap">The loaded bitmap.</param>
         /// <param name="loadedFile">The loaded file.</param>
@@ -101,25 +95,6 @@ namespace ImageSandbox.Model
                 }
             }
         }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return this.FileName;
-        }
-
-
-        
-
-
-
-
-
 
         #endregion
     }
