@@ -833,6 +833,7 @@ namespace ImageSandbox.ViewModel
         {
             this.imagePalette.Clear();
             this.SelectedFolderImages.Clear();
+            this.checkToEnablePictureMosaic();
         }
 
         private void createOriginalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
