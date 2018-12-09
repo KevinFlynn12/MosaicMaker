@@ -19,6 +19,12 @@ namespace ImageSandbox.Model
 
         #region Properties
 
+        /// <summary>
+        /// Gets the image bitmap.
+        /// </summary>
+        /// <value>
+        /// The image bitmap.
+        /// </value>
         public WriteableBitmap ImageBitmap { get; private set; }
 
         #endregion
