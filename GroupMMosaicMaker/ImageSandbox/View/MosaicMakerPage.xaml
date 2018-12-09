@@ -57,7 +57,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
         <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="32,305,0,0" RenderTransformOrigin="0.461,0.963"/>
         <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="AddImageButton_Click"/>
-        <Button Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="316,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}" RenderTransformOrigin="0.781,0.511" Click="Button_Click"/>
+        <Button x:Name="clearPaletteButton" Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}" RenderTransformOrigin="0.781,0.511" Click="ClearPaletteButton_Click"/>
         <CheckBox x:Name="UseImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left" Margin="25,137,0,0" VerticalAlignment="Top" Command="{Binding UseImageOnce, Mode=TwoWay}"   />
         <Button x:Name="RemoveSelectedImages" Content="Remove Selected Images" HorizontalAlignment="Left" Margin="118,927,0,0" VerticalAlignment="Top" Width="186" Height="32" Click="RemoveSelectedImages_Click"/>
     </Grid>

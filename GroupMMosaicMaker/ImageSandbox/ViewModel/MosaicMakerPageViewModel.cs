@@ -369,6 +369,14 @@ namespace ImageSandbox.ViewModel
             this.UseImagesOnce = new RelayCommand(this.useImagesOnce, this.canAlwaysExecute);
         }
 
+
+        private bool canUseImageOnlyOnce()
+        {
+            return this.useAllImagesOnce;
+        }
+
+
+
         private void useImagesOnce(object obj)
         {
             this.UseAllImagesOnce = true;
@@ -789,7 +797,10 @@ namespace ImageSandbox.ViewModel
 
 
 
-        public void clearImagePallette()
+        /// <summary>
+        /// Clears the image palette.
+        /// </summary>
+        public void ClearImagePalette()
         {
             this.imagePalete.Clear();
             this.SelectedFolderImages.Clear();
