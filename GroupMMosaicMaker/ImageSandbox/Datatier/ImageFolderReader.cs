@@ -4,13 +4,12 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Model;
 using ImageSandbox.Util;
 
-namespace ImageSandbox.Datatier
+namespace ImageSandbox.DataTier
 {
     public class ImageFolderReader
     {
@@ -35,8 +34,6 @@ namespace ImageSandbox.Datatier
 
             foreach (var currentFile in storedFolder)
             {
-                var stored = storedFolder.Count;
-
                 try
                 {
                     var copyBitmapImage = await BitmapCopy.MakeACopyOfTheFileToWorkOn(currentFile);
@@ -61,14 +58,14 @@ namespace ImageSandbox.Datatier
 
                         var sourcePixels = pixelData.DetachPixelData();
 
-                        var fileWriteableBitmap =
+                        var fileWritableBitmap =
                             new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
 
-                        using (var writeStream = fileWriteableBitmap.PixelBuffer.AsStream())
+                        using (var writeStream = fileWritableBitmap.PixelBuffer.AsStream())
                         {
                             await writeStream.WriteAsync(sourcePixels, 0, sourcePixels.Length);
 
-                            var selectedFolderImage = new FolderImage(fileWriteableBitmap, currentFile);
+                            var selectedFolderImage = new FolderImage(fileWritableBitmap, currentFile);
 
                             loadedImage.Add(selectedFolderImage);
                         }
@@ -76,7 +73,7 @@ namespace ImageSandbox.Datatier
                 }
                 catch (Exception)
                 {
-                    var folderLoadDialog = new ContentDialog { Title = "The folder was loaded", CloseButtonText = "OK" };
+                    var folderLoadDialog = new ContentDialog {Title = "The folder was loaded", CloseButtonText = "OK"};
                     await folderLoadDialog.ShowAsync();
                 }
             }

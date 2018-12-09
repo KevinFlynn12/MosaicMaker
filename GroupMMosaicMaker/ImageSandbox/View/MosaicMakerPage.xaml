@@ -2,7 +2,6 @@
     x:Class="ImageSandbox.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ImageSandbox"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -11,54 +10,93 @@
     <Grid>
         <CommandBar>
             <CommandBar.Content>
-                <Grid/>
+                <Grid />
             </CommandBar.Content>
-            <AppBarButton x:Name="LoadButton" Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick"  />
-            <AppBarButton x:Name="SaveButton" IsEnabled ="{Binding CanSave, Mode=TwoWay}" Icon="Save" Label="Save Picture"  Click="SaveButton_OnClick" />
-            <AppBarButton x:Name="AddImagePalette" Icon="Add"  HorizontalAlignment="Center" Label="Add Image Palette" VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePalette_OnClick"/>
+            <AppBarButton Icon="OpenFile" Label="Load Picture" Click="LoadButton_OnClick" />
+            <AppBarButton  IsEnabled="{Binding CanSave, Mode=TwoWay}" Icon="Save"
+                          Label="Save Picture" Click="SaveButton_OnClick" />
+            <AppBarButton  Icon="Add" HorizontalAlignment="Center" Label="Add Image Palette"
+                          VerticalAlignment="Stretch" Margin="0,0,0,0" Click="AddImagePalette_OnClick" />
         </CommandBar>
+        <TextBlock HorizontalAlignment="Left" Margin="354,65,0,0" Text="Select What Grid You Would Like"
+                   TextWrapping="Wrap" VerticalAlignment="Top" />
+        <RadioButton  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0"
+                     VerticalAlignment="Top" Command="{Binding GridChecked, Mode=TwoWay}" />
+        <RadioButton Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top"
+                     Margin="722,63,0,0" Command="{Binding TriangleGridChecked, Mode=TwoWay}" />
+        <RadioButton x:Name="noGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0"
+                     VerticalAlignment="Top" Command="{Binding NoGridChecked, Mode=TwoWay}" />
         <Grid Height="359" Margin="708,103,28,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Image Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664" />
+            <ScrollViewer ZoomMode="Enabled" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                <Image Source="{Binding ImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left"
+                       VerticalAlignment="Center" Height="359" Width="664" />
             </ScrollViewer>
         </Grid>
         <Grid Height="359" Margin="708,527,28,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-            <ScrollViewer ZoomMode="Enabled"  HorizontalScrollBarVisibility="Auto"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Image Source="{Binding AlterImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"   Height="359" Width="664"/>
+            <ScrollViewer ZoomMode="Enabled" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                <Image Source="{Binding AlterImageDisplay, Mode=TwoWay}" Stretch="Fill" HorizontalAlignment="Left"
+                       VerticalAlignment="Center" Height="359" Width="664" />
             </ScrollViewer>
         </Grid>
+        <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}"
+                 TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number" VerticalAlignment="Top"
+                 Margin="163,103,0,0" />
+        <Button Content="Submit" Command="{Binding ChangeBlockSize, Mode=TwoWay}" HorizontalAlignment="Left"
+                VerticalAlignment="Top" Margin="259,103,0,0" Height="33" />
+        <CheckBox x:Name="useImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left"
+                  Margin="27,140,0,0" VerticalAlignment="Top" Click="UseImageOnce_OnClick" />
+        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick"
+                  HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,179,0,0" />
+        <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="32,231,0,0"
+                VerticalAlignment="Top" Height="69" Width="174" Command="{Binding CreateSolidMosaic, Mode=OneWay}" />
+        <TextBlock HorizontalAlignment="Left" Margin="33,79,0,0" Text="Enter a block size between 5 and 50 "
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Top" />
+        <TextBlock HorizontalAlignment="Left" Margin="538,289,0,0" Text="Original Photo" TextWrapping="Wrap"
+                   VerticalAlignment="Top" />
+        <TextBlock HorizontalAlignment="Left" Margin="567,668,0,0" Text="Mosaic Photo" TextWrapping="Wrap"
+                   VerticalAlignment="Top" />
 
-        <Button Content="Create Solid Block&#xD;&#xA;   Mosaic" HorizontalAlignment="Left" Margin="39,264,0,0" VerticalAlignment="Top" Height="69" Width="174" Command="{Binding CreateSolidMosaic, Mode=OneWay}" />
-        <TextBlock HorizontalAlignment="Left" Margin="27,92,0,0" Text="Enter a block size between 5 and 50 " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="538,289,0,0" Text="Orignal Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="567,668,0,0" Text="Mosaic Photo" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Text="{Binding BlockSize, Mode=TwoWay}" TextChanging="blockSizeTextBox_OnTextChanging" InputScope="Number"  VerticalAlignment="Top" Margin="168,113,0,0"/>
-        <Button Content="Submit" Command="{Binding ChangeBlockSize, Mode=TwoWay}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="253,112,0,0" Height="33"/>
-        <Button x:Name="btnPictureMosaic"  IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}" Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="36,438,0,0" Height="56" Width="176" Click="PictureMosaicButton_Click" RenderTransformOrigin="0.522,0.232"/>
-        <CheckBox x:Name="blackAndWhiteCheckBox" Content="Black and White Mosaic" Click="BlackAndWhiteCheckbox_OnClick" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="27,201,0,0"/>
-        <TextBlock HorizontalAlignment="Left" Margin="354,65,0,0" Text="Select What Grid You Would Like" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <RadioButton x:Name="squareGrid"  Content="Square Grid" HorizontalAlignment="Left" Margin="597,63,0,0" VerticalAlignment="Top" Command="{Binding GridChecked, Mode=TwoWay}" />
-        <RadioButton x:Name="TriangleGrid" Content="Triangle Grid" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="722,63,0,0" Command="{Binding TriangleGridChecked, Mode=TwoWay}"  />
-        <RadioButton x:Name="NoGrid" Content="No Grid" HorizontalAlignment="Left" Margin="869,63,0,0" VerticalAlignment="Top" Command="{Binding NoGridChecked, Mode=TwoWay}"/>
-        <GridView x:Name="GridView" ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"  SelectionChanged="GridView_OnSelectionChanged" SelectionMode="Multiple" HorizontalAlignment="Left" VerticalAlignment="Top" Width="369" Height="342" Margin="27,580,0,0" >
+        <Button HorizontalAlignment="Left" Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic"
+                Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172"
+                Margin="33,338,0,0" RenderTransformOrigin="0.461,0.963" />
+        <Button x:Name="btnPictureMosaic" IsEnabled="{Binding IsCreatePictureMosaicEnabled, Mode=TwoWay}"
+                Content="Create Picture&#xD;&#xA;     Mosaic" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Margin="33,436,0,0" Height="58" Width="176" Click="PictureMosaicButton_Click"
+                RenderTransformOrigin="0.522,0.232" />
+
+
+        <GridView x:Name="gridView" ItemsSource="{Binding SelectedFolderImages, Mode=TwoWay}"
+                  SelectionChanged="GridView_OnSelectionChanged" SelectionMode="Multiple" HorizontalAlignment="Left"
+                  VerticalAlignment="Top" Width="406" Height="342" Margin="27,580,0,0">
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageGalleryDataTemplate">
-                    <Image  Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill"/>
+                    <Image Source="{Binding}" Height="50" Width="50" Stretch="UniformToFill" />
                 </DataTemplate>
             </GridView.ItemTemplate>
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="6" Orientation="Horizontal"/>
+                    <ItemsWrapGrid MaximumRowsOrColumns="7" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <TextBlock x:Name="ImagePaletteCount" Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,527,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20"/>
-        <TextBlock HorizontalAlignment="Left" Margin="85,527,0,0" Text="Images in Palette have been loaded" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954"/>
-        <Button HorizontalAlignment="Left"  Height="67" Content="Create a Solid Triangle&#xD;&#xA;     Mosaic" Command="{Binding TriangleMosaic , Mode=TwoWay}" VerticalAlignment="Top" Width="172" Margin="38,351,0,0" RenderTransformOrigin="0.461,0.963"/>
-        <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,927,0,0" Command="{Binding AddImage , Mode=TwoWay}" Click="AddImageButton_Click"/>
-        <Button x:Name="clearPaletteButton" Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,927,0,0" Command="{Binding ClearPalette , Mode=TwoWay}" RenderTransformOrigin="0.781,0.511" Click="ClearPaletteButton_Click"/>
-        <CheckBox x:Name="UseImageOnce" Content="Use every Image in ImagePalette once" HorizontalAlignment="Left" Margin="27,164,0,0" VerticalAlignment="Top" Click="UseImageOnce_OnClick"   />
-        <Button x:Name="RemoveSelectedImages" Content="Remove Selected Images" HorizontalAlignment="Left" Margin="118,927,0,0" VerticalAlignment="Top" Width="186" Height="32" Click="RemoveSelectedImages_Click"/>
-        <TextBlock HorizontalAlignment="Left" Text="Enter block size" TextWrapping="Wrap" VerticalAlignment="Top" Margin="33,119,0,0" Height="26" Width="112"/>
+        <TextBlock Text="{Binding NumberOfImages, Mode=TwoWay}" HorizontalAlignment="Left" Margin="33,521,0,0"
+                   TextWrapping="Wrap" VerticalAlignment="Top" Width="38" Height="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="78,521,0,0" Text="Images in Palette have been loaded"
+                   TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.231,0.954" />
+
+        <Button Content="Add Image" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,927,0,0"
+                Command="{Binding AddImage , Mode=TwoWay}" Click="AddImageButton_Click" />
+        <Button Content="Remove Selected Images" HorizontalAlignment="Left" Margin="118,927,0,0"
+                VerticalAlignment="Top" Width="186" Height="32" Click="RemoveSelectedImages_Click" />
+        <Button Content="Clear Palette" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="330,927,0,0"
+                Command="{Binding ClearPalette , Mode=TwoWay}" RenderTransformOrigin="0.781,0.511"
+                Click="ClearPaletteButton_Click" />
+
+
+        <TextBlock HorizontalAlignment="Left" Text="Enter block size" TextWrapping="Wrap" VerticalAlignment="Top"
+                   Margin="33,109,0,0" Height="26" Width="112" />
     </Grid>
 </Page>

@@ -168,11 +168,16 @@ namespace ImageSandbox.Model
             return this.selectedFolderImages.GetEnumerator();
         }
 
+        /// <summary>
+        ///     Resizes all images.
+        /// </summary>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <returns>Task</returns>
         public async Task ResizeAllImages(int blockSize)
         {
-            foreach (var currImage in this.selectedFolderImages)
+            foreach (var currentImage in this.selectedFolderImages)
             {
-                await currImage.ResizeWritableBitmap(blockSize);
+                await currentImage.ResizeWritableBitmap(blockSize);
             }
         }
 
@@ -222,13 +227,13 @@ namespace ImageSandbox.Model
         }
 
         /// <summary>
-        ///     Repopulates the image pallette.
+        ///     Repopulates the image palette.
         /// </summary>
-        public void RepopulateImagePallette()
+        public void RepopulateImagePalettte()
         {
-            foreach (var currImage in this.reservedImagePalette)
+            foreach (var currentImage in this.reservedImagePalette)
             {
-                this.selectedFolderImages.Add(currImage);
+                this.selectedFolderImages.Add(currentImage);
             }
         }
 

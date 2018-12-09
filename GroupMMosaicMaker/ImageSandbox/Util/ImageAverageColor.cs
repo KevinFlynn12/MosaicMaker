@@ -43,10 +43,7 @@ namespace ImageSandbox.Util
             var averageBlue = totalBlue / pixelCount;
             var averageGreen = totalGreen / pixelCount;
 
-            var newColor = new Color();
-            newColor.R = (byte) averageRed;
-            newColor.B = (byte) averageBlue;
-            newColor.G = (byte) averageGreen;
+            var newColor = new Color {R = (byte) averageRed, B = (byte) averageBlue, G = (byte) averageGreen};
             return newColor;
         }
 
@@ -134,10 +131,7 @@ namespace ImageSandbox.Util
             var averageBlue = totalBlue / pixelCount;
             var averageGreen = totalGreen / pixelCount;
 
-            var newColor = new Color();
-            newColor.R = (byte) averageRed;
-            newColor.B = (byte) averageBlue;
-            newColor.G = (byte) averageGreen;
+            var newColor = new Color {R = (byte) averageRed, B = (byte) averageBlue, G = (byte) averageGreen};
             return newColor;
         }
 

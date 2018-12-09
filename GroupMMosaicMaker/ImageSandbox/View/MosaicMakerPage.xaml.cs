@@ -45,7 +45,7 @@ namespace ImageSandbox
         public MainPage()
         {
             this.InitializeComponent();
-            this.NoGrid.IsChecked = true;
+            this.noGrid.IsChecked = true;
             this.btnPictureMosaic.IsEnabled = false;
             this.selectedFolder = null;
             this.viewModel = new MosaicMakerPageViewModel();
@@ -180,9 +180,9 @@ namespace ImageSandbox
 
         private void RemoveSelectedImages_Click(object sender, RoutedEventArgs e)
         {
-            while (this.GridView.SelectedItems.Any())
+            while (this.gridView.SelectedItems.Any())
             {
-                var selectedImage = this.GridView.SelectedItems[0];
+                var selectedImage = this.gridView.SelectedItems[0];
                 this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
         }
@@ -195,7 +195,7 @@ namespace ImageSandbox
         private void GridView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var images = new List<WriteableBitmap>();
-            foreach (var currentImage in this.GridView.SelectedItems)
+            foreach (var currentImage in this.gridView.SelectedItems)
             {
                 images.Add((WriteableBitmap) currentImage);
             }
@@ -203,11 +203,11 @@ namespace ImageSandbox
             this.viewModel.SelectedImages = images;
         }
 
-        #endregion
-
         private void UseImageOnce_OnClick(object sender, RoutedEventArgs e)
         {
-            this.viewModel.UseAllImagesOnce = this.UseImageOnce.IsChecked ?? false;
+            this.viewModel.UseAllImagesOnce = this.useImageOnce.IsChecked ?? false;
         }
+
+        #endregion
     }
 }
