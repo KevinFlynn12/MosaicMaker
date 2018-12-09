@@ -614,13 +614,14 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-           // this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+           this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
                 this.SelectedFolderImages.Add(images.ImageBitmap);
             }
 
+            this.OnPropertyChanged("SelectedFolderImages");
             this.loadedFolder.Clear();
         }
 
@@ -785,6 +786,16 @@ namespace ImageSandbox.ViewModel
                 stream.Dispose();
             }
         }
+
+
+
+        public void clearImagePallette()
+        {
+            this.imagePalete.Clear();
+            this.SelectedFolderImages.Clear();
+        }
+
+
 
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {

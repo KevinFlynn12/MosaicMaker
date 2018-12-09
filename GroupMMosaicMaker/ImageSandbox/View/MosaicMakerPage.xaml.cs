@@ -171,7 +171,7 @@ namespace ImageSandbox
             if (selectedFolder != null)
             {
                 await this.viewModel.LoadAllFolderImages(selectedFolder);
-                this.viewModel.LoadAllImagesIntoImagePalette();
+
             }
         }
 
@@ -194,6 +194,11 @@ namespace ImageSandbox
                 var selectedImage = this.GridView.SelectedItems[0];
                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+           this.viewModel.clearImagePallette();
         }
     }
 }
