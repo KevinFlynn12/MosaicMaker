@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
@@ -171,7 +172,7 @@ namespace ImageSandbox
             if (selectedFolder != null)
             {
                 await this.viewModel.LoadAllFolderImages(selectedFolder);
-                this.viewModel.LoadAllImagesIntoImagePalette();
+
             }
         }
 
@@ -189,11 +190,16 @@ namespace ImageSandbox
 
         private void RemoveSelectedImages_Click(object sender, RoutedEventArgs e)
         {
-            for(int i = 0 ; i <= this.GridView.SelectedItems.Count; i++)
+            while (this.GridView.SelectedItems.Any())
             {
                 var selectedImage = this.GridView.SelectedItems[0];
                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
+        }
+
+        private void ClearPaletteButton_Click(object sender, RoutedEventArgs e)
+        {
+           this.viewModel.ClearImagePalette();
         }
 
         private void GridView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -383,6 +383,14 @@ namespace ImageSandbox.ViewModel
             this.UseImagesOnce = new RelayCommand(this.useImagesOnce, this.canAlwaysExecute);
         }
 
+
+        private bool canUseImageOnlyOnce()
+        {
+            return this.useAllImagesOnce;
+        }
+
+
+
         private void useImagesOnce(object obj)
         {
             this.UseAllImagesOnce = true;
@@ -648,13 +656,14 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+           this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
                 this.SelectedFolderImages.Add(images.ImageBitmap);
             }
 
+            this.OnPropertyChanged("SelectedFolderImages");
             this.loadedFolder.Clear();
         }
 
@@ -671,7 +680,7 @@ namespace ImageSandbox.ViewModel
                     this.SelectedFolderImages.Remove(currentImage);
                 }
 
-             
+
             }
 
             this.NumberOfImages = "" + this.SelectedFolderImages.Count;
@@ -819,6 +828,19 @@ namespace ImageSandbox.ViewModel
                 stream.Dispose();
             }
         }
+
+
+
+        /// <summary>
+        /// Clears the image palette.
+        /// </summary>
+        public void ClearImagePalette()
+        {
+            this.imagePalete.Clear();
+            this.SelectedFolderImages.Clear();
+        }
+
+
 
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
