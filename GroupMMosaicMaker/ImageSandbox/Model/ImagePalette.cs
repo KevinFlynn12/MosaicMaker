@@ -168,6 +168,11 @@ namespace ImageSandbox.Model
             return this.selectedFolderImages.GetEnumerator();
         }
 
+        /// <summary>
+        /// Resizes all images.
+        /// </summary>
+        /// <param name="blockSize">Size of the block.</param>
+        /// <returns>Task</returns>
         public async Task ResizeAllImages(int blockSize)
         {
             foreach (var currImage in this.selectedFolderImages)
@@ -222,7 +227,7 @@ namespace ImageSandbox.Model
         }
 
         /// <summary>
-        ///     Repopulates the image pallette.
+        ///     Repopulates the image palette.
         /// </summary>
         public void RepopulateImagePallette()
         {

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -9,17 +6,26 @@ namespace ImageSandbox.Util
 {
     public class RelayCommandAsync : ICommand
     {
+        #region Data members
+
         private readonly Func<object, Task> executedMethod;
         private readonly Predicate<object> canExecute;
 
-        public event EventHandler CanExecuteChanged;
+        #endregion
+
+        #region Constructors
 
         public RelayCommandAsync(Func<object, Task> execute, Predicate<object> canExecute = null)
         {
             this.executedMethod = execute;
             this.canExecute = canExecute;
         }
-        
+
+        #endregion
+
+        #region Methods
+
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {
@@ -27,7 +33,7 @@ namespace ImageSandbox.Util
             return result;
         }
 
-        public async  void Execute(object parameter)
+        public async void Execute(object parameter)
         {
             await this.executedMethod(parameter);
         }
@@ -39,5 +45,7 @@ namespace ImageSandbox.Util
         {
             this.CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        #endregion
     }
 }

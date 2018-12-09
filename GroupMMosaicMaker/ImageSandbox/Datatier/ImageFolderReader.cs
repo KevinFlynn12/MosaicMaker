@@ -4,7 +4,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.FileProperties;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using ImageSandbox.Model;
@@ -35,8 +34,6 @@ namespace ImageSandbox.Datatier
 
             foreach (var currentFile in storedFolder)
             {
-                var stored = storedFolder.Count;
-
                 try
                 {
                     var copyBitmapImage = await BitmapCopy.MakeACopyOfTheFileToWorkOn(currentFile);
@@ -76,7 +73,7 @@ namespace ImageSandbox.Datatier
                 }
                 catch (Exception)
                 {
-                    var folderLoadDialog = new ContentDialog { Title = "The folder was loaded", CloseButtonText = "OK" };
+                    var folderLoadDialog = new ContentDialog {Title = "The folder was loaded", CloseButtonText = "OK"};
                     await folderLoadDialog.ShowAsync();
                 }
             }

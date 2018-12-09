@@ -203,11 +203,11 @@ namespace ImageSandbox
             this.viewModel.SelectedImages = images;
         }
 
-        #endregion
-
         private void UseImageOnce_OnClick(object sender, RoutedEventArgs e)
         {
             this.viewModel.UseAllImagesOnce = this.UseImageOnce.IsChecked ?? false;
         }
+
+        #endregion
     }
 }
