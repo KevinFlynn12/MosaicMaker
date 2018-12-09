@@ -11,7 +11,6 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
-using ImageMagick.Defines;
 using ImageSandbox.Annotations;
 using ImageSandbox.Datatier;
 using ImageSandbox.Model;
@@ -34,7 +33,7 @@ namespace ImageSandbox.ViewModel
         private WriteableBitmap imageDisplay;
         private WriteableBitmap alterImageDisplay;
         private MosaicImage mosaicImage;
-        private  ImagePalette imagePalete;
+        private readonly ImagePalette imagePalete;
         private ObservableCollection<WriteableBitmap> selectedFolderImages;
         private readonly ImageFolderReader folderReader;
         private List<FolderImage> loadedFolder;
@@ -57,15 +56,17 @@ namespace ImageSandbox.ViewModel
 
         private string numberOfImages;
 
+        private List<WriteableBitmap> selectedImages;
+
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Gets or sets the selected folder images.
+        ///     Gets or sets the selected folder images.
         /// </summary>
         /// <value>
-        /// The selected folder images.
+        ///     The selected folder images.
         /// </value>
         public ObservableCollection<WriteableBitmap> SelectedFolderImages
         {
@@ -78,66 +79,69 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the create solid mosaic.
+        ///     Gets or sets the create solid mosaic.
         /// </summary>
         /// <value>
-        /// The create solid mosaic.
+        ///     The create solid mosaic.
         /// </value>
         public RelayCommandAsync CreateSolidMosaic { get; set; }
+
         /// <summary>
-        /// Gets or sets the triangle mosaic.
+        ///     Gets or sets the triangle mosaic.
         /// </summary>
         /// <value>
-        /// The triangle mosaic.
+        ///     The triangle mosaic.
         /// </value>
         public RelayCommandAsync TriangleMosaic { get; set; }
+
         /// <summary>
-        /// Gets or sets the size of the change block.
+        ///     Gets or sets the size of the change block.
         /// </summary>
         /// <value>
-        /// The size of the change block.
+        ///     The size of the change block.
         /// </value>
         public RelayCommand ChangeBlockSize { get; set; }
+
         /// <summary>
-        /// Gets or sets the triangle grid checked.
+        ///     Gets or sets the triangle grid checked.
         /// </summary>
         /// <value>
-        /// The triangle grid checked.
+        ///     The triangle grid checked.
         /// </value>
         public RelayCommand TriangleGridChecked { get; set; }
+
         /// <summary>
-        /// Gets or sets the grid checked.
+        ///     Gets or sets the grid checked.
         /// </summary>
         /// <value>
-        /// The grid checked.
+        ///     The grid checked.
         /// </value>
         public RelayCommand GridChecked { get; set; }
+
         /// <summary>
-        /// Gets or sets the no grid checked.
+        ///     Gets or sets the no grid checked.
         /// </summary>
         /// <value>
-        /// The no grid checked.
+        ///     The no grid checked.
         /// </value>
         public RelayCommand NoGridChecked { get; set; }
-        
+
         public RelayCommand ClearPalette { get; set; }
         public RelayCommand UseImagesOnce { get; set; }
 
-
-
         /// <summary>
-        /// Gets the type of the loaded file.
+        ///     Gets the type of the loaded file.
         /// </summary>
         /// <value>
-        /// The type of the loaded file.
+        ///     The type of the loaded file.
         /// </value>
         public string LoadedFileType { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is create picture mosaic enabled.
+        ///     Gets or sets a value indicating whether this instance is create picture mosaic enabled.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is create picture mosaic enabled; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is create picture mosaic enabled; otherwise, <c>false</c>.
         /// </value>
         public bool IsCreatePictureMosaicEnabled
         {
@@ -152,10 +156,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is grid check enabled.
+        ///     Gets or sets a value indicating whether this instance is grid check enabled.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is grid check enabled; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is grid check enabled; otherwise, <c>false</c>.
         /// </value>
         public bool IsGridCheckEnabled
         {
@@ -169,10 +173,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance can save.
+        ///     Gets or sets a value indicating whether this instance can save.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance can save; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance can save; otherwise, <c>false</c>.
         /// </value>
         public bool CanSave
         {
@@ -187,10 +191,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance has grid.
+        ///     Gets or sets a value indicating whether this instance has grid.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance has grid; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance has grid; otherwise, <c>false</c>.
         /// </value>
         public bool HasGrid
         {
@@ -203,10 +207,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance has triangle grid.
+        ///     Gets or sets a value indicating whether this instance has triangle grid.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance has triangle grid; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance has triangle grid; otherwise, <c>false</c>.
         /// </value>
         public bool HasTriangleGrid
         {
@@ -217,7 +221,6 @@ namespace ImageSandbox.ViewModel
                 this.OnPropertyChanged();
             }
         }
-
 
         public bool UseAllImagesOnce
         {
@@ -230,10 +233,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is black and white.
+        ///     Gets or sets a value indicating whether this instance is black and white.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is black and white; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is black and white; otherwise, <c>false</c>.
         /// </value>
         public bool IsBlackAndWhite
         {
@@ -246,10 +249,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the image display.
+        ///     Gets or sets the image display.
         /// </summary>
         /// <value>
-        /// The image display.
+        ///     The image display.
         /// </value>
         public WriteableBitmap ImageDisplay
         {
@@ -266,10 +269,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the alter image display.
+        ///     Gets or sets the alter image display.
         /// </summary>
         /// <value>
-        /// The alter image display.
+        ///     The alter image display.
         /// </value>
         public WriteableBitmap AlterImageDisplay
         {
@@ -282,10 +285,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the size of the block.
+        ///     Gets or sets the size of the block.
         /// </summary>
         /// <value>
-        /// The size of the block.
+        ///     The size of the block.
         /// </value>
         public string BlockSize
         {
@@ -301,10 +304,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the number of images.
+        ///     Gets or sets the number of images.
         /// </summary>
         /// <value>
-        /// The number of images.
+        ///     The number of images.
         /// </value>
         public string NumberOfImages
         {
@@ -317,10 +320,10 @@ namespace ImageSandbox.ViewModel
         }
 
         /// <summary>
-        /// Gets or sets the mosaic image.
+        ///     Gets or sets the mosaic image.
         /// </summary>
         /// <value>
-        /// The mosaic image.
+        ///     The mosaic image.
         /// </value>
         public MosaicImage MosaicImage
         {
@@ -332,8 +335,6 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        private List<WriteableBitmap> selectedImages;
-
         public List<WriteableBitmap> SelectedImages
         {
             get => this.selectedImages;
@@ -344,13 +345,12 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MosaicMakerPageViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="MosaicMakerPageViewModel" /> class.
         /// </summary>
         public MosaicMakerPageViewModel()
         {
@@ -378,18 +378,15 @@ namespace ImageSandbox.ViewModel
             this.TriangleGridChecked = new RelayCommand(this.createTriangleGrid, this.canCreateGrid);
             this.GridChecked = new RelayCommand(this.createGrid, this.canCreateGrid);
             this.NoGridChecked = new RelayCommand(this.createNoGrid, this.canAlwaysExecute);
-            
+
             this.ClearPalette = new RelayCommand(this.clearPalette, this.canClearPalette);
             this.UseImagesOnce = new RelayCommand(this.useImagesOnce, this.canAlwaysExecute);
         }
-
 
         private bool canUseImageOnlyOnce()
         {
             return this.useAllImagesOnce;
         }
-
-
 
         private void useImagesOnce(object obj)
         {
@@ -405,20 +402,17 @@ namespace ImageSandbox.ViewModel
         {
             this.NumberOfImages = "" + 0;
             this.imagePalete.Clear();
-            this.SelectedFolderImages= new ObservableCollection<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
         }
-        
 
         public async Task AddImage(StorageFile file)
         {
-
             using (var fileStream = await file.OpenAsync(FileAccessMode.Read))
 
             {
                 var decoder = await BitmapDecoder.CreateAsync(fileStream);
 
-                var transform = new BitmapTransform
-                {
+                var transform = new BitmapTransform {
                     ScaledWidth = Convert.ToUInt32(50),
                     ScaledHeight = Convert.ToUInt32(50)
                 };
@@ -442,27 +436,28 @@ namespace ImageSandbox.ViewModel
 
                     var selectedFolderImage = new FolderImage(fileWriteableBitmap, file);
                     this.imagePalete.Add(selectedFolderImage);
-                    this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>(this.imagePalete.Select(image => image.ImageBitmap).ToList());
+                    this.SelectedFolderImages =
+                        new ObservableCollection<WriteableBitmap>(this
+                                                                  .imagePalete.Select(image => image.ImageBitmap)
+                                                                  .ToList());
                     this.NumberOfImages = this.imagePalete.Count + "";
-
-                }  
+                }
             }
-
         }
 
         private async Task createSolidMosaic(object obj)
         {
             this.changeMosaicType(true, false, false);
             await this.handleCreatingMosaic();
-            
+
             this.CanSave = true;
         }
+
         private bool canTriangleMosaic(object obj)
         {
-            return (this.selectedImageFile != null) & (this.blockSizeNumber >= 5) & (this.blockSizeNumber <= 50) &  (!this.hasTriangleMosaic || this.hasBlockSizeChanged);
+            return (this.selectedImageFile != null) & (this.blockSizeNumber >= 5) & (this.blockSizeNumber <= 50) &
+                   (!this.hasTriangleMosaic || this.hasBlockSizeChanged);
         }
-
-
 
         private bool canCreateGrid(object obj)
         {
@@ -473,7 +468,6 @@ namespace ImageSandbox.ViewModel
         {
             this.changeGridType(false, true);
             await this.creatingOutlineOrignalImage();
-            
         }
 
         private async void createGrid(object obj)
@@ -487,7 +481,6 @@ namespace ImageSandbox.ViewModel
             this.changeGridType(false, false);
             this.ImageDisplay = this.orignalImage;
         }
-        
 
         private bool canChangeBlockSize(object obj)
         {
@@ -496,20 +489,19 @@ namespace ImageSandbox.ViewModel
             return parsedBlockSize >= 5 && parsedBlockSize <= 50;
         }
 
-        private async void changeBlockSize(object obj)
+        private void changeBlockSize(object obj)
         {
             this.blockSizeNumber = int.Parse(this.BlockSize);
 
-            
             this.IsGridCheckEnabled = true;
-            
+
             if (this.MosaicImage != null)
             {
                 this.MosaicImage.BlockSize = this.blockSizeNumber;
-
             }
+
             this.changeMosaicType(false, false, false);
-            this.CheckToEnablePictureMosaic();
+            this.checkToEnablePictureMosaic();
             this.CreateSolidMosaic.OnCanExecuteChanged();
             this.TriangleMosaic.OnCanExecuteChanged();
             this.TriangleGridChecked.OnCanExecuteChanged();
@@ -535,10 +527,12 @@ namespace ImageSandbox.ViewModel
 
             this.CanSave = true;
         }
+
         private bool canAlwaysExecute(object obj)
         {
             return true;
         }
+
         private async Task handleCreatingMosaic()
         {
             var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
@@ -566,17 +560,16 @@ namespace ImageSandbox.ViewModel
 
                 var sourcePixels = pixelData.DetachPixelData();
                 if (this.hasTriangleMosaic)
-                { 
-                    this.MosaicImage.CreateTriangleMosaic(sourcePixels, isBlackAndWhite);
-                    
-                }else if(this.hasPictureMosaic)
+                {
+                    this.MosaicImage.CreateTriangleMosaic(sourcePixels, this.isBlackAndWhite);
+                }
+                else if (this.hasPictureMosaic)
                 {
                     await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
                 }
                 else
                 {
                     this.MosaicImage.CreateSolidMosaic(sourcePixels, this.isBlackAndWhite);
-
                 }
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
@@ -626,7 +619,6 @@ namespace ImageSandbox.ViewModel
                 {
                     await this.MosaicImage.CreatePictureMosaic(sourcePixels, this.imagePalete, this.UseAllImagesOnce);
                 }
-                
 
                 this.modifiedImage = new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                 using (var writeStream = this.modifiedImage.PixelBuffer.AsStream())
@@ -645,18 +637,19 @@ namespace ImageSandbox.ViewModel
             var selectedImagePalette = new ImagePalette();
             foreach (var image in this.selectedImages)
             {
-                selectedImagePalette.Add(this.imagePalete.Where(folderImage => folderImage.ImageBitmap.Equals(image)).ToList().First());
+                selectedImagePalette.Add(this.imagePalete.Where(folderImage => folderImage.ImageBitmap.Equals(image))
+                                             .ToList().First());
             }
 
             return selectedImagePalette;
-
         }
+
         /// <summary>
-        /// Loads all images into image palette.
+        ///     Loads all images into image palette.
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-           this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
@@ -667,47 +660,37 @@ namespace ImageSandbox.ViewModel
             this.loadedFolder.Clear();
         }
 
-
         public void RemoveSelectedItem(WriteableBitmap selectedImage)
         {
-
-
-            for(int i= 0; i < this.SelectedFolderImages.Count; i++){
-
+            for (var i = 0; i < this.SelectedFolderImages.Count; i++)
+            {
                 var currentImage = this.selectedFolderImages[i];
                 if (currentImage.Equals(selectedImage))
                 {
                     this.SelectedFolderImages.Remove(currentImage);
                 }
-
-
             }
 
             this.NumberOfImages = "" + this.SelectedFolderImages.Count;
         }
 
-
-
-
         /// <summary>
-        /// Loads all folder images.
+        ///     Loads all folder images.
         /// </summary>
         /// <param name="selectedFolder">The selected folder.</param>
         /// <returns>A task</returns>
         public async Task LoadAllFolderImages(StorageFolder selectedFolder)
         {
             this.loadedFolder = (List<FolderImage>) await this.folderReader.LoadSelectedFolder(selectedFolder);
-            this.CheckToEnablePictureMosaic();
+            this.checkToEnablePictureMosaic();
             this.LoadAllImagesIntoImagePalette();
-            this.UpdateImagePaletteCount();
+            this.updateImagePaletteCount();
         }
 
-        private void UpdateImagePaletteCount()
+        private void updateImagePaletteCount()
         {
             this.NumberOfImages = "" + this.imagePalete.Count;
         }
-
-        
 
         private void changeMosaicType(bool isSolidMosaic, bool isTriangleMosaic, bool isPictureMosaic)
         {
@@ -716,13 +699,15 @@ namespace ImageSandbox.ViewModel
             this.hasPictureMosaic = isPictureMosaic;
             this.CreateSolidMosaic.OnCanExecuteChanged();
             this.TriangleMosaic.OnCanExecuteChanged();
-            this.CheckToEnablePictureMosaic();
+            this.checkToEnablePictureMosaic();
         }
+
         private void changeGridType(bool isGrid, bool isTriangleGrid)
         {
             this.HasGrid = isGrid;
-            this.hasTriangleGrid = isTriangleGrid; 
+            this.hasTriangleGrid = isTriangleGrid;
         }
+
         /// <summary>
         ///     Loads the picture.
         /// </summary>
@@ -736,7 +721,6 @@ namespace ImageSandbox.ViewModel
 
             if (this.selectedImageFile != null)
             {
-
                 var copyBitmapImage = await this.MakeACopyOfTheFileToWorkOn(this.selectedImageFile);
 
                 using (var fileStream = await this.selectedImageFile.OpenAsync(FileAccessMode.Read))
@@ -763,8 +747,10 @@ namespace ImageSandbox.ViewModel
                         this.AlterImageDisplay = null;
                         this.CanSave = false;
                     }
+
                     var sourcePixels = pixelData.DetachPixelData();
-                    this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber, decoder.PixelHeight, decoder.PixelWidth);
+                    this.MosaicImage = new MosaicImage(imageFile, this.blockSizeNumber, decoder.PixelHeight,
+                        decoder.PixelWidth);
                     await this.createOriginalImage(decoder, sourcePixels);
                     if (this.HasGrid)
                     {
@@ -774,10 +760,11 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-        private void CheckToEnablePictureMosaic()
+        private void checkToEnablePictureMosaic()
         {
             this.IsCreatePictureMosaicEnabled =
-                this.blockSizeNumber != 0 && this.orignalImage != null && this.checkForImagePalette() & (!this.hasPictureMosaic || this.hasBlockSizeChanged);
+                this.blockSizeNumber != 0 && this.orignalImage != null && this.checkForImagePalette() &
+                (!this.hasPictureMosaic || this.hasBlockSizeChanged);
         }
 
         private bool checkForImagePalette()
@@ -829,10 +816,8 @@ namespace ImageSandbox.ViewModel
             }
         }
 
-
-
         /// <summary>
-        /// Clears the image palette.
+        ///     Clears the image palette.
         /// </summary>
         public void ClearImagePalette()
         {
@@ -840,65 +825,63 @@ namespace ImageSandbox.ViewModel
             this.SelectedFolderImages.Clear();
         }
 
-
-
         private void createOrignalImageWithOutline(byte[] sourcePixels, uint imageWidth, uint imageHeight)
         {
-            var startingYpoint = 0;
-            while (startingYpoint < imageHeight)
+            var startingYPoint = 0;
+            while (startingYPoint < imageHeight)
             {
-                var startingXpoint = 0;
-                while (startingXpoint < imageWidth)
+                var startingXPoint = 0;
+                while (startingXPoint < imageWidth)
                 {
-                    var XStoppingPoint = this.UpdateStoppingPoint(imageWidth, startingXpoint);
+                    var xStoppingPoint = this.updateStoppingPoint(imageWidth, startingXPoint);
 
-                    var YStoppingPoint = this.UpdateStoppingPoint(imageHeight, startingYpoint);
+                    var yStoppingPoint = this.updateStoppingPoint(imageHeight, startingYPoint);
                     var lineY = 0;
-                    for (var currentYPoint = startingYpoint; currentYPoint < YStoppingPoint; currentYPoint++)
+                    for (var currentYPoint = startingYPoint; currentYPoint < yStoppingPoint; currentYPoint++)
                     {
                         var lineX = 0;
-                        for (var currentXPoint = startingXpoint; currentXPoint < XStoppingPoint; currentXPoint++)
+                        for (var currentXPoint = startingXPoint; currentXPoint < xStoppingPoint; currentXPoint++)
                         {
-                            var pixelColor = ImagePixel.GetPixelBgra8(sourcePixels, currentYPoint, currentXPoint,
+                            var pixelColor = ImagePixel.GetPixel(sourcePixels, currentYPoint, currentXPoint,
                                 imageWidth, imageHeight);
 
-                            if (currentYPoint == startingYpoint || YStoppingPoint == currentYPoint
-                                                                || currentXPoint == startingXpoint ||
-                                                                XStoppingPoint == currentXPoint)
+                            if (currentYPoint == startingYPoint || yStoppingPoint == currentYPoint
+                                                                || currentXPoint == startingXPoint ||
+                                                                xStoppingPoint == currentXPoint)
                             {
                                 pixelColor = Colors.White;
-                                ImagePixel.SetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
+                                ImagePixel.SetPixel(sourcePixels, currentYPoint, currentXPoint, pixelColor,
                                     imageWidth, imageHeight);
                             }
                             else if (this.HasTriangleGrid && lineX == lineY)
                             {
                                 pixelColor = Colors.White;
-                                ImagePixel.SetPixelBgra8(sourcePixels, currentYPoint, currentXPoint, pixelColor,
+                                ImagePixel.SetPixel(sourcePixels, currentYPoint, currentXPoint, pixelColor,
                                     imageWidth, imageHeight);
                             }
-                           
+
                             lineX++;
                         }
 
                         lineY++;
                     }
 
-                    startingXpoint += this.blockSizeNumber;
+                    startingXPoint += this.blockSizeNumber;
                 }
 
-                startingYpoint += this.blockSizeNumber;
+                startingYPoint += this.blockSizeNumber;
             }
         }
 
-        private int UpdateStoppingPoint(uint maxValue, int coordinate)
+        private int updateStoppingPoint(uint maxValue, int coordinate)
         {
-            var CoordinateStoppingPoint = coordinate + this.blockSizeNumber;
-            if (CoordinateStoppingPoint > maxValue)
+            var coordinateStoppingPoint = coordinate + this.blockSizeNumber;
+            if (coordinateStoppingPoint > maxValue)
             {
-                CoordinateStoppingPoint = (int) maxValue;
+                coordinateStoppingPoint = (int) maxValue;
             }
 
-            return CoordinateStoppingPoint;
+            return coordinateStoppingPoint;
         }
 
         private async Task creatingOutlineOrignalImage()
@@ -937,22 +920,22 @@ namespace ImageSandbox.ViewModel
                 }
             }
         }
+
         /// <summary>
-        /// Determines what happens when Black and White check box is pressed
+        ///     Determines what happens when Black and White check box is pressed
         /// </summary>
         /// <returns>A task.</returns>
         public async Task BlackAndWhiteCheckboxChanged()
         {
-            if (this.MosaicImage != null & this.orignalImage != null)
+            if ((this.MosaicImage != null) & (this.orignalImage != null))
             {
                 this.ImageDisplay = this.orignalImage;
                 await this.handleCreatingMosaic();
             }
-            else if(this.orignalImage != null)
+            else if (this.orignalImage != null)
             {
                 this.ImageDisplay = this.orignalImage;
             }
-            
         }
 
         [NotifyPropertyChangedInvocator]

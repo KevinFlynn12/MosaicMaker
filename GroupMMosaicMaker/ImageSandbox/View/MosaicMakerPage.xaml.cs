@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -37,7 +36,7 @@ namespace ImageSandbox
         private StorageFile selectedImageFile;
         private readonly MosaicMakerPageViewModel viewModel;
 
-        private StorageFolder selectedFolder;
+        private readonly StorageFolder selectedFolder;
 
         #endregion
 
@@ -103,28 +102,27 @@ namespace ImageSandbox
 
             this.handleRemainingFileTypes(fileSavePicker);
 
-            var savefile = await fileSavePicker.PickSaveFileAsync();
+            var saveFile = await fileSavePicker.PickSaveFileAsync();
 
-            await this.viewModel.SavePicture(savefile);
+            await this.viewModel.SavePicture(saveFile);
         }
 
         private void handleRemainingFileTypes(FileSavePicker fileSavePicker)
         {
-            var fileTypes = new List<string>
-            {
+            var fileTypes = new List<string> {
                 ".png",
                 ".jpg",
                 ".jpeg",
                 ".bmp"
             };
 
-            foreach (var currType in fileTypes)
+            foreach (var currentType in fileTypes)
             {
-                if (!currType.Equals(this.viewModel.LoadedFileType))
+                if (!currentType.Equals(this.viewModel.LoadedFileType))
                 {
-                    var displayFileType = currType.Remove(0, 1);
+                    var displayFileType = currentType.Remove(0, 1);
 
-                    fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> {currType});
+                    fileSavePicker.FileTypeChoices.Add(displayFileType + " files", new List<string> {currentType});
                 }
             }
         }
@@ -152,14 +150,10 @@ namespace ImageSandbox
         {
             if (this.blackAndWhiteCheckBox.IsChecked != null)
             {
-                this.viewModel.IsBlackAndWhite = (bool)this.blackAndWhiteCheckBox.IsChecked;
+                this.viewModel.IsBlackAndWhite = (bool) this.blackAndWhiteCheckBox.IsChecked;
                 await this.viewModel.BlackAndWhiteCheckboxChanged();
             }
-           
         }
-        
-
-
 
         private void PictureMosaicButton_Click(object sender, RoutedEventArgs e)
         {
@@ -172,11 +166,8 @@ namespace ImageSandbox
             if (selectedFolder != null)
             {
                 await this.viewModel.LoadAllFolderImages(selectedFolder);
-
             }
         }
-
-        #endregion
 
         private async void AddImageButton_Click(object sender, RoutedEventArgs e)
         {
@@ -184,7 +175,6 @@ namespace ImageSandbox
             if (this.selectedImageFile != null)
             {
                 await this.viewModel.AddImage(this.selectedImageFile);
-                
             }
         }
 
@@ -193,13 +183,13 @@ namespace ImageSandbox
             while (this.GridView.SelectedItems.Any())
             {
                 var selectedImage = this.GridView.SelectedItems[0];
-               this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
+                this.viewModel.RemoveSelectedItem((WriteableBitmap) selectedImage);
             }
         }
 
         private void ClearPaletteButton_Click(object sender, RoutedEventArgs e)
         {
-           this.viewModel.ClearImagePalette();
+            this.viewModel.ClearImagePalette();
         }
 
         private void GridView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -207,9 +197,12 @@ namespace ImageSandbox
             var images = new List<WriteableBitmap>();
             foreach (var currentImage in this.GridView.SelectedItems)
             {
-                images.Add((WriteableBitmap)currentImage);
+                images.Add((WriteableBitmap) currentImage);
             }
+
             this.viewModel.SelectedImages = images;
         }
+
+        #endregion
     }
 }

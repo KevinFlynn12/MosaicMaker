@@ -17,9 +17,9 @@ namespace ImageSandbox.Util
         /// <returns>Bitmap Image</returns>
         public static async Task<BitmapImage> MakeACopyOfTheFileToWorkOn(StorageFile imageFile)
         {
-            IRandomAccessStream inputstream = await imageFile.OpenReadAsync();
+            IRandomAccessStream inputStream = await imageFile.OpenReadAsync();
             var newImage = new BitmapImage();
-            newImage.SetSource(inputstream);
+            newImage.SetSource(inputStream);
             return newImage;
         }
 
