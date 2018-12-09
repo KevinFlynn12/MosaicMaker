@@ -614,7 +614,7 @@ namespace ImageSandbox.ViewModel
         /// </summary>
         public void LoadAllImagesIntoImagePalette()
         {
-            //this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
+            this.SelectedFolderImages = new ObservableCollection<WriteableBitmap>();
             foreach (var images in this.loadedFolder)
             {
                 this.imagePalete.Add(images);
@@ -635,7 +635,6 @@ namespace ImageSandbox.ViewModel
                 if (currentImage.Equals(selectedImage))
                 {
                     this.SelectedFolderImages.Remove(currentImage);
-
                 }
 
 
@@ -679,8 +678,7 @@ namespace ImageSandbox.ViewModel
         private void changeGridType(bool isGrid, bool isTriangleGrid)
         {
             this.HasGrid = isGrid;
-            this.hasTriangleGrid = isTriangleGrid;
-            
+            this.hasTriangleGrid = isTriangleGrid; 
         }
         /// <summary>
         ///     Loads the picture.
