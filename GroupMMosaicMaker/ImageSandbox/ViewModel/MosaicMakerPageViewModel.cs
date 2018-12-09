@@ -634,12 +634,14 @@ namespace ImageSandbox.ViewModel
                 var currentImage = this.selectedFolderImages[i];
                 if (currentImage.Equals(selectedImage))
                 {
-                    this.selectedFolderImages.Remove(selectedImage);
+                    removeImages.Add(selectedImage);
                 }
 
              
             }
+            this.SelectedFolderImages.Remove(removeImages.First());
 
+            this.NumberOfImages = "" + this.SelectedFolderImages.Count;
         }
 
 
